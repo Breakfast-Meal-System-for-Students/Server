@@ -11,8 +11,6 @@ namespace BMS.Core.Domains.Entities
     {
         public string Description { get; set; } = null!;
         public int Rate { get; set; }
-        public DateTime CreateDate { get; set; } = DateTime.Now;
-        public DateTime LastUpdateDate { get; set; } = DateTime.Now;
 
         public Guid UserId { get; set; }
         public User User { get; set; } = null!;

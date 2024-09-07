@@ -90,11 +90,18 @@ namespace BMS.DAL.DataContext
                 .OnDelete(DeleteBehavior.Restrict);
 
             // One-to-Many relationship between Order and Notification
-            //modelBuilder.Entity<Notification>()
-            //    .HasOne(n => n.Order)
-            //    .WithMany(o => o.Notifications)
-            //    .HasForeignKey(n => n.OrderId)
-            //    .OnDelete(DeleteBehavior.Restrict);
+            modelBuilder.Entity<Notification>()
+                .HasOne(n => n.Order)
+                .WithMany(u => u.Notifications)
+                .HasForeignKey(n => n.OrderId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            // One-to-Many relationship between Shop and Notification
+            modelBuilder.Entity<Notification>()
+                .HasOne(n => n.Shop)
+                .WithMany(u => u.Notifications)
+                .HasForeignKey(n => n.ShopId)
+                .OnDelete(DeleteBehavior.Restrict);
 
             // One-to-Many relationship between User and Feedback
             modelBuilder.Entity<Feedback>()

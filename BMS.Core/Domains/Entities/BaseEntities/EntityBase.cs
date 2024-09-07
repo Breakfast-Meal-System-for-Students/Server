@@ -18,5 +18,7 @@ namespace BMS.Core.Domains.Entities.BaseEntities
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public virtual TKey Id { get; set; }
+        public DateTime CreateDate { get; set; } = DateTime.Now;
+        public DateTime LastUpdateDate { get; set; } = DateTime.Now;
     }
 }

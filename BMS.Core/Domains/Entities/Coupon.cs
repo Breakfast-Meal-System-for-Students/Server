@@ -16,8 +16,6 @@ namespace BMS.Core.Domains.Entities
         public double MaxDiscount { get; set; }
         public double MinPrice { get; set; }
         public double MinDiscount { get; set; }
-        public DateTime CreateDate { get; set; } = DateTime.Now;
-        public DateTime LastUpdateDate { get; set; } = DateTime.Now;
 
         public Guid ShopId { get; set; }
         public Shop Shop { get; set; } = null!;

@@ -17,8 +17,6 @@ namespace BMS.Core.Domains.Entities
         public string Address { get; set; } = null!;
         public double Rate { get; set; }
         public ShopStatus Status { get; set; } = ShopStatus.PENDING;
-        public DateTime CreateDate { get; set; } = DateTime.Now;
-        public DateTime LastUpdateDate { get; set; } = DateTime.Now;
 
         public Guid UserId { get; set; }
         public User User { get; set; } = null!;
@@ -29,6 +27,7 @@ namespace BMS.Core.Domains.Entities
         public ICollection<Order> Orders { get; set; } = new List<Order>();
         public ICollection<PackageHistory> PackageHistories { get; set; } = new List<PackageHistory>();
         public ICollection<Feedback> Feedbacks { get; set; } = new List<Feedback>();
+        public ICollection<Notification> Notifications { get; set; } = new List<Notification>();
     }
 
 }
