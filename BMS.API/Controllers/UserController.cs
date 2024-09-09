@@ -2,6 +2,7 @@
 using BMS.BLL.Models.Requests.Feedbacks;
 using BMS.BLL.Models.Requests.Users;
 using BMS.BLL.Services;
+using BMS.BLL.Services.BaseServices;
 using BMS.BLL.Services.IServices;
 using Microsoft.AspNetCore.Identity.Data;
 using Microsoft.AspNetCore.Mvc;
@@ -14,6 +15,7 @@ namespace BMS.API.Controllers
         public UserController(IUserService userService) 
         {
             _userService = userService;
+            _baseService = (BaseService)userService;
         }
 
         [HttpPost("login")]

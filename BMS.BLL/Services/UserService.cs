@@ -2,6 +2,7 @@
 using BMS.BLL.Models;
 using BMS.BLL.Models.Requests.Users;
 using BMS.BLL.Models.Responses.Users;
+using BMS.BLL.Services.BaseServices;
 using BMS.BLL.Services.IServices;
 using BMS.Core.Domains.Entities;
 using BMS.DAL;
@@ -13,15 +14,11 @@ using System.Threading.Tasks;
 
 namespace BMS.BLL.Services
 {
-    public class UserService : IUserService
+    public class UserService : BaseService, IUserService
     {
-        private readonly IUnitOfWork _unitOfWork;
-        private readonly IMapper _mapper;
 
-        public UserService(IUnitOfWork unitOfWork, IMapper mapper)
+        public UserService(IUnitOfWork unitOfWork, IMapper mapper) : base(unitOfWork, mapper)
         {
-            _unitOfWork = unitOfWork;
-            _mapper = mapper;
         }
 
         public Task<ServiceActionResult> GetUserByEmail(string email)
@@ -51,26 +48,19 @@ namespace BMS.BLL.Services
 
         public async Task<ServiceActionResult> RegisterUser(UserRegisterRequest request)
         {
-            try
-            {
                 var user = await _unitOfWork.UserRepository.GetAsync(a => a.Email == request.Email);
                 if (user == null)
                 {
                     request.Password = HashPassword(request.Password);
-                    await _unitOfWork.UserRepository.AddAsync(_mapper.Map<User>(request));
-                    await _unitOfWork.CommitAsync();
+                    user = _mapper.Map<User>(request);
+                    await _unitOfWork.UserRepository.AddAsync(user);
                     var response = _mapper.Map<UserLoginResponse>(user);
                     return new ServiceActionResult() { Data = response };
                 }
                 else
                 {
-                    return new ServiceActionResult(false, "Email Already Exit");
+                    return new ServiceActionResult(true, "Email Already Exit");
                 }
-            } catch (Exception ex)
-            {
-                _unitOfWork.Rollback();
-                throw ex;
-            }
         }
 
         private string HashPassword(string password)
