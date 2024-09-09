@@ -236,12 +236,15 @@ namespace BMS.DAL.Migrations
 
                     b.Property<Guid>("UserId")
                         .HasColumnType("uniqueidentifier");
+                    b.Property<Guid>("ShopId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.HasKey("Id");
 
                     b.HasIndex("OrderId");
 
                     b.HasIndex("UserId");
+                    b.HasIndex("ShopId");
 
                     b.ToTable("Notifications");
                 });
@@ -773,9 +776,16 @@ namespace BMS.DAL.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
+                    b.HasOne("BMS.Core.Domains.Entities.ShopId", "Shop")
+                       .WithMany("Notifications")
+                       .HasForeignKey("ShopId")
+                       .OnDelete(DeleteBehavior.Cascade)
+                       .IsRequired();
                     b.Navigation("Order");
 
                     b.Navigation("User");
+
+                    b.Navigation("Shop");
                 });
 
             modelBuilder.Entity("BMS.Core.Domains.Entities.Order", b =>
