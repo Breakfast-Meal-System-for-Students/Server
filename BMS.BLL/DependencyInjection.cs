@@ -15,18 +15,22 @@ namespace BMS.BLL
     {
         public static void RegisterBLLDependencies(this IServiceCollection services, IConfiguration Configuration)
         {
-            ;
+            #region Mapper
             services.AddAutoMapper(typeof(AutoMapperProfiles));
 
-           
-            
-         
-            services.AddScoped<IFeedbackService, FeedbackService>();
-         
+            #endregion
 
-           // services.AddFluentValidationAutoValidation();
+
+            #region Service
+            services.AddScoped<IFeedbackService, FeedbackService>();
+            services.AddScoped<IUserService, UserService>();
+            #endregion
+
+            #region Validation
+            // services.AddFluentValidationAutoValidation();
             //services.AddValidatorsFromAssemblyContaining<UserToLoginDTOValidator>();
 
+            #endregion
 
         }
     }
