@@ -4,9 +4,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace BMS.BLL.Exceptions.IExceptions
+namespace BMS.Core.Exceptions.IExceptions
 {
-    public interface IForbiddenException
+    public interface IBusinessException
     {
+
     }
 }
