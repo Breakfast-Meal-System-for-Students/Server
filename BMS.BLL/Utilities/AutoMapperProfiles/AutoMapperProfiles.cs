@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using BMS.BLL.Models.Requests.Feedbacks;
-using BMS.BLL.Models.Requests.Users;
+using BMS.BLL.Models.Requests.User;
+
 using BMS.BLL.Models.Responses.Feedbacks;
 using BMS.BLL.Models.Responses.Users;
 using BMS.Core.Domains.Entities;
@@ -19,6 +20,19 @@ namespace BMS.BLL.Utilities.AutoMapperProfiles
             public AutoMapperProfile()
             {
                 #region user
+
+
+                CreateMap<RegisterUser, User>()
+                   .ForMember(dest => dest.UserName, opt => opt.MapFrom(src => src.Email))
+                   .ForMember(dest => dest.PasswordHash, opt => opt.Ignore());
+
+            
+
+
+                CreateMap<User, LoginUser>();
+
+           
+
 
                 #endregion
 

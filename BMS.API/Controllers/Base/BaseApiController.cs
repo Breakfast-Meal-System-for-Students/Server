@@ -1,6 +1,6 @@
 ﻿using BMS.API.Constants;
-using BMS.BLL.Exceptions.IExceptions;
 using BMS.BLL.Models;
+using BMS.Core.Exceptions.IExceptions;
 using BMS.BLL.Services.BaseServices;
 using BMS.BLL.Services.IServices;
 using Microsoft.AspNetCore.Mvc;

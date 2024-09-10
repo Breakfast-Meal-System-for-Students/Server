@@ -8,6 +8,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using FluentValidation.AspNetCore;
+using FluentValidation;
+using BMS.BLL.Validators;
 
 namespace BMS.BLL
 {
@@ -15,20 +18,28 @@ namespace BMS.BLL
     {
         public static void RegisterBLLDependencies(this IServiceCollection services, IConfiguration Configuration)
         {
-            #region Mapper
+            
             services.AddAutoMapper(typeof(AutoMapperProfiles));
 
-            #endregion
+            services.AddScoped<IAuthService, AuthService>();
+            services.AddScoped<ICookieService, CookieService>();
+            services.AddScoped<IEmailService, EmailService>();
+            services.AddScoped<ITokenService, TokenService>();
+
+
+
 
 
             #region Service
             services.AddScoped<IFeedbackService, FeedbackService>();
             services.AddScoped<IUserService, UserService>();
             #endregion
-
+              
             #region Validation
-            // services.AddFluentValidationAutoValidation();
-            //services.AddValidatorsFromAssemblyContaining<UserToLoginDTOValidator>();
+            services.AddFluentValidationAutoValidation();
+            services.AddValidatorsFromAssemblyContaining<UserToLoginDTOValidator>();
+       
+
 
             #endregion
 

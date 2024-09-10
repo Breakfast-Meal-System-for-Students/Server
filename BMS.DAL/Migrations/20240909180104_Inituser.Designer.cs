@@ -4,6 +4,7 @@ using BMS.DAL.DataContext;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace BMS.DAL.Migrations
 {
     [DbContext(typeof(BMS_DbContext))]
-    partial class BMS_DbContextModelSnapshot : ModelSnapshot
+    [Migration("20240909180104_Inituser")]
+    partial class Inituser
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -239,8 +242,6 @@ namespace BMS.DAL.Migrations
 
                     b.Property<Guid>("UserId")
                         .HasColumnType("uniqueidentifier");
-                    b.Property<Guid>("ShopId")
-                        .HasColumnType("uniqueidentifier");
 
                     b.HasKey("Id");
 
@@ -249,7 +250,6 @@ namespace BMS.DAL.Migrations
                     b.HasIndex("ShopId");
 
                     b.HasIndex("UserId");
-                    b.HasIndex("ShopId");
 
                     b.ToTable("Notifications");
                 });
@@ -784,18 +784,11 @@ namespace BMS.DAL.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("BMS.Core.Domains.Entities.ShopId", "Shop")
-                       .WithMany("Notifications")
-                       .HasForeignKey("ShopId")
-                       .OnDelete(DeleteBehavior.Cascade)
-                       .IsRequired();
                     b.Navigation("Order");
 
                     b.Navigation("Shop");
 
                     b.Navigation("User");
-
-                    b.Navigation("Shop");
                 });
 
             modelBuilder.Entity("BMS.Core.Domains.Entities.Order", b =>
