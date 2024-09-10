@@ -15,7 +15,7 @@ namespace BMS.Core.Domains.Entities
         public string LastName { get; set; } = null!;
         public string? Avatar { get; set; }
         public string? Phone { get; set; } = null!;
-        public string? Password { get; set; } = null!;
+      //  public string? Password { get; set; } = null!;
         public DateTime CreateDate { get; set; } = DateTime.Now;
         public DateTime LastUpdateDate { get; set; } = DateTime.Now;
 

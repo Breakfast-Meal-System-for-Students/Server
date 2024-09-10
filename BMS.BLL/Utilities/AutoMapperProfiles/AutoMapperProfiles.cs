@@ -1,7 +1,7 @@
 ﻿using AutoMapper;
 using BMS.BLL.Models.Requests.Feedbacks;
 using BMS.BLL.Models.Requests.User;
-
+using BMS.BLL.Models.Requests.Users;
 using BMS.BLL.Models.Responses.Feedbacks;
 using BMS.BLL.Models.Responses.Users;
 using BMS.Core.Domains.Entities;
