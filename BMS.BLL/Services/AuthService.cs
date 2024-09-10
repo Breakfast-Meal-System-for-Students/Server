@@ -1,10 +1,12 @@
 ﻿using AutoMapper;
 using BMS.BLL.Models;
 using BMS.BLL.Models.Requests.User;
+using BMS.BLL.Services.BaseServices;
 using BMS.BLL.Services.IServices;
 using BMS.Core.Domains.Constants;
 using BMS.Core.Domains.Entities;
 using BMS.Core.Exceptions;
+using BMS.DAL;
 using Microsoft.AspNetCore.Identity;
 using System;
 using System.Collections.Generic;
@@ -15,7 +17,7 @@ using System.Threading.Tasks;
 
 namespace BMS.BLL.Services
 {
-    public class AuthService : IAuthService
+    public class AuthService : BaseService, IAuthService
     {
         private readonly ITokenService _tokenService;
         private readonly UserManager<User> _userManager;
@@ -25,13 +27,13 @@ namespace BMS.BLL.Services
         private readonly IEmailService _emailService;
         private readonly ICookieService _cookieService;
 
-        public AuthService(ITokenService tokenService,
+        public AuthService(ITokenService tokenService, IUnitOfWork unitOfWork,
             UserManager<User> userManager,
             SignInManager<User> signInManager,
             IMapper mapper,
             RoleManager<Role> roleManager,
             IEmailService emailService,
-            ICookieService cookieService)
+            ICookieService cookieService) : base(unitOfWork, mapper)
         {
             _tokenService = tokenService;
             _userManager = userManager;

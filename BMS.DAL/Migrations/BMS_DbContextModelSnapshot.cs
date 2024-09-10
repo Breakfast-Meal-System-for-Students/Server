@@ -48,6 +48,24 @@ namespace BMS.DAL.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Categories");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = new Guid("fcfaa15a-6412-486a-96fb-f5ae290994fa"),
+                            CreateDate = new DateTime(2024, 9, 10, 12, 50, 53, 995, DateTimeKind.Local).AddTicks(3594),
+                            Description = "Rice",
+                            LastUpdateDate = new DateTime(2024, 9, 10, 12, 50, 53, 995, DateTimeKind.Local).AddTicks(3614),
+                            Name = "Rice"
+                        },
+                        new
+                        {
+                            Id = new Guid("225df778-d8e6-4d3b-bf23-25024dc64c51"),
+                            CreateDate = new DateTime(2024, 9, 10, 12, 50, 53, 995, DateTimeKind.Local).AddTicks(3621),
+                            Description = "SuShi",
+                            LastUpdateDate = new DateTime(2024, 9, 10, 12, 50, 53, 995, DateTimeKind.Local).AddTicks(3622),
+                            Name = "SuShi"
+                        });
                 });
 
             modelBuilder.Entity("BMS.Core.Domains.Entities.CategoryShop", b =>
@@ -239,8 +257,6 @@ namespace BMS.DAL.Migrations
 
                     b.Property<Guid>("UserId")
                         .HasColumnType("uniqueidentifier");
-                    b.Property<Guid>("ShopId")
-                        .HasColumnType("uniqueidentifier");
 
                     b.HasKey("Id");
 
@@ -249,7 +265,6 @@ namespace BMS.DAL.Migrations
                     b.HasIndex("ShopId");
 
                     b.HasIndex("UserId");
-                    b.HasIndex("ShopId");
 
                     b.ToTable("Notifications");
                 });
@@ -439,6 +454,32 @@ namespace BMS.DAL.Migrations
                         .HasFilter("[NormalizedName] IS NOT NULL");
 
                     b.ToTable("AspNetRoles", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            Id = new Guid("0af91399-1d7f-48b0-9e13-10b09095743f"),
+                            Name = "Admin",
+                            NormalizedName = "Admin"
+                        },
+                        new
+                        {
+                            Id = new Guid("46484aa7-7667-4c12-beea-d2dadf66e948"),
+                            Name = "Staff",
+                            NormalizedName = "Staff"
+                        },
+                        new
+                        {
+                            Id = new Guid("0444b601-248f-4c65-8806-665cd52a81f2"),
+                            Name = "User",
+                            NormalizedName = "User"
+                        },
+                        new
+                        {
+                            Id = new Guid("70ebb2ac-4e92-46dd-8ab1-1bc8598c207b"),
+                            Name = "Shop",
+                            NormalizedName = "Shop"
+                        });
                 });
 
             modelBuilder.Entity("BMS.Core.Domains.Entities.Shop", b =>
@@ -535,9 +576,6 @@ namespace BMS.DAL.Migrations
                     b.Property<string>("NormalizedUserName")
                         .HasMaxLength(256)
                         .HasColumnType("nvarchar(256)");
-
-                    b.Property<string>("Password")
-                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("PasswordHash")
                         .HasColumnType("nvarchar(max)");
@@ -784,18 +822,11 @@ namespace BMS.DAL.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("BMS.Core.Domains.Entities.ShopId", "Shop")
-                       .WithMany("Notifications")
-                       .HasForeignKey("ShopId")
-                       .OnDelete(DeleteBehavior.Cascade)
-                       .IsRequired();
                     b.Navigation("Order");
 
                     b.Navigation("Shop");
 
                     b.Navigation("User");
-
-                    b.Navigation("Shop");
                 });
 
             modelBuilder.Entity("BMS.Core.Domains.Entities.Order", b =>

@@ -1,5 +1,7 @@
 ﻿using BMS.API.Controllers.Base;
 using BMS.BLL.Models.Requests.User;
+using BMS.BLL.Services.BaseServices;
+using BMS.BLL.Services;
 using BMS.BLL.Services.IServices;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity.Data;
@@ -14,6 +16,7 @@ namespace BMS.API.Controllers
         public AuthController(IAuthService authService)
         {
             _authService = authService;
+            _baseService = (BaseService)_authService;
         }
 
         [HttpPost("register")]

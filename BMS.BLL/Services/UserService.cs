@@ -36,12 +36,12 @@ namespace BMS.BLL.Services
             var user = await _unitOfWork.UserRepository.GetAsync(a => a.Email == request.Email);
             if (user != null) 
             {
-                if(VerifyPassword(user.Password, request.Password))
-                {
-                    var response = _mapper.Map<UserLoginResponse>(user);
-                    //response.Role = _unitOfWork.
-                    return new ServiceActionResult() { Data =  response};
-                }
+                //if(VerifyPassword(user.Password, request.Password))
+                //{
+                //    var response = _mapper.Map<UserLoginResponse>(user);
+                //    //response.Role = _unitOfWork.
+                //    return new ServiceActionResult() { Data =  response};
+                //}
             }
             return new ServiceActionResult() { Data = null };
         }
