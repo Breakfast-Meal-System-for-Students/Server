@@ -19,7 +19,7 @@ namespace BMS.Core.Exceptions
 
         public AddRoleException()
         {
-            _customMessage = "Can add account with mentee role";
+            _customMessage = "Can add account with shop role";
         }
     }
 }

@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using BMS.BLL.Models.Requests.Admin;
 using BMS.BLL.Models.Requests.Feedbacks;
 using BMS.BLL.Models.Requests.Shop;
 using BMS.BLL.Models.Requests.User;
@@ -33,7 +34,7 @@ namespace BMS.BLL.Utilities.AutoMapperProfiles
 
                 CreateMap<User, LoginUser>();
 
-
+                CreateMap<CreateStaffRequest, User>();
 
 
                 #endregion
