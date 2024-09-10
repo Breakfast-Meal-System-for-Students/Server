@@ -14,8 +14,6 @@ namespace BMS.Core.Domains.Entities
         public string Description { get; set; } = null!;
         public double Price { get; set; }
         public bool Status { get; set; } = true;
-        public DateTime CreateDate { get; set; } = DateTime.Now;
-        public DateTime LastUpdateDate { get; set; } = DateTime.Now;
 
         public Guid ShopId { get; set; }
         public Shop Shop { get; set; } = null!;

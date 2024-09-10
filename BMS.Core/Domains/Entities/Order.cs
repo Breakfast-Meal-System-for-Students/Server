@@ -12,8 +12,6 @@ namespace BMS.Core.Domains.Entities
       
         public double TotalPrice { get; set; }
         public string Status { get; set; } = null!;
-        public DateTime CreateDate { get; set; } = DateTime.Now;
-        public DateTime LastUpdateDate { get; set; } = DateTime.Now;
 
         public Guid CustomerId { get; set; }
         public User Customer { get; set; } = null!;
@@ -23,6 +21,7 @@ namespace BMS.Core.Domains.Entities
 
         public ICollection<OrderItem> OrderItems { get; set; } = new List<OrderItem>();
         public ICollection<CouponUsage> CouponUsages { get; set; } = new List<CouponUsage>();
+        public ICollection<Notification> Notifications { get; set; } = new List<Notification>();
     }
 
 }

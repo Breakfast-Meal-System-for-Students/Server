@@ -9,8 +9,8 @@ namespace BMS.Core.Domains.Enums
  
     public enum ShopStatus
     {
-        PENDING,
-        ACCEPTED,
-        DENIED
+        PENDING = 1,
+        ACCEPTED = 2,
+        DENIED = 3
     }
 }

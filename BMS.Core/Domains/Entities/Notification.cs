@@ -11,14 +11,15 @@ namespace BMS.Core.Domains.Entities
     {
         public string Object { get; set; } = null!;
         public string Status { get; set; } = null!;
-        public DateTime CreateDate { get; set; } = DateTime.Now;
-        public DateTime LastUpdateDate { get; set; } = DateTime.Now;
 
         public Guid UserId { get; set; }
         public User User { get; set; } = null!;
 
         public Guid OrderId { get; set; }
         public Order Order { get; set; } = null!;
+
+        public Guid ShopId { get; set; }
+        public Shop Shop { get; set; } = null!;
     }
 
 }

@@ -9,9 +9,6 @@ namespace BMS.Core.Domains.Entities
 {
     public class CouponUsage : EntityBase<Guid>
     {
-        public DateTime CreateDate { get; set; } = DateTime.Now;
-        public DateTime LastUpdateDate { get; set; } = DateTime.Now;
-
         public Guid UserId { get; set; }
         public User User { get; set; } = null!;
 

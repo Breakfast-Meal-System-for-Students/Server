@@ -4,10 +4,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace BMS.BLL.Exceptions.IExceptions
+namespace BMS.BLL.Services.IServices
 {
-    public interface IBusinessException
+    public interface ICookieService
     {
-
+        void SetJwtCookie(string token);
     }
 }

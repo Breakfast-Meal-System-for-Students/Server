@@ -2,11 +2,13 @@ using BMS.DAL.DataContext;
 using Microsoft.EntityFrameworkCore;
 using BMS.DAL;
 using BMS.BLL;
+using BMS.API.Extensions;
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 
 builder.Services.AddControllers();
+builder.Services.AddIdentityServices(builder.Configuration);
 builder.Services.RegisterDALDependencies(builder.Configuration);
 builder.Services.RegisterBLLDependencies(builder.Configuration);
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle

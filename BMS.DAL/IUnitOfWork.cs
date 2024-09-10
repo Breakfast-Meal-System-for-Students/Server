@@ -10,7 +10,7 @@ namespace BMS.DAL
     public interface IUnitOfWork
     {
         public IFeedbackRepository FeedbackRepository { get; }
-
+        public IUserRepository UserRepository { get; }
         void Commit();
         Task CommitAsync();
         void Rollback();

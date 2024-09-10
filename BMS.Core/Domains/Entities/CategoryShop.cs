@@ -9,9 +9,6 @@ namespace BMS.Core.Domains.Entities
 {
     public class CategoryShop : EntityBase<Guid>
     {
-        public DateTime CreateDate { get; set; } = DateTime.Now;
-        public DateTime LastUpdateDate { get; set; } = DateTime.Now;
-
         public Guid ShopId { get; set; }
         public Shop Shop { get; set; } = null!;
 

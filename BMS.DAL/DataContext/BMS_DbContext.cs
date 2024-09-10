@@ -90,11 +90,18 @@ namespace BMS.DAL.DataContext
                 .OnDelete(DeleteBehavior.Restrict);
 
             // One-to-Many relationship between Order and Notification
-            //modelBuilder.Entity<Notification>()
-            //    .HasOne(n => n.Order)
-            //    .WithMany(o => o.Notifications)
-            //    .HasForeignKey(n => n.OrderId)
-            //    .OnDelete(DeleteBehavior.Restrict);
+            modelBuilder.Entity<Notification>()
+                .HasOne(n => n.Order)
+                .WithMany(u => u.Notifications)
+                .HasForeignKey(n => n.OrderId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            // One-to-Many relationship between Shop and Notification
+            modelBuilder.Entity<Notification>()
+                .HasOne(n => n.Shop)
+                .WithMany(u => u.Notifications)
+                .HasForeignKey(n => n.ShopId)
+                .OnDelete(DeleteBehavior.Restrict);
 
             // One-to-Many relationship between User and Feedback
             modelBuilder.Entity<Feedback>()
@@ -172,6 +179,16 @@ namespace BMS.DAL.DataContext
                 .WithMany(o => o.CouponUsages)
                 .HasForeignKey(cu => cu.OrderId)
                 .OnDelete(DeleteBehavior.Restrict);
+            modelBuilder.Entity<Role>().HasData(
+          new Role { Id = Guid.NewGuid(), Name = "Admin", NormalizedName="Admin"},
+        new Role { Id = Guid.NewGuid(), Name = "Staff", NormalizedName = "Staff" },
+         new Role { Id = Guid.NewGuid(), Name = "User", NormalizedName = "User" },
+          new Role { Id = Guid.NewGuid(), Name = "Shop", NormalizedName = "Shop" });
+
+            modelBuilder.Entity<Category>().HasData(
+          new Category { Id = Guid.NewGuid(), Name = "Rice",Description= "Rice" },
+        new Category { Id = Guid.NewGuid(), Name = "SuShi", Description = "SuShi" });
+
         }
     }
 }

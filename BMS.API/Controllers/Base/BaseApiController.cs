@@ -1,6 +1,8 @@
 ﻿using BMS.API.Constants;
-using BMS.BLL.Exceptions.IExceptions;
 using BMS.BLL.Models;
+using BMS.Core.Exceptions.IExceptions;
+using BMS.BLL.Services.BaseServices;
+using BMS.BLL.Services.IServices;
 using Microsoft.AspNetCore.Mvc;
 
 namespace BMS.API.Controllers.Base
@@ -9,6 +11,7 @@ namespace BMS.API.Controllers.Base
     [Route("api/[controller]")]
     public class BaseApiController : ControllerBase
     {
+        protected BaseService _baseService;
         private IActionResult BuildSuccessResult(ServiceActionResult result)
         {
             var successResult = new ApiResponse(true)
@@ -48,14 +51,15 @@ namespace BMS.API.Controllers.Base
             try
             {
                 var result = await serviceLogicFunc();
-
+                _baseService.Commit();
                 return result.IsSuccess ? BuildSuccessResult(result) : Problem(result.Detail);
+
             }
             catch (Exception ex)
             {
                 if (errorHandler is not null)
                     await errorHandler();
-
+                _baseService.Rollback();
                 return BuildErrorResult(ex);
             }
         }

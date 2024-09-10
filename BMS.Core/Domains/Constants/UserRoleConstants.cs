@@ -10,7 +10,7 @@ namespace BMS.Core.Domains.Constants
     {
         public const string ADMIN = "Admin";
         public const string STAFF = "Staff";
-        public const string MENTOR = "Mentor";
-        public const string MENTEE = "Mentee";
+        public const string USER = "User";
+        public const string SHOP = "Shop";
     }
 }
