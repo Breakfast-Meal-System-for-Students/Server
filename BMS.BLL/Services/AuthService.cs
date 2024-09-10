@@ -83,7 +83,7 @@ namespace BMS.BLL.Services
             return new ServiceActionResult(true) { Data = new { roles = await _userManager.GetRolesAsync(user), token = token } };
         }
 
-        public async Task<ServiceActionResult> RegisterAsync(RegisterUser userToRegisterDTO)
+        public async Task<ServiceActionResult> RegisterAsync(RegisterUser userToRegisterDTO, int role = 3)
         {
             var userEntity = _mapper.Map<User>(userToRegisterDTO);
 
@@ -93,12 +93,20 @@ namespace BMS.BLL.Services
                 var error = result.Errors.First();
                 return new ServiceActionResult(false, error.Description);
             }
-
-            if (!await _roleManager.RoleExistsAsync(UserRoleConstants.ADMIN))
+            string roleName = "";
+            switch (role)
             {
-                await _roleManager.CreateAsync(new Role { Name = UserRoleConstants.ADMIN });
+                case 1: roleName = UserRoleConstants.ADMIN; break;
+                case 2: roleName = UserRoleConstants.STAFF; break;
+                case 3: roleName = UserRoleConstants.USER; break;
+                case 4: roleName = UserRoleConstants.SHOP; break;
             }
-            var roleResult = await _userManager.AddToRoleAsync(userEntity, UserRoleConstants.ADMIN);
+
+            if (!await _roleManager.RoleExistsAsync(roleName))
+            {
+                await _roleManager.CreateAsync(new Role { Name = roleName });
+            }
+            var roleResult = await _userManager.AddToRoleAsync(userEntity, roleName);
             if (!roleResult.Succeeded)
             {
                 await _userManager.DeleteAsync(userEntity);
