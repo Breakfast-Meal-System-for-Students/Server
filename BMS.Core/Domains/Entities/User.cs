@@ -11,8 +11,8 @@ namespace BMS.Core.Domains.Entities
     public class User : IdentityUser<Guid>
     {
         
-        public string FirstName { get; set; } = null!;
-        public string LastName { get; set; } = null!;
+        public string? FirstName { get; set; } = null!;
+        public string? LastName { get; set; } = null!;
         public string? Avatar { get; set; }
         public string? Phone { get; set; } = null!;
       //  public string? Password { get; set; } = null!;
