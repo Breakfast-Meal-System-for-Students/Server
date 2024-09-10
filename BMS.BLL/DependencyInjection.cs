@@ -27,12 +27,21 @@ namespace BMS.BLL
             services.AddScoped<ITokenService, TokenService>();
 
 
-            services.AddScoped<IFeedbackService, FeedbackService>();
-         
 
+
+
+            #region Service
+            services.AddScoped<IFeedbackService, FeedbackService>();
+            services.AddScoped<IUserService, UserService>();
+            #endregion
+              
+            #region Validation
             services.AddFluentValidationAutoValidation();
             services.AddValidatorsFromAssemblyContaining<UserToLoginDTOValidator>();
+       
 
+
+            #endregion
 
         }
     }
