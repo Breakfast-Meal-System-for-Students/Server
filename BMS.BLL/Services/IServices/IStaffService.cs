@@ -11,11 +11,11 @@ namespace BMS.BLL.Services.IServices
 {
     public interface IStaffService
     {
-        Task<ServiceActionResult> GetListStaff(PagingRequest request);
-        Task<ServiceActionResult> GetStaffByMail(string email);
+        Task<ServiceActionResult> GetListStaff(SearchStaffRequest request);
+        Task<ServiceActionResult> GetStaffById(Guid id);
         Task<ServiceActionResult> GetStaffByName(string name);
         Task<ServiceActionResult> GetTotalStaff();
-        Task<ServiceActionResult> AddStaff(CreateStaffRequest name);
+        Task<ServiceActionResult> AddStaff(CreateStaffRequest request);
         Task<ServiceActionResult> DeleteStaff(Guid id);
     }
 }

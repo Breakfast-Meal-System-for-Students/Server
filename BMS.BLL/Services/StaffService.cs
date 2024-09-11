@@ -6,6 +6,7 @@ using BMS.BLL.Models.Requests.Admin;
 using BMS.BLL.Models.Requests.Basic;
 using BMS.BLL.Models.Requests.User;
 using BMS.BLL.Models.Responses.Shop;
+using BMS.BLL.Models.Responses.Users;
 using BMS.BLL.Services.BaseServices;
 using BMS.BLL.Services.IServices;
 using BMS.BLL.Utilities;
@@ -86,14 +87,49 @@ namespace BMS.BLL.Services
             return new ServiceActionResult();
         }
 
-        public async Task<ServiceActionResult> GetListStaff(PagingRequest request)
+        public async Task<ServiceActionResult> GetListStaff(SearchStaffRequest request)
         {
-            throw new NotImplementedException();
+            IQueryable<User> staffQuery = (await _unitOfWork.UserRepository.GetAllAsyncAsQueryable()).Include(a => a.UserRoles).ThenInclude(b => b.Role).Where(x => x.UserRoles.Any(a => a.Role.Name.Contains(UserRoleConstants.STAFF)));
+
+            /*var canParsed = Enum.TryParse(queryParameters.Status, true, out ShopStatus status);
+            if (canParsed)
+            {
+                applicationQuery = applicationQuery.Where(m => m.Status == status);
+            }*/
+
+            if (!string.IsNullOrEmpty(request.Search))
+            {
+                staffQuery = staffQuery.Where(m => m.Email.Contains(request.Search) || (m.LastName + m.FirstName).Contains(request.Search));
+            }
+
+            staffQuery = request.IsDesc ? staffQuery.OrderByDescending(a => a.CreateDate) : staffQuery.OrderBy(a => a.CreateDate);
+
+            var paginationResult = PaginationHelper
+            .BuildPaginatedResult<User, UserLoginResponse>(_mapper, staffQuery, request.PageSize, request.PageIndex);
+
+            return new ServiceActionResult(true) { Data = paginationResult };
         }
 
-        public async Task<ServiceActionResult> GetStaffByMail(string email)
+        public async Task<ServiceActionResult> GetStaffById(Guid id)
         {
-            throw new NotImplementedException();
+            var staff = await _unitOfWork.UserRepository.FindAsync(id);
+            if (staff != null)
+            {
+                var roles = await _userManager.GetRolesAsync(staff);
+                bool isInShopRole = roles.Contains(UserRoleConstants.STAFF);
+                if (isInShopRole)
+                {
+                    throw new BusinessRuleException($"{staff.Email} is not a Staff in System");
+                }
+                var returnStaff = _mapper.Map<UserLoginResponse>(staff);
+
+                return new ServiceActionResult(true) { Data = returnStaff };
+            } else
+            {
+                return new ServiceActionResult(false, "Staff is not exits or deleted");
+            }
+
+            
         }
 
         public async Task<ServiceActionResult> GetStaffByName(string name)
@@ -103,7 +139,10 @@ namespace BMS.BLL.Services
 
         public async Task<ServiceActionResult> GetTotalStaff()
         {
-            throw new NotImplementedException();
+            return new ServiceActionResult()
+            {
+                Data = (await _unitOfWork.UserRepository.GetAllAsyncAsQueryable()).Include(a => a.UserRoles).ThenInclude(b => b.Role).Where(x => x.UserRoles.Any(a => a.Role.Name.Contains(UserRoleConstants.STAFF))).Count()
+            };
         }
     }
 }
