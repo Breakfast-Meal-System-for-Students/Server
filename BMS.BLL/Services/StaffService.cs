@@ -70,8 +70,19 @@ namespace BMS.BLL.Services
             try
             {
                 var password = AccountCreationHelper.GenerateRandomPassword();
+                staff.UserName =  staff.Email;
                 await _userManager.CreateAsync(staff, password);
-                await _emailService.SendEmailAsync(request.Email, "YOU HAVE NEW INFORMATION FROM BMS", EmailHelper.GetAcceptedEmailBody("thunghiem3340@gmail.com", request.Email, password), true);
+                if (!await _roleManager.RoleExistsAsync(UserRoleConstants.STAFF))
+                {
+                    await _roleManager.CreateAsync(new Role { Name = UserRoleConstants.STAFF });
+                }
+                var roleResult = await _userManager.AddToRoleAsync(staff, UserRoleConstants.STAFF);
+                if (!roleResult.Succeeded)
+                {
+                    await _userManager.DeleteAsync(staff);
+                    throw new AddRoleException("Can not create account with role");
+                }
+                //await _emailService.SendEmailAsync(request.Email, "YOU HAVE NEW INFORMATION FROM BMS", EmailHelper.GetAcceptedEmailBody("thunghiem3340@gmail.com", request.Email, password), true);
                 return new ServiceActionResult();
             }
             catch
@@ -117,7 +128,7 @@ namespace BMS.BLL.Services
             {
                 var roles = await _userManager.GetRolesAsync(staff);
                 bool isInShopRole = roles.Contains(UserRoleConstants.STAFF);
-                if (isInShopRole)
+                if (!isInShopRole)
                 {
                     throw new BusinessRuleException($"{staff.Email} is not a Staff in System");
                 }

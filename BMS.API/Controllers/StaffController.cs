@@ -22,7 +22,7 @@ namespace BMS.API.Controllers
 
         [HttpPost]
         [Authorize(Roles = UserRoleConstants.ADMIN)]
-        public async Task<IActionResult> CreateShopApplication([FromForm] CreateStaffRequest request)
+        public async Task<IActionResult> CreateStaff([FromForm] CreateStaffRequest request)
         {
             return await ExecuteServiceLogic(
                 async () => await _staffService.AddStaff(request).ConfigureAwait(false)
@@ -36,7 +36,7 @@ namespace BMS.API.Controllers
                 async () => await _staffService.DeleteStaff(id).ConfigureAwait(false)
             ).ConfigureAwait(false);
         }
-        [HttpGet("GetListStaff")]
+        [HttpPost("GetListStaff")]
         [Authorize(Roles = UserRoleConstants.ADMIN)]
         public async Task<IActionResult> GetListStaff(SearchStaffRequest request)
         {
