@@ -34,6 +34,8 @@ namespace BMS.BLL.Utilities.AutoMapperProfiles
                 CreateMap<User, LoginUser>();
 
 
+                CreateMap<User, UserLoginResponse>();
+                CreateMap<UserRegisterRequest, User>();
 
 
                 #endregion
@@ -50,8 +52,11 @@ namespace BMS.BLL.Utilities.AutoMapperProfiles
 
                 CreateMap<FeedbackRequest, Feedback>();
 
-                CreateMap<User, UserLoginResponse>();
-                CreateMap<UserRegisterRequest, User>();
+                CreateMap<Feedback, FeedbackForStaffResponse>()
+                    .ForMember(dest => dest.UserName, opt => opt.MapFrom(src => src.User!.FirstName))
+                    .ForMember(dest => dest.UserPic, opt => opt.MapFrom(src => src.User!.Avatar))
+                    .ForMember(dest => dest.ShopName, opt => opt.MapFrom(src => src.Shop!.Name))
+                    .ForMember(dest => dest.Shoppic, opt => opt.MapFrom(src => src.Shop!.Image));
                 #endregion
 
 

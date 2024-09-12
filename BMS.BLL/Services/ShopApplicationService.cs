@@ -54,7 +54,7 @@ namespace BMS.BLL.Services
                 }
             }
             var shopApplication = _mapper.Map<Shop>(applicationRequest);
-
+             
             try
             {
                
@@ -157,7 +157,9 @@ namespace BMS.BLL.Services
                 Email = application.Email,
                 UserName = application.Email,
                 PhoneNumber = application.PhoneNumber,
-             
+                FirstName = application.Name,
+                ShopId = application.Id,
+                Phone = application.PhoneNumber,
             };
     
         //  public string? Password { get; set; } = null!;

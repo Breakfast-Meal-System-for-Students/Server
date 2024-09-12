@@ -22,6 +22,8 @@ namespace BMS.Core.Domains.Entities
         public ICollection<OrderItem> OrderItems { get; set; } = new List<OrderItem>();
         public ICollection<CouponUsage> CouponUsages { get; set; } = new List<CouponUsage>();
         public ICollection<Notification> Notifications { get; set; } = new List<Notification>();
+
+        public ICollection<Transaction> Transactions { get; set; } = new List<Transaction>();
     }
 
 }

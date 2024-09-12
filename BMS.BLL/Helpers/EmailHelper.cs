@@ -32,14 +32,14 @@ namespace BMS.BLL.Helpers
                         box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
                     }}
                     .header {{
-                        background-color: #4CAF50;
+                        background-color: #FFD700;
                         color: white;
                         padding: 10px 0;
                         text-align: center;
                         border-radius: 10px 10px 0 0;
                     }}
                     .footer {{
-                        background-color: #4CAF50;
+                        background-color: #FFD700;
                         color: white;
                         padding: 10px 0;
                         text-align: center;
@@ -88,7 +88,7 @@ namespace BMS.BLL.Helpers
         {
             return $@"Congratulations! 🎉 Your application has been accepted! We are thrilled to welcome you to become a shoper in our platform. 🤝<br>
 
-                    We provide you account to become a mentor in our platform: <br>
+                    We provide you account to become a shoper in our platform: <br>
                     Account: {account}<br>
                     Password: {password}<br>
 
