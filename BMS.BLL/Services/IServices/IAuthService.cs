@@ -11,7 +11,7 @@ namespace BMS.BLL.Services.IServices
     public interface IAuthService
     {
         Task<ServiceActionResult> LoginAsync(LoginUser userToLoginDTO);
-        Task<ServiceActionResult> RegisterAsync(RegisterUser userToRegisterDTO);
+        Task<ServiceActionResult> RegisterAsync(RegisterUser userToRegisterDTO, int role);
         Task<ServiceActionResult> ConfirmEmail(string userId, string token);
         
     }

@@ -30,11 +30,16 @@ namespace BMS.BLL
 
 
 
+
             #region Service
             services.AddScoped<IFeedbackService, FeedbackService>();
             services.AddScoped<IUserService, UserService>();
+            services.AddScoped<IAuthService, AuthService>();
+            services.AddScoped<ICookieService, CookieService>();
+            services.AddScoped<IEmailService, EmailService>();
+            services.AddScoped<ITokenService, TokenService>();
             #endregion
-              
+
             #region Validation
             services.AddFluentValidationAutoValidation();
             services.AddValidatorsFromAssemblyContaining<UserToLoginDTOValidator>();
