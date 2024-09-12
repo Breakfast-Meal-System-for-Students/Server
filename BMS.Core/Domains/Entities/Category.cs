@@ -13,7 +13,8 @@ namespace BMS.Core.Domains.Entities
         public string? Image { get; set; }
         public string Description { get; set; } = null!;
 
-        public ICollection<CategoryShop> CategoryShops { get; set; } = new List<CategoryShop>();
+
+        public ICollection<RegisterCategory>? RegisterCategorys { get; set; } = new List<RegisterCategory>();
     }
 
 }

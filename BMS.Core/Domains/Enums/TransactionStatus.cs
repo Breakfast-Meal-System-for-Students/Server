@@ -6,12 +6,11 @@ using System.Threading.Tasks;
 
 namespace BMS.Core.Domains.Enums
 {
- 
-    public enum ShopStatus
+    public enum TransactionStatus
     {
-        PENDING = 1,
-        ACCEPTED = 2,
-        DENIED = 3,
-        CLOSE = 4
+        PAID = 1,
+        NOTPAID = 2,
+       
     }
+ 
 }

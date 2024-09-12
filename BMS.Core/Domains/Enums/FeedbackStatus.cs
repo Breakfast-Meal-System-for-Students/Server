@@ -7,11 +7,10 @@ using System.Threading.Tasks;
 namespace BMS.Core.Domains.Enums
 {
  
-    public enum ShopStatus
+    public enum FeedbackStatus
     {
-        PENDING = 1,
-        ACCEPTED = 2,
-        DENIED = 3,
-        CLOSE = 4
+        APPROVED = 1,
+        BAN = 2,
+        WARN = 3,
     }
 }

@@ -1,6 +1,10 @@
 ﻿using BMS.BLL.Models;
 using BMS.BLL.Models.Requests.Basic;
 using BMS.BLL.Models.Requests.Feedbacks;
+using BMS.BLL.Models.Responses.Feedbacks;
+using BMS.Core.Domains.Entities;
+using BMS.Core.Domains.Enums;
+using BMS.Core.Helpers;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,7 +17,9 @@ namespace BMS.BLL.Services.IServices
     {
         Task<ServiceActionResult> GetAllFeedbacksOfAShop(Guid shopId, PagingRequest request);
         Task<ServiceActionResult> AddFeedback(FeedbackRequest  request, Guid userId);
-     
 
+        Task<ServiceActionResult> GetAllFeedbacksForStaff(FeedbackForStaffRequest queryParameters);
+        Task<ServiceActionResult> ReviewFeedback(Guid id, string status);
+     
     }
 }

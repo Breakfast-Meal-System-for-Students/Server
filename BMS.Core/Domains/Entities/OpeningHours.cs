@@ -7,13 +7,15 @@ using System.Threading.Tasks;
 
 namespace BMS.Core.Domains.Entities
 {
-    public class CategoryShop : EntityBase<Guid>
+    public class OpeningHours : EntityBase<Guid>
     {
+        public int day { get; set; }
+
+        public int from_hour { get; set; }
+        public int to_hour { get; set; }
+        public int from_minute { get; set; }
+        public int to_minute { get; set; }
         public Guid ShopId { get; set; }
         public Shop Shop { get; set; } = null!;
-
-        public Guid CategoryId { get; set; }
-        public Category Category { get; set; } = null!;
-    }
-
+          }
 }

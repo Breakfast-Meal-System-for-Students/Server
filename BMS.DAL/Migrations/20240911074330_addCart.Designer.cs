@@ -4,6 +4,7 @@ using BMS.DAL.DataContext;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace BMS.DAL.Migrations
 {
     [DbContext(typeof(BMS_DbContext))]
-    partial class BMS_DbContextModelSnapshot : ModelSnapshot
+    [Migration("20240911074330_addCart")]
+    partial class addCart
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -110,20 +113,45 @@ namespace BMS.DAL.Migrations
                     b.HasData(
                         new
                         {
-                            Id = new Guid("5974dddc-3920-419a-9606-211ae25bc6a5"),
-                            CreateDate = new DateTime(2024, 9, 12, 16, 27, 55, 27, DateTimeKind.Local).AddTicks(4959),
+                            Id = new Guid("f51d20d8-0a9a-4e7d-9dd4-c67fe636c31f"),
+                            CreateDate = new DateTime(2024, 9, 11, 14, 43, 29, 530, DateTimeKind.Local).AddTicks(3207),
                             Description = "Rice",
-                            LastUpdateDate = new DateTime(2024, 9, 12, 16, 27, 55, 27, DateTimeKind.Local).AddTicks(4973),
+                            LastUpdateDate = new DateTime(2024, 9, 11, 14, 43, 29, 530, DateTimeKind.Local).AddTicks(3225),
                             Name = "Rice"
                         },
                         new
                         {
-                            Id = new Guid("ab41163c-2848-47a6-a11d-34b5e70b9086"),
-                            CreateDate = new DateTime(2024, 9, 12, 16, 27, 55, 27, DateTimeKind.Local).AddTicks(4979),
+                            Id = new Guid("22a85b6e-4d76-479c-b077-76481815d1b8"),
+                            CreateDate = new DateTime(2024, 9, 11, 14, 43, 29, 530, DateTimeKind.Local).AddTicks(3242),
                             Description = "SuShi",
-                            LastUpdateDate = new DateTime(2024, 9, 12, 16, 27, 55, 27, DateTimeKind.Local).AddTicks(4979),
+                            LastUpdateDate = new DateTime(2024, 9, 11, 14, 43, 29, 530, DateTimeKind.Local).AddTicks(3242),
                             Name = "SuShi"
                         });
+                });
+
+            modelBuilder.Entity("BMS.Core.Domains.Entities.CategoryShop", b =>
+                {
+                    b.Property<Guid>("ShopId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("CategoryId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("CreateDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("LastUpdateDate")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("ShopId", "CategoryId");
+
+                    b.HasIndex("CategoryId");
+
+                    b.ToTable("CategoryShops");
                 });
 
             modelBuilder.Entity("BMS.Core.Domains.Entities.Coupon", b =>
@@ -223,9 +251,6 @@ namespace BMS.DAL.Migrations
 
                     b.Property<Guid>("ShopId")
                         .HasColumnType("uniqueidentifier");
-
-                    b.Property<int>("Status")
-                        .HasColumnType("int");
 
                     b.Property<Guid>("UserId")
                         .HasColumnType("uniqueidentifier");
@@ -500,34 +525,6 @@ namespace BMS.DAL.Migrations
                     b.ToTable("Products");
                 });
 
-            modelBuilder.Entity("BMS.Core.Domains.Entities.RegisterCategory", b =>
-                {
-                    b.Property<Guid>("CategoryId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid>("ShopId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid>("ProductId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<DateTime>("CreateDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<DateTime>("LastUpdateDate")
-                        .HasColumnType("datetime2");
-
-                    b.HasKey("CategoryId", "ShopId", "ProductId");
-
-                    b.HasIndex("ShopId");
-
-                    b.ToTable("RegisterCategorys");
-                });
-
             modelBuilder.Entity("BMS.Core.Domains.Entities.Role", b =>
                 {
                     b.Property<Guid>("Id")
@@ -559,25 +556,25 @@ namespace BMS.DAL.Migrations
                     b.HasData(
                         new
                         {
-                            Id = new Guid("61f8f8ff-ade0-4027-b485-002f4da309d8"),
+                            Id = new Guid("f66c5d34-768b-4726-8b29-9ceb8a75c878"),
                             Name = "Admin",
                             NormalizedName = "Admin"
                         },
                         new
                         {
-                            Id = new Guid("a97e9132-f060-4e2c-9e61-8088afab5ff2"),
+                            Id = new Guid("22027808-8c69-4b07-8c93-80339b1a12a7"),
                             Name = "Staff",
                             NormalizedName = "Staff"
                         },
                         new
                         {
-                            Id = new Guid("a26afa1f-e489-4fe3-95d6-1d519b63eb3a"),
+                            Id = new Guid("60672cf0-51c2-4af9-b2c4-269bf6283744"),
                             Name = "User",
                             NormalizedName = "User"
                         },
                         new
                         {
-                            Id = new Guid("ae05af39-23fc-4bd9-8255-a6f755ffcdf3"),
+                            Id = new Guid("63b2c868-c5e9-49d6-9a67-7098622d6b44"),
                             Name = "Shop",
                             NormalizedName = "Shop"
                         });
@@ -886,6 +883,25 @@ namespace BMS.DAL.Migrations
                     b.Navigation("Product");
                 });
 
+            modelBuilder.Entity("BMS.Core.Domains.Entities.CategoryShop", b =>
+                {
+                    b.HasOne("BMS.Core.Domains.Entities.Category", "Category")
+                        .WithMany("CategoryShops")
+                        .HasForeignKey("CategoryId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("BMS.Core.Domains.Entities.Shop", "Shop")
+                        .WithMany("CategoryShops")
+                        .HasForeignKey("ShopId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Category");
+
+                    b.Navigation("Shop");
+                });
+
             modelBuilder.Entity("BMS.Core.Domains.Entities.Coupon", b =>
                 {
                     b.HasOne("BMS.Core.Domains.Entities.Shop", "Shop")
@@ -1060,33 +1076,6 @@ namespace BMS.DAL.Migrations
                     b.Navigation("Shop");
                 });
 
-            modelBuilder.Entity("BMS.Core.Domains.Entities.RegisterCategory", b =>
-                {
-                    b.HasOne("BMS.Core.Domains.Entities.Category", "Category")
-                        .WithMany("RegisterCategorys")
-                        .HasForeignKey("CategoryId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("BMS.Core.Domains.Entities.Product", "Product")
-                        .WithMany("RegisterCategorys")
-                        .HasForeignKey("ShopId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("BMS.Core.Domains.Entities.Shop", "Shop")
-                        .WithMany("RegisterCategorys")
-                        .HasForeignKey("ShopId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Category");
-
-                    b.Navigation("Product");
-
-                    b.Navigation("Shop");
-                });
-
             modelBuilder.Entity("BMS.Core.Domains.Entities.Shop", b =>
                 {
                     b.HasOne("BMS.Core.Domains.Entities.User", "User")
@@ -1170,7 +1159,7 @@ namespace BMS.DAL.Migrations
 
             modelBuilder.Entity("BMS.Core.Domains.Entities.Category", b =>
                 {
-                    b.Navigation("RegisterCategorys");
+                    b.Navigation("CategoryShops");
                 });
 
             modelBuilder.Entity("BMS.Core.Domains.Entities.Coupon", b =>
@@ -1201,8 +1190,6 @@ namespace BMS.DAL.Migrations
                     b.Navigation("Images");
 
                     b.Navigation("OrderItems");
-
-                    b.Navigation("RegisterCategorys");
                 });
 
             modelBuilder.Entity("BMS.Core.Domains.Entities.Role", b =>
@@ -1212,6 +1199,8 @@ namespace BMS.DAL.Migrations
 
             modelBuilder.Entity("BMS.Core.Domains.Entities.Shop", b =>
                 {
+                    b.Navigation("CategoryShops");
+
                     b.Navigation("Coupons");
 
                     b.Navigation("Feedbacks");
@@ -1225,8 +1214,6 @@ namespace BMS.DAL.Migrations
                     b.Navigation("PackageHistories");
 
                     b.Navigation("Products");
-
-                    b.Navigation("RegisterCategorys");
                 });
 
             modelBuilder.Entity("BMS.Core.Domains.Entities.User", b =>
