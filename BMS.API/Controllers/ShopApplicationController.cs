@@ -1,6 +1,7 @@
 ﻿using BMS.API.Controllers.Base;
 using BMS.BLL.Models.Requests.Shop;
 using BMS.BLL.Services;
+using BMS.BLL.Services.BaseServices;
 using BMS.BLL.Services.IServices;
 using BMS.Core.Domains.Constants;
 using Microsoft.AspNetCore.Authorization;
@@ -12,10 +13,10 @@ namespace BMS.API.Controllers
     public class ShopApplicationController : BaseApiController
     {
         private readonly IShopApplicationService _shopApplicationService;
-
         public ShopApplicationController(IShopApplicationService shopApplicationService)
         {
             _shopApplicationService = shopApplicationService;
+            _baseService = (BaseService)_shopApplicationService;
         }
 
         [HttpPost]
@@ -45,7 +46,7 @@ namespace BMS.API.Controllers
         }
 
         [HttpPut("{id}")]
-        [Authorize(Roles = UserRoleConstants.STAFF)]
+       // [Authorize(Roles = UserRoleConstants.STAFF)]
         public async Task<IActionResult> ReviewedApplication(Guid id, string status)
         {
             return await ExecuteServiceLogic(
