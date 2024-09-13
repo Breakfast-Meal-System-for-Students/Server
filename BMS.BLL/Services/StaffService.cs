@@ -82,7 +82,7 @@ namespace BMS.BLL.Services
                     await _userManager.DeleteAsync(staff);
                     throw new AddRoleException("Can not create account with role");
                 }
-                //await _emailService.SendEmailAsync(request.Email, "YOU HAVE NEW INFORMATION FROM BMS", EmailHelper.GetAcceptedEmailBody("thunghiem3340@gmail.com", request.Email, password), true);
+                await _emailService.SendEmailAsync(request.Email, "YOU HAVE NEW INFORMATION FROM BMS", EmailHelper.GetAcceptedEmailBody("thunghiem3340@gmail.com", request.Email, password), true);
                 return new ServiceActionResult();
             }
             catch
