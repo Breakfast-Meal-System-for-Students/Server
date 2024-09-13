@@ -26,7 +26,6 @@ namespace BMS.BLL
             services.AddScoped<IEmailService, EmailService>();
             services.AddScoped<ITokenService, TokenService>();
             services.AddScoped<IUserClaimsService, UserClaimsService>();
-            services.AddScoped<IShopApplicationService, ShopApplicationService>();
 
 
 
@@ -34,10 +33,10 @@ namespace BMS.BLL
             #region Service
             services.AddScoped<IFeedbackService, FeedbackService>();
             services.AddScoped<IUserService, UserService>();
-            services.AddScoped<IAuthService, AuthService>();
             services.AddScoped<ICookieService, CookieService>();
-            services.AddScoped<IEmailService, EmailService>();
-            services.AddScoped<ITokenService, TokenService>();
+            services.AddScoped<IShopApplicationService, ShopApplicationService>();
+            services.AddScoped<ICategoryService, CategoryService>();
+            services.AddScoped<IFileStorageService, FileStorageService>();
             #endregion
 
             #region Validation

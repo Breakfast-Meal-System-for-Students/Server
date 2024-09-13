@@ -12,7 +12,7 @@ namespace BMS.DAL
     public class UnitOfWork : IUnitOfWork, IDisposable
     {
         public IUserRepository UserRepository => new UserRepository(_dbContext);
-
+        public ICategoryRepository CategoryRepositoy => new CategoryRepository(_dbContext);
         public IShopRepository ShopRepository => new ShopRepository(_dbContext);
         public IFeedbackRepository FeedbackRepository => new FeedbackRepository(_dbContext);
         public DbContext _dbContext { get; }

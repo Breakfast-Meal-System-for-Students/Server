@@ -1,8 +1,10 @@
 ﻿using AutoMapper;
+using BMS.BLL.Models.Requests.Category;
 using BMS.BLL.Models.Requests.Feedbacks;
 using BMS.BLL.Models.Requests.Shop;
 using BMS.BLL.Models.Requests.User;
 using BMS.BLL.Models.Requests.Users;
+using BMS.BLL.Models.Responses.Category;
 using BMS.BLL.Models.Responses.Feedbacks;
 using BMS.BLL.Models.Responses.Shop;
 using BMS.BLL.Models.Responses.Users;
@@ -59,7 +61,14 @@ namespace BMS.BLL.Utilities.AutoMapperProfiles
                     .ForMember(dest => dest.Shoppic, opt => opt.MapFrom(src => src.Shop!.Image));
                 #endregion
 
+                #region category
+                CreateMap<Category, UpdateCategoryRequest>()
+                 .ForMember(dest => dest.Image, opt => opt.Ignore());
+                CreateMap<CreateCategoryRequest, Category>()
+                .ForMember(dest => dest.Image, opt => opt.Ignore()); 
 
+                CreateMap<Category, CategoryResponse>();
+                #endregion
             }
         }
     }

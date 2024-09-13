@@ -28,7 +28,7 @@ namespace BMS.API.Controllers
         }
 
         [HttpGet]
-        [Authorize(Roles = UserRoleConstants.STAFF)]
+      //  [Authorize(Roles = UserRoleConstants.STAFF)]
         public async Task<IActionResult> GetAllApplications([FromQuery] ShopApplicationRequest request)
         {
             return await ExecuteServiceLogic(
@@ -37,7 +37,7 @@ namespace BMS.API.Controllers
         }
 
         [HttpGet("{id}")]
-        [Authorize(Roles = UserRoleConstants.STAFF)]
+       // [Authorize(Roles = UserRoleConstants.STAFF)]
         public async Task<IActionResult> GetApplication(Guid id)
         {
             return await ExecuteServiceLogic(
