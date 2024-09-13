@@ -37,7 +37,7 @@ namespace BMS.API.Controllers
         }
 
         [HttpGet("GetUserById{id}")]
-        public async Task<IActionResult> GetStaffById(Guid id)
+        public async Task<IActionResult> GetUserById(Guid id)
         {
             return await ExecuteServiceLogic(
                 async () => await _userService.GetUserByID(id).ConfigureAwait(false)
@@ -45,7 +45,7 @@ namespace BMS.API.Controllers
         }
 
         [HttpGet("GetUserByEmail{email}")]
-        public async Task<IActionResult> GetStaffById(string email)
+        public async Task<IActionResult> GetUserByEmail(string email)
         {
             return await ExecuteServiceLogic(
                 async () => await _userService.GetUserByEmail(email).ConfigureAwait(false)
@@ -54,7 +54,7 @@ namespace BMS.API.Controllers
 
         [HttpGet("GetTotalUser")]
         [Authorize(Roles = UserRoleConstants.ADMIN)]
-        public async Task<IActionResult> GetTotalStaff()
+        public async Task<IActionResult> GetTotalUser()
         {
             return await ExecuteServiceLogic(
                 async () => await _userService.GetTotalUser().ConfigureAwait(false)
