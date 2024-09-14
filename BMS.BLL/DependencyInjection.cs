@@ -21,18 +21,24 @@ namespace BMS.BLL
             
             services.AddAutoMapper(typeof(AutoMapperProfiles));
 
+            services.AddScoped<IAuthService, AuthService>();
+            services.AddScoped<ICookieService, CookieService>();
+            services.AddScoped<IEmailService, EmailService>();
+            services.AddScoped<ITokenService, TokenService>();
+            services.AddScoped<IUserClaimsService, UserClaimsService>();
+
+
 
 
 
             #region Service
             services.AddScoped<IFeedbackService, FeedbackService>();
             services.AddScoped<IUserService, UserService>();
-            services.AddScoped<IAuthService, AuthService>();
             services.AddScoped<ICookieService, CookieService>();
-            services.AddScoped<IEmailService, EmailService>();
-            services.AddScoped<ITokenService, TokenService>();
+            services.AddScoped<IShopApplicationService, ShopApplicationService>();
+            services.AddScoped<ICategoryService, CategoryService>();
+            services.AddScoped<IFileStorageService, FileStorageService>();
 
-            services.AddScoped<IUserClaimsService, UserClaimsService>();
             services.AddScoped<IShopApplicationService, ShopApplicationService>();
             services.AddScoped<IStaffService, StaffService>();
             #endregion
