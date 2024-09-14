@@ -30,6 +30,7 @@ namespace BMS.BLL
 
 
 
+
             #region Service
             services.AddScoped<IFeedbackService, FeedbackService>();
             services.AddScoped<IUserService, UserService>();
@@ -37,6 +38,9 @@ namespace BMS.BLL
             services.AddScoped<IShopApplicationService, ShopApplicationService>();
             services.AddScoped<ICategoryService, CategoryService>();
             services.AddScoped<IFileStorageService, FileStorageService>();
+
+            services.AddScoped<IShopApplicationService, ShopApplicationService>();
+            services.AddScoped<IStaffService, StaffService>();
             #endregion
 
             #region Validation

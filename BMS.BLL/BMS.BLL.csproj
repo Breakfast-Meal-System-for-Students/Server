@@ -18,4 +18,8 @@
     <ProjectReference Include="..\BMS.DAL\BMS.DAL.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Models\Responses\Admin\" />
+  </ItemGroup>
+
 </Project>
