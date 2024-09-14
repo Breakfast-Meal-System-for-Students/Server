@@ -10,8 +10,8 @@ namespace BMS.Core.Domains.Enums
     {
         DRAFT = 1,
         ORDERED = 2,
-        PREPARING = 3,
-        CHECKING = 4,
+        CHECKING = 3,
+        PREPARING = 4,
         PREPARED = 5,
         TAKENOVER = 6,
         CANCEL = 7,

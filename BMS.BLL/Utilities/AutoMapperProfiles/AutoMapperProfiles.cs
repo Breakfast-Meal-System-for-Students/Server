@@ -5,6 +5,7 @@ using BMS.BLL.Models.Requests.Feedbacks;
 using BMS.BLL.Models.Requests.Shop;
 using BMS.BLL.Models.Requests.User;
 using BMS.BLL.Models.Requests.Users;
+using BMS.BLL.Models.Responses.Admin;
 using BMS.BLL.Models.Responses.Category;
 using BMS.BLL.Models.Responses.Feedbacks;
 using BMS.BLL.Models.Responses.Shop;
@@ -50,7 +51,10 @@ namespace BMS.BLL.Utilities.AutoMapperProfiles
                 CreateMap<Shop, ShopApplicationResponse>();
 
                 #endregion
-
+                #region order
+                CreateMap<Order, OrderResponse>()
+                    .ForMember(dest => dest.OrderItems, opt => opt.MapFrom(src => src.OrderItems));
+                #endregion
                 #region feedback
                 CreateMap<Feedback, FeedbackResponse>();
 
