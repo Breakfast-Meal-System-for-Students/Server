@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Azure.Core;
 using BMS.BLL.Models;
 using BMS.BLL.Models.Requests.Admin;
 using BMS.BLL.Models.Responses.Admin;
@@ -30,7 +31,23 @@ namespace BMS.BLL.Services
 
         public async Task<ServiceActionResult> ChangeOrderStatus(Guid id, OrderStatus status)
         {
-            throw new NotImplementedException();
+            var order = await _unitOfWork.OrderRepository.FindAsync(id);
+            var canParsed = Enum.TryParse(order.Status, true, out OrderStatus s);
+            if (canParsed)
+            {
+                if (s.Equals(8)) throw new BusinessRuleException("Order is Completed, so that you can not change this");
+                if (s.Equals(7)) throw new BusinessRuleException("Order is Canceled, so that you can not change this");
+                if(Enum.Equals(status, s))
+                {
+                    throw new BusinessRuleException($"Order is already in {status}, so that you can not change this");
+                }
+                if (s.CompareTo(status) > 0) throw new BusinessRuleException($"Order is already in {s}, so that you can not change back to {status}");
+                order.Status = status.ToString();
+                return new ServiceActionResult() { Detail = $" Change Order Status from {s} to {status} sucessfully" };
+            } else
+            {
+                throw new BusinessRuleException("Have Error in Status Order");
+            }
         }
 
         public async Task<ServiceActionResult> GetListOrders(SearchOrderRequest request)
@@ -73,20 +90,72 @@ namespace BMS.BLL.Services
 
         public async Task<ServiceActionResult> GetOrderByShop(Guid id, SearchOrderRequest request)
         {
-            throw new NotImplementedException();
+            IQueryable<Order> orderQuery = (await _unitOfWork.OrderRepository.GetAllAsyncAsQueryable()).Include(a => a.OrderItems).Where(x => x.ShopId == id);
+
+            //var canParsed = Enum.TryParse(request.Status, true, out OrderStatus status);
+            if (request.Status != 0)
+            {
+                orderQuery = orderQuery.Where(m => m.Status.Equals(request.Status));
+            }
+
+            //if (!string.IsNullOrEmpty(request.Search))
+            //{
+            //    orderQuery = orderQuery.Where(m => m.Email.Contains(request.Search) || (m.LastName + m.FirstName).Contains(request.Search));
+            //}
+
+            orderQuery = request.IsDesc ? orderQuery.OrderByDescending(a => a.CreateDate) : orderQuery.OrderBy(a => a.CreateDate);
+
+            var paginationResult = PaginationHelper
+            .BuildPaginatedResult<Order, OrderResponse>(_mapper, orderQuery, request.PageSize, request.PageIndex);
+
+            return new ServiceActionResult(true) { Data = paginationResult };
         }
 
         public async Task<ServiceActionResult> GetOrderByUser(Guid id, SearchOrderRequest request)
         {
-            throw new NotImplementedException();
+            IQueryable<Order> orderQuery = (await _unitOfWork.OrderRepository.GetAllAsyncAsQueryable()).Include(a => a.OrderItems).Where(x => x.CustomerId == id);
+
+            //var canParsed = Enum.TryParse(request.Status, true, out OrderStatus status);
+            if (request.Status != 0)
+            {
+                orderQuery = orderQuery.Where(m => m.Status.Equals(request.Status));
+            }
+
+            //if (!string.IsNullOrEmpty(request.Search))
+            //{
+            //    orderQuery = orderQuery.Where(m => m.Email.Contains(request.Search) || (m.LastName + m.FirstName).Contains(request.Search));
+            //}
+
+            orderQuery = request.IsDesc ? orderQuery.OrderByDescending(a => a.CreateDate) : orderQuery.OrderBy(a => a.CreateDate);
+
+            var paginationResult = PaginationHelper
+            .BuildPaginatedResult<Order, OrderResponse>(_mapper, orderQuery, request.PageSize, request.PageIndex);
+
+            return new ServiceActionResult(true) { Data = paginationResult };
         }
 
         public async Task<ServiceActionResult> GetTotalOrder(TotalOrdersRequest request)
         {
-
+            var orders = (await _unitOfWork.OrderRepository.GetAllAsyncAsQueryable());
+            if(request.Year != 0)
+            {
+                if(request.Month != 0)
+                {
+                    if(request.Day != 0)
+                    {
+                        orders = orders.Where(x => x.CreateDate.Year == request.Year && x.CreateDate.Month == request.Month && x.CreateDate.Day == request.Day);
+                    } else
+                    {
+                        orders = orders.Where(x => x.CreateDate.Year == request.Year && x.CreateDate.Month == request.Month);
+                    }
+                } else
+                {
+                    orders = orders.Where(x => x.CreateDate.Year == request.Year);
+                }
+            }
             return new ServiceActionResult()
             {
-                Data = (await _unitOfWork.OrderRepository.GetAllAsyncAsQueryable()).Where(x => x).Count()
+                Data = orders.Count()
             };
         }
     }
