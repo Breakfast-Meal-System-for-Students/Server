@@ -42,6 +42,7 @@ namespace BMS.BLL
             services.AddScoped<IShopApplicationService, ShopApplicationService>();
             services.AddScoped<IStaffService, StaffService>();
             services.AddScoped<IOrderService, OrderService>();
+            services.AddScoped<ITransactionService, TransactionService>();
             #endregion
 
             #region Validation

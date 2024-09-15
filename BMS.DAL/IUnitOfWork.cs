@@ -13,6 +13,7 @@ namespace BMS.DAL
         public IUserRepository UserRepository { get; }
         public IShopRepository ShopRepository { get; }
         public ICategoryRepository CategoryRepositoy { get; }
+        public ITransactionRepository TransactionRepository { get; }
         public IOrderRepository OrderRepository { get; }
         void Commit();
         Task CommitAsync();
