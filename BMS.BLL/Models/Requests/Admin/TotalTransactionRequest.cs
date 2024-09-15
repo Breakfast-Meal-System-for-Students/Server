@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace BMS.BLL.Models.Requests.Admin
 {
-    public class TotalOrdersRequest
+    public class TotalTRansactionRequest
     {
         [Range(1, 31)]
         [Length(1, 2)]
@@ -19,6 +19,6 @@ namespace BMS.BLL.Models.Requests.Admin
         [Length(4, 4)]
         [Range(2000, 3000)]
         public int? Year = 0;
-        public OrderStatus? Status { get; set; } = 0;
+        public TransactionStatus? Status { get; set; } = 0;
     }
 }

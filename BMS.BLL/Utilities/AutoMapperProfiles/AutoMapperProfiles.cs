@@ -55,6 +55,13 @@ namespace BMS.BLL.Utilities.AutoMapperProfiles
                 CreateMap<Order, OrderResponse>()
                     .ForMember(dest => dest.OrderItems, opt => opt.MapFrom(src => src.OrderItems));
                 #endregion
+
+                #region transaction
+                CreateMap<Transaction, TransactionResponse>()
+                     .ForMember(dest => dest.Order, opt => opt.MapFrom(src => src.Order));
+                /*CreateMap<Shop, TopResponse>()
+                     .ForMember(dest => dest.TotalAmount, opt => opt.MapFrom(src => src.Order));*/
+                #endregion
                 #region feedback
                 CreateMap<Feedback, FeedbackResponse>();
 

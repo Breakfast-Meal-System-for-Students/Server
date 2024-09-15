@@ -51,7 +51,7 @@ namespace BMS.API.Controllers
         public async Task<IActionResult> GetOrderByUser(Guid id, SearchOrderRequest request)
         {
             return await ExecuteServiceLogic(
-                async () => await _orderService.GetOrderByUser(, request).ConfigureAwait(false)
+                async () => await _orderService.GetOrderByUser(id, request).ConfigureAwait(false)
             ).ConfigureAwait(false);
         }
 

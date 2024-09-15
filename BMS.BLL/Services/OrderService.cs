@@ -153,6 +153,10 @@ namespace BMS.BLL.Services
                     orders = orders.Where(x => x.CreateDate.Year == request.Year);
                 }
             }
+            if(request.Status != 0)
+            {
+                orders = orders.Where(x => x.Status.Equals(request.Status.ToString()));
+            }
             return new ServiceActionResult()
             {
                 Data = orders.Count()

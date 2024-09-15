@@ -10,7 +10,7 @@ namespace BMS.Core.Domains.Enums
     {
         PAID = 1,
         NOTPAID = 2,
-       
+        ERROR = 3,
     }
  
 }
