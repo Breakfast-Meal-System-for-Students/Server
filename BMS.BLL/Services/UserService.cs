@@ -105,7 +105,7 @@ namespace BMS.BLL.Services
             }
             else
             {
-                return new ServiceActionResult(false, "Staff is not exits or deleted");
+                return new ServiceActionResult(false, "User is not exits or deleted");
             }
         }
     }
