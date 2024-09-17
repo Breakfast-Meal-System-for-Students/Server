@@ -16,6 +16,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using BMS.BLL.Models.Responses.Roles;
 
 namespace BMS.BLL.Utilities.AutoMapperProfiles
 {
@@ -32,16 +33,21 @@ namespace BMS.BLL.Utilities.AutoMapperProfiles
                    .ForMember(dest => dest.UserName, opt => opt.MapFrom(src => src.Email))
                    .ForMember(dest => dest.PasswordHash, opt => opt.Ignore());
 
-            
+
+                CreateMap<UpdateUserRequest, User>();
 
 
+                CreateMap<User, UserResponse>();
                 CreateMap<User, LoginUser>();
 
 
                 CreateMap<User, UserLoginResponse>();
                 CreateMap<UserRegisterRequest, User>();
                 CreateMap<CreateStaffRequest, User>();
-
+                #region Role
+                CreateMap<UserRole, RoleResponse>()
+                .ForMember(dest => dest.Name, src => src.MapFrom(opt => opt.Role.Name));
+                #endregion
 
                 #endregion
                 #region shop  

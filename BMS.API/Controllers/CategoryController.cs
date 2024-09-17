@@ -22,7 +22,7 @@ namespace BMS.API.Controllers
         }
 
 
-        [HttpDelete("{Id}")]
+        [HttpDelete("{id}")]
 
         public async Task<IActionResult> DeleteCategory(Guid id)
         {
@@ -46,7 +46,7 @@ namespace BMS.API.Controllers
                                async () => await _categoryService.GetAllCategory(pagingRequest).ConfigureAwait(false)
                                           ).ConfigureAwait(false);
         }
-        [HttpPut("{Id}")]
+        [HttpPut("{id}")]
         public async Task<IActionResult> UpdateCategory(Guid Id, [FromQuery] UpdateCategoryRequest category)
         {
             return await ExecuteServiceLogic(

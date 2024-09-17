@@ -16,6 +16,7 @@ using System.Text;
 using System.Threading.Tasks;
 using BMS.BLL.Models.Requests.Category;
 using BMS.BLL.Models.Responses.Category;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace BMS.BLL.Services
 {
@@ -55,30 +56,38 @@ namespace BMS.BLL.Services
         }
         public async Task<ServiceActionResult> AddCategory(CreateCategoryRequest request)
         {
-
-            var imageUrl = await _fileStorageService.UploadFileBlobAsync(request.Image);
+        
+            
             var categoryEntity = _mapper.Map<Category>(request);
-            categoryEntity.Image = imageUrl;
+            if (request.Image != null)
+            {
+                var imageUrl = await _fileStorageService.UploadFileBlobAsync(request.Image);
+                categoryEntity.Image = imageUrl;
+            }
             await _unitOfWork.CategoryRepositoy.AddAsync(categoryEntity);
             // do something add feedback
             await _unitOfWork.CommitAsync();
 
-            return new ServiceActionResult();
+            return new ServiceActionResult(true) { Data = categoryEntity };
         }
 
         public async Task<ServiceActionResult> UpdateCategory(Guid id, UpdateCategoryRequest request)
         {
 
-            var imageUrl = await _fileStorageService.UploadFileBlobAsync(request.Image);
+           
             var category = await _unitOfWork.CategoryRepositoy.FindAsync(id) ?? throw new ArgumentNullException("Category is not exist");
             category.Description = request.Description;
-            category.Image = imageUrl;
+            if (request.Image != null)
+            {
+                var imageUrl = await _fileStorageService.UploadFileBlobAsync(request.Image);
+                category.Image = imageUrl;
+            }
+          
             category.LastUpdateDate = DateTime.UtcNow;
             category.Name = request.Name;
-          
             await _unitOfWork.CommitAsync();
 
-            return new ServiceActionResult();
+            return new ServiceActionResult(true) { Data = category };
         }
 
 
