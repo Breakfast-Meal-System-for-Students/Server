@@ -58,16 +58,6 @@ namespace BMS.BLL.Services
             var shops = (await _unitOfWork.ShopRepository.GetAllAsyncAsQueryable())
                         .Include(shop => shop.Orders)
                         .ThenInclude(order => order.Transactions);
-                        //.GroupBy(shop => shop.Id)
-                        //.Select(group => new
-                        //{
-                        //    ShopId = group.Key,
-                        //    ShopName = group.FirstOrDefault().Name,
-                        //    TotalTransactionAmount = group
-                        //        .SelectMany(shop => shop.Orders)
-                        //        .SelectMany(order => order.Transactions)
-                        //        .Sum(transaction => transaction.Price)
-                        //});
             if (request.Year != 0)
             {
                 if (request.Month != 0)

@@ -12,7 +12,8 @@ namespace BMS.Core.Domains.Entities
         public Guid CustomerId { get; set; } 
         public User Customer { get; set; } = null!;
 
-        
+        public Guid ShopId { get; set; }
+        public Shop Shop { get; set; } = null!;
         public bool IsPurchase { get; set; }
 
         // Quan hệ 1-n với CartDetail
