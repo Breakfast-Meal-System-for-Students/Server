@@ -27,16 +27,28 @@ namespace BMS.DAL.DataContext
         public DbSet<Image> Images { get; set; }
         public DbSet<Product> Products { get; set; }
         public DbSet<Category> Categories { get; set; }
-        public DbSet<CategoryShop> CategoryShops { get; set; }
+
+        public DbSet<RegisterCategory> RegisterCategorys { get; set; }
         public DbSet<Package> Packages { get; set; }
         public DbSet<PackageHistory> PackageHistories { get; set; }
         public DbSet<OrderItem> OrderItems { get; set; }
         public DbSet<Coupon> Coupons { get; set; }
         public DbSet<CouponUsage> CouponUsages { get; set; }
 
+        public DbSet<Transaction> Transactions { get; set; }
+        public DbSet<Cart> Carts { get; set; }
+        public DbSet<CartDetail> CartDetails { get; set; }
+
+        public DbSet<OpeningHours> OpeningHours { get; set; }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
+            // 1-to-1 relationship between Shop and user
+            modelBuilder.Entity<User>()
+      .HasOne(u => u.Shop) 
+      .WithOne(s => s.User) 
+      .HasForeignKey<Shop>(s => s.UserId) 
+      .OnDelete(DeleteBehavior.Cascade); 
 
             modelBuilder.Entity<UserRole>(entity =>
             {
@@ -52,20 +64,29 @@ namespace BMS.DAL.DataContext
                       .HasForeignKey(ur => ur.RoleId)
                       .OnDelete(DeleteBehavior.Cascade);
             });
-            // Many-to-Many relationship between Shop and Category
-            modelBuilder.Entity<CategoryShop>(entity =>
+            //
+            modelBuilder.Entity<RegisterCategory>(entity =>
             {
-                entity.HasKey(cs => new { cs.ShopId, cs.CategoryId });
+                // Configure composite primary key
+                entity.HasKey(rc => new { rc.CategoryId, rc.ShopId ,rc.ProductId});
 
-                entity.HasOne(cs => cs.Shop)
-                      .WithMany(s => s.CategoryShops)
-                      .HasForeignKey(cs => cs.ShopId)
-                      .OnDelete(DeleteBehavior.Cascade);
+                // Configure relationships between RegisterCategory and Category
+                entity.HasOne(rc => rc.Category)
+                      .WithMany(c => c.RegisterCategorys) // Navigational property in Category
+                      .HasForeignKey(rc => rc.CategoryId)
+                      .OnDelete(DeleteBehavior.Cascade); // Cascade delete when a Category is deleted
 
-                entity.HasOne(cs => cs.Category)
-                      .WithMany(c => c.CategoryShops)
-                      .HasForeignKey(cs => cs.CategoryId)
-                      .OnDelete(DeleteBehavior.Cascade);
+                // Configure relationships between RegisterCategory and Shop
+                entity.HasOne(rc => rc.Shop)
+                      .WithMany(s => s.RegisterCategorys) // Navigational property in Shop
+                      .HasForeignKey(rc => rc.ShopId)
+                      .OnDelete(DeleteBehavior.Cascade); // Cascade delete when a Shop is deleted
+
+                // Configure relationships between RegisterCategory and Product
+                entity.HasOne(rc => rc.Product)
+                      .WithMany(s => s.RegisterCategorys) // Navigational property in Product
+                      .HasForeignKey(rc => rc.ShopId)
+                      .OnDelete(DeleteBehavior.Cascade); // Cascade delete when a Product is deleted
             });
 
             // One-to-Many relationship between User and Order
@@ -179,6 +200,41 @@ namespace BMS.DAL.DataContext
                 .WithMany(o => o.CouponUsages)
                 .HasForeignKey(cu => cu.OrderId)
                 .OnDelete(DeleteBehavior.Restrict);
+
+
+            // Cấu hình quan hệ 1-n giữa Customer và Cart
+            modelBuilder.Entity<Cart>()
+                .HasOne(c => c.Customer)
+                .WithMany(cu => cu.Carts)
+                .HasForeignKey(c => c.CustomerId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            // Cấu hình quan hệ 1-n giữa Cart và CartDetail
+            modelBuilder.Entity<CartDetail>()
+                .HasOne(cd => cd.Cart)
+                .WithMany(c => c.CartDetails)
+                .HasForeignKey(cd => cd.CartId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            // Cấu hình quan hệ 1-n giữa Product và CartDetail
+            modelBuilder.Entity<CartDetail>()
+                .HasOne(cd => cd.Product)
+                .WithMany(p => p.CartDetails)
+                .HasForeignKey(cd => cd.ProductId)
+                .OnDelete(DeleteBehavior.Cascade);
+            // Thiết lập mối quan hệ giữa Transaction và Order
+            modelBuilder.Entity<Transaction>()
+                .HasOne(t => t.Order)
+                .WithMany(o => o.Transactions)  // Một đơn hàng có thể có nhiều giao dịch
+                .HasForeignKey(t => t.OrderId)
+                .OnDelete(DeleteBehavior.Cascade);
+            // Relationship between OpenHouse and Shop (One-to-Many)
+            modelBuilder.Entity<OpeningHours>()
+                .HasOne(oh => oh.Shop)
+                .WithMany(s => s.OpeningHours)
+                .HasForeignKey(oh => oh.ShopId)
+                .OnDelete(DeleteBehavior.Cascade);
+            // seed dât
             modelBuilder.Entity<Role>().HasData(
           new Role { Id = Guid.NewGuid(), Name = "Admin", NormalizedName="Admin"},
         new Role { Id = Guid.NewGuid(), Name = "Staff", NormalizedName = "Staff" },

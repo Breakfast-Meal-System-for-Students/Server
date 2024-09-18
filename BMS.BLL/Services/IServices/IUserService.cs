@@ -1,4 +1,5 @@
 ﻿using BMS.BLL.Models;
+using BMS.BLL.Models.Requests.Admin;
 using BMS.BLL.Models.Requests.Users;
 using System;
 using System.Collections.Generic;
@@ -12,16 +13,16 @@ namespace BMS.BLL.Services.IServices
     {
         Task<ServiceActionResult> GetUserByID(Guid userID);
         Task<ServiceActionResult> GetUserByEmail(string email);
-        Task<ServiceActionResult> Login(UserLoginRequest request);
-        Task<ServiceActionResult> RegisterUser(UserRegisterRequest request);
+        Task<ServiceActionResult> GetTotalUser();
+        Task<ServiceActionResult> GetListUser(SearchStaffRequest request);
+
+        Task<ServiceActionResult> DeleteUser(Guid id);
         /*Task<ServiceActionResult> ChangePassword(ChangePWForm userDto);
-        
-        Task<ServiceActionResult> CreateUserGoogle(GoogleLoginForm userDto);
         Task<ServiceActionResult> UpdateUserProfile(Account user);
         Task<ServiceActionResult> ResetPassWord(ResetPassWordRequest request);
         Task<ServiceActionResult> ResetPasswordAsync(RPFormRequest request);
-        Task<ServiceActionResult> GetAccountsAsync(string? search, int currentPage, int pageSize);
-        Task<ServiceActionResult> GetTotalAccountsCountAsync();
+        
+        
         Task<ServiceActionResult> GetAccountsByDateAsync(DateTime date);
         Task<ServiceActionResult> GetAccountCountByDateAsync(DateTime date);*/
     }

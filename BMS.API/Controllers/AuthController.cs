@@ -20,10 +20,11 @@ namespace BMS.API.Controllers
         }
 
         [HttpPost("register")]
-        public async Task<IActionResult> Register(RegisterUser request)
+        public async Task<IActionResult> Register(RegisterUser request, int role)
         {
             return await ExecuteServiceLogic(
-                async () => await _authService.RegisterAsync(request).ConfigureAwait(false)
+
+                async () => await _authService.RegisterAsync(request, role).ConfigureAwait(false)
             ).ConfigureAwait(false);
         }
 

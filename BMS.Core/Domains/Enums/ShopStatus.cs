@@ -11,6 +11,7 @@ namespace BMS.Core.Domains.Enums
     {
         PENDING = 1,
         ACCEPTED = 2,
-        DENIED = 3
+        DENIED = 3,
+        CLOSE = 4
     }
 }

@@ -32,14 +32,14 @@ namespace BMS.BLL.Helpers
                         box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
                     }}
                     .header {{
-                        background-color: #4CAF50;
+                        background-color: #FFD700;
                         color: white;
                         padding: 10px 0;
                         text-align: center;
                         border-radius: 10px 10px 0 0;
                     }}
                     .footer {{
-                        background-color: #4CAF50;
+                        background-color: #FFD700;
                         color: white;
                         padding: 10px 0;
                         text-align: center;
@@ -72,7 +72,7 @@ namespace BMS.BLL.Helpers
         {
             return $@"Dear {userName},<br>
 
-                        Thank you for your interest in the Mentor position at {companyName}. We appreciate the time and effort you invested in applying for this role.<br>
+                        Thank you for your interest in the Shoper position at {companyName}. We appreciate the time and effort you invested in applying for this role.<br>
 
                         After careful consideration, we regret to inform you that we have decided not to move forward with your application. <br>
 
@@ -86,9 +86,9 @@ namespace BMS.BLL.Helpers
         }
         public static string GetAcceptedEmailBody(string platformEmail, string account, string password)
         {
-            return $@"Congratulations! 🎉 Your application has been accepted! We are thrilled to welcome you to become a mentor in our platform. 🤝<br>
+            return $@"Congratulations! 🎉 Your application has been accepted! We are thrilled to welcome you to become a shoper in our platform. 🤝<br>
 
-                    We provide you account to become a mentor in our platform: <br>
+                    We provide you account to become a shoper in our platform: <br>
                     Account: {account}<br>
                     Password: {password}<br>
 

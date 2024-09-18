@@ -54,9 +54,14 @@ namespace BMS.BLL.Services
             //var confirmationLink = urlHelper.Action("ConfirmEmail", "Auth", new { userId = user.Id, token }, _httpContextAccessor.HttpContext.Request.Scheme);
             //will improve this later
             var encodedToken = WebUtility.UrlEncode(token);
-            await SendEmailAsync(user.Email, "Confirm Your Account Registration", EmailHelper.GetConfirmEmailBody($"http://localhost:3000/home?userId={user.Id}&token={encodedToken}", user.UserName, "thunghiem3340@gmail.com"), true);
+            await SendEmailAsync(user.Email, "Confirm Your Account Registration", EmailHelper.GetConfirmEmailBody($"http://localhost:3000/home?userId={user.Id}&token={encodedToken}", user.UserName, "breakfastmealsystem@gmail.com"), true);
         }
-
+        public async Task SendEmailConfirmationMoblieAsync(User user, string token = "")
+        {
+     
+            var encodedToken = WebUtility.UrlEncode(token);
+            await SendEmailAsync(user.Email, "Confirm Your Account Registration", EmailHelper.GetConfirmEmailBody($"https://localhost:7039/api/Auth/confirm-email?userId={user.Id}&token={encodedToken}", user.UserName, "breakfastmealsystem@gmail.com"), true);
+        }
 
     }
 }

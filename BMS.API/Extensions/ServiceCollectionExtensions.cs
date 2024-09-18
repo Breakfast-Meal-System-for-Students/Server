@@ -28,45 +28,47 @@ namespace BMS.API.Extensions
 
             var jwtSettings = configuration.GetSection(nameof(JwtSettings)).Get<JwtSettings>() ?? throw new MissingJwtSettingsException();
 
-            services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-                .AddCookie(options =>
+            services.AddAuthentication(options =>
+            {
+                options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+            })
+            .AddCookie(options =>
+            {
+                options.Cookie.HttpOnly = true;
+                options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
+                options.Cookie.SameSite = SameSiteMode.Strict;
+                options.Cookie.Name = "token";
+                options.ExpireTimeSpan = TimeSpan.FromMinutes(60);
+                options.SlidingExpiration = true;
+            })
+            .AddJwtBearer(options =>
+            {
+                options.TokenValidationParameters = new TokenValidationParameters
                 {
-                    options.Cookie.HttpOnly = true;
-                    options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
-                    options.Cookie.SameSite = SameSiteMode.Strict;
-                    options.Cookie.Name = "token";
-                    options.ExpireTimeSpan = TimeSpan.FromMinutes(60);
-                    options.SlidingExpiration = true;
-                })
-                .AddJwtBearer(options =>
-                {
-                    options.TokenValidationParameters = new TokenValidationParameters
-                    {
-                        //ValidIssuer = jwtSettings.Issuer,
-                        ValidateIssuer = jwtSettings.ValidateIssuer,
-                        //ValidAudience = jwtSettings.Audience,
-                        ValidateAudience = jwtSettings.ValidateAudience,
-                        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSettings.SigningKey)),
-                        ValidateIssuerSigningKey = jwtSettings.ValidateIssuerSigningKey,
-                        //ValidateLifetime = jwtSettings.ValidateLifetime,
-                        //ClockSkew = TimeSpan.Zero
-                    };
+                    ValidateIssuer = jwtSettings.ValidateIssuer,
+                    ValidIssuer = jwtSettings.Issuer,
+                    ValidateAudience = jwtSettings.ValidateAudience,
+                    ValidAudience = jwtSettings.Audience,
+                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSettings.SigningKey)),
+                    ValidateIssuerSigningKey = jwtSettings.ValidateIssuerSigningKey,
+                    ValidateLifetime = jwtSettings.ValidateLifetime,
+                    ClockSkew = TimeSpan.Zero
+                };
 
-                    options.Events = new JwtBearerEvents
+                options.Events = new JwtBearerEvents
+                {
+                    OnMessageReceived = context =>
                     {
-                        OnMessageReceived = context =>
+                        var accessToken = context.Request.Cookies["token"] ?? context.Request.Query["access_token"];
+                        if (!string.IsNullOrEmpty(accessToken))
                         {
-                            var accessToken = context.Request.Cookies["token"] ?? context.Request.Query["access_token"];
-
-                            if (!string.IsNullOrEmpty(accessToken))
-                            {
-                                context.Token = accessToken;
-                            }
-
-                            return Task.CompletedTask;
+                            context.Token = accessToken;
                         }
-                    };
-                });
+                        return Task.CompletedTask;
+                    }
+                };
+            });
 
             services.AddAuthorization(opt =>
             {
@@ -94,9 +96,28 @@ namespace BMS.API.Extensions
             return services;
         }
 
-     
+        public static IServiceCollection AddCorsPolicy(this IServiceCollection services, IConfiguration configuration)
+        {
+            var corsSettings = configuration.GetSection(nameof(CorsSettings)).Get<CorsSettings>() ??
+                               throw new NullReferenceException("Missing cors settings");
+            services.AddCors(options =>
+            {
+                options.AddPolicy(corsSettings.PolicyName, builder =>
+                {
+                    builder.WithOrigins(corsSettings.WithOrigins)
+                        .WithHeaders(corsSettings.WithHeaders)
+                        .WithMethods(corsSettings.WithMethods);
+                    if (corsSettings.AllowCredentials)
+                    {
+                        builder.AllowCredentials();
+                    }
+                });
+            });
 
-    
+            return services;
+        }
+
+
 
     }
 }

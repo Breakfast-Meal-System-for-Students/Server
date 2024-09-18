@@ -11,9 +11,10 @@ namespace BMS.Core.Domains.Entities
     public class User : IdentityUser<Guid>
     {
         
-        public string FirstName { get; set; } = null!;
-        public string LastName { get; set; } = null!;
+        public string? FirstName { get; set; } = null!;
+        public string? LastName { get; set; } = null!;
         public string? Avatar { get; set; }
+
         public string? Phone { get; set; } = null!;
       //  public string? Password { get; set; } = null!;
         public DateTime CreateDate { get; set; } = DateTime.Now;
@@ -22,7 +23,11 @@ namespace BMS.Core.Domains.Entities
         public ICollection<UserRole>? UserRoles { get; set; }
 
         public ICollection<Order>? Orders { get; set; } = new List<Order>();
-        public ICollection<Shop>? Shops { get; set; } = new List<Shop>();
+        //  public ICollection<Shop>? Shops { get; set; } = new List<Shop>();
+        public ICollection<Cart>? Carts { get; set; } = new List<Cart>();
+
+        public Guid? ShopId { get; set; }
+        public Shop? Shop { get; set; }
         public ICollection<Notification>? Notifications { get; set; } = new List<Notification>();
         public ICollection<Feedback>? Feedbacks { get; set; } = new List<Feedback>();
         public ICollection<CouponUsage>? CouponUsages { get; set; } = new List<CouponUsage>();

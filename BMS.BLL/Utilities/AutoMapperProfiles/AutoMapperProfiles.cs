@@ -1,8 +1,14 @@
 ﻿using AutoMapper;
+using BMS.BLL.Models.Requests.Category;
+using BMS.BLL.Models.Requests.Admin;
 using BMS.BLL.Models.Requests.Feedbacks;
+using BMS.BLL.Models.Requests.Shop;
 using BMS.BLL.Models.Requests.User;
 using BMS.BLL.Models.Requests.Users;
+using BMS.BLL.Models.Responses.Admin;
+using BMS.BLL.Models.Responses.Category;
 using BMS.BLL.Models.Responses.Feedbacks;
+using BMS.BLL.Models.Responses.Shop;
 using BMS.BLL.Models.Responses.Users;
 using BMS.Core.Domains.Entities;
 using System;
@@ -10,6 +16,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using BMS.BLL.Models.Responses.Roles;
 
 namespace BMS.BLL.Utilities.AutoMapperProfiles
 {
@@ -26,27 +33,61 @@ namespace BMS.BLL.Utilities.AutoMapperProfiles
                    .ForMember(dest => dest.UserName, opt => opt.MapFrom(src => src.Email))
                    .ForMember(dest => dest.PasswordHash, opt => opt.Ignore());
 
-            
+
+                CreateMap<UpdateUserRequest, User>();
 
 
+                CreateMap<User, UserResponse>();
                 CreateMap<User, LoginUser>();
 
-           
 
-
+                CreateMap<User, UserLoginResponse>();
+                CreateMap<UserRegisterRequest, User>();
+                CreateMap<CreateStaffRequest, User>();
+                #region Role
+                CreateMap<UserRole, RoleResponse>()
+                .ForMember(dest => dest.Name, src => src.MapFrom(opt => opt.Role.Name));
                 #endregion
 
+                #endregion
+                #region shop  
 
+                CreateMap<CreateShopApplicationRequest, Shop>();
+
+                CreateMap<Shop, ShopApplicationResponse>();
+
+                #endregion
+                #region order
+                CreateMap<Order, OrderResponse>()
+                    .ForMember(dest => dest.OrderItems, opt => opt.MapFrom(src => src.OrderItems));
+                #endregion
+
+                #region transaction
+                CreateMap<Transaction, TransactionResponse>()
+                     .ForMember(dest => dest.Order, opt => opt.MapFrom(src => src.Order));
+                /*CreateMap<Shop, TopResponse>()
+                     .ForMember(dest => dest.TotalAmount, opt => opt.MapFrom(src => src.Order));*/
+                #endregion
                 #region feedback
                 CreateMap<Feedback, FeedbackResponse>();
 
                 CreateMap<FeedbackRequest, Feedback>();
 
-                CreateMap<User, UserLoginResponse>();
-                CreateMap<UserRegisterRequest, User>();
+                CreateMap<Feedback, FeedbackForStaffResponse>()
+                    .ForMember(dest => dest.UserName, opt => opt.MapFrom(src => src.User!.FirstName))
+                    .ForMember(dest => dest.UserPic, opt => opt.MapFrom(src => src.User!.Avatar))
+                    .ForMember(dest => dest.ShopName, opt => opt.MapFrom(src => src.Shop!.Name))
+                    .ForMember(dest => dest.Shoppic, opt => opt.MapFrom(src => src.Shop!.Image));
                 #endregion
 
+                #region category
+                CreateMap<Category, UpdateCategoryRequest>()
+                 .ForMember(dest => dest.Image, opt => opt.Ignore());
+                CreateMap<CreateCategoryRequest, Category>()
+                .ForMember(dest => dest.Image, opt => opt.Ignore()); 
 
+                CreateMap<Category, CategoryResponse>();
+                #endregion
             }
         }
     }
