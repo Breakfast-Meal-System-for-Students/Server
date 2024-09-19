@@ -30,7 +30,7 @@ namespace BMS.API.Controllers
 
         [HttpGet("GetOrderById{id}")]
         //[Authorize(Roles = UserRoleConstants.ADMIN)]
-        public async Task<IActionResult> GetOrderById(Guid id)
+        public async Task<IActionResult> GetOrderById([FromQuery]Guid id)
         {
             return await ExecuteServiceLogic(
                 async () => await _orderService.GetOrderByID(id).ConfigureAwait(false)
@@ -39,7 +39,7 @@ namespace BMS.API.Controllers
 
         [HttpGet("GetOrderByShop")]
         //[Authorize(Roles = UserRoleConstants.ADMIN)]
-        public async Task<IActionResult> GetOrderByShop(Guid id, SearchOrderRequest request)
+        public async Task<IActionResult> GetOrderByShop(Guid id, [FromQuery]SearchOrderRequest request)
         {
             return await ExecuteServiceLogic(
                 async () => await _orderService.GetOrderByShop(id, request).ConfigureAwait(false)
@@ -48,7 +48,7 @@ namespace BMS.API.Controllers
 
         [HttpGet("GetOrderByUser")]
         //[Authorize(Roles = UserRoleConstants.ADMIN)]
-        public async Task<IActionResult> GetOrderByUser(Guid id, SearchOrderRequest request)
+        public async Task<IActionResult> GetOrderByUser(Guid id, [FromQuery] SearchOrderRequest request)
         {
             return await ExecuteServiceLogic(
                 async () => await _orderService.GetOrderByUser(id, request).ConfigureAwait(false)
@@ -57,7 +57,7 @@ namespace BMS.API.Controllers
 
         [HttpGet("GetTotalOrder")]
         //[Authorize(Roles = UserRoleConstants.ADMIN)]
-        public async Task<IActionResult> GetTotalOrder(TotalOrdersRequest request)
+        public async Task<IActionResult> GetTotalOrder([FromQuery] TotalOrdersRequest request)
         {
             return await ExecuteServiceLogic(
                 async () => await _orderService.GetTotalOrder(request).ConfigureAwait(false)
@@ -70,6 +70,24 @@ namespace BMS.API.Controllers
         {
             return await ExecuteServiceLogic(
                 async () => await _orderService.ChangeOrderStatus(id, status).ConfigureAwait(false)
+            ).ConfigureAwait(false);
+        }
+
+        [HttpPost("CreateOrder")]
+        //[Authorize(Roles = UserRoleConstants.ADMIN)]
+        public async Task<IActionResult> CreateOrder(Guid cartId, Guid voucherId)
+        {
+            return await ExecuteServiceLogic(
+                async () => await _orderService.CreateOrder(cartId, voucherId).ConfigureAwait(false)
+            ).ConfigureAwait(false);
+        }
+
+        [HttpGet("GetStatusOrder")]
+        //[Authorize(Roles = UserRoleConstants.ADMIN)]
+        public async Task<IActionResult> GetStatusOrder([FromQuery] Guid orderId)
+        {
+            return await ExecuteServiceLogic(
+                async () => await _orderService.GetStatusOrder(orderId).ConfigureAwait(false)
             ).ConfigureAwait(false);
         }
     }

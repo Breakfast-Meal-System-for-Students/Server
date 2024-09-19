@@ -19,7 +19,7 @@ namespace BMS.API.Controllers
 
         [HttpPost("GetListTransactions")]
         //[Authorize(Roles = UserRoleConstants.ADMIN)]
-        public async Task<IActionResult> GetListTransactions(SearchTransactionRequest request)
+        public async Task<IActionResult> GetListTransactions([FromForm]SearchTransactionRequest request)
         {
             return await ExecuteServiceLogic(
                 async () => await _transactionService.GetListTracsactions(request).ConfigureAwait(false)
@@ -28,7 +28,7 @@ namespace BMS.API.Controllers
 
         [HttpGet("GetTransactionById{id}")]
         //[Authorize(Roles = UserRoleConstants.ADMIN)]
-        public async Task<IActionResult> GetTransactionById(Guid id)
+        public async Task<IActionResult> GetTransactionById([FromQuery] Guid id)
         {
             return await ExecuteServiceLogic(
                 async () => await _transactionService.GetTransactionByID(id).ConfigureAwait(false)
@@ -37,7 +37,7 @@ namespace BMS.API.Controllers
 
         [HttpGet("GetTransactionByOrderId{id}")]
         //[Authorize(Roles = UserRoleConstants.ADMIN)]
-        public async Task<IActionResult> GetTransactionByOrderId(Guid id)
+        public async Task<IActionResult> GetTransactionByOrderId([FromQuery] Guid id)
         {
             return await ExecuteServiceLogic(
                 async () => await _transactionService.GetTransactionByOrderID(id).ConfigureAwait(false)
@@ -46,7 +46,7 @@ namespace BMS.API.Controllers
 
         [HttpGet("GetTransactionByShop")]
         //[Authorize(Roles = UserRoleConstants.ADMIN)]
-        public async Task<IActionResult> GetTransactionByShop(Guid id, SearchTransactionRequest request)
+        public async Task<IActionResult> GetTransactionByShop(Guid id, [FromQuery]SearchTransactionRequest request)
         {
             return await ExecuteServiceLogic(
                 async () => await _transactionService.GetTransactionByShop(id, request).ConfigureAwait(false)
@@ -55,7 +55,7 @@ namespace BMS.API.Controllers
 
         [HttpGet("GetTransactionByUser")]
         //[Authorize(Roles = UserRoleConstants.ADMIN)]
-        public async Task<IActionResult> GetTransactionByUser(Guid id, SearchTransactionRequest request)
+        public async Task<IActionResult> GetTransactionByUser(Guid id, [FromQuery] SearchTransactionRequest request)
         {
             return await ExecuteServiceLogic(
                 async () => await _transactionService.GetTransactionByUser(id, request).ConfigureAwait(false)
@@ -64,7 +64,7 @@ namespace BMS.API.Controllers
 
         [HttpGet("GetTotalTransaction")]
         //[Authorize(Roles = UserRoleConstants.ADMIN)]
-        public async Task<IActionResult> GetTotalTransaction(TotalTRansactionRequest request)
+        public async Task<IActionResult> GetTotalTransaction([FromQuery] TotalTRansactionRequest request)
         {
             return await ExecuteServiceLogic(
                 async () => await _transactionService.GetTotalTransaction(request).ConfigureAwait(false)
@@ -82,7 +82,7 @@ namespace BMS.API.Controllers
 
         [HttpPost("GetTopShopHaveHighTransaction")]
         //[Authorize(Roles = UserRoleConstants.ADMIN)]
-        public async Task<IActionResult> GetTopShopHaveHighTransaction(TopShopOrUserRequest request)
+        public async Task<IActionResult> GetTopShopHaveHighTransaction([FromForm] TopShopOrUserRequest request)
         {
             return await ExecuteServiceLogic(
                 async () => await _transactionService.GetTopShopHaveHighTransaction(request).ConfigureAwait(false)
@@ -91,7 +91,7 @@ namespace BMS.API.Controllers
 
         [HttpPost("GetTopUserHaveHighTransaction")]
         //[Authorize(Roles = UserRoleConstants.ADMIN)]
-        public async Task<IActionResult> GetTopUserHaveHighTransaction(TopShopOrUserRequest request)
+        public async Task<IActionResult> GetTopUserHaveHighTransaction([FromForm]TopShopOrUserRequest request)
         {
             return await ExecuteServiceLogic(
                 async () => await _transactionService.GetTopUserHaveHighTransaction(request).ConfigureAwait(false)

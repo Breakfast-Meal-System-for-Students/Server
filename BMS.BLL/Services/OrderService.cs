@@ -3,6 +3,7 @@ using Azure.Core;
 using BMS.BLL.Models;
 using BMS.BLL.Models.Requests.Admin;
 using BMS.BLL.Models.Responses.Admin;
+using BMS.BLL.Models.Responses.Cart;
 using BMS.BLL.Models.Responses.Users;
 using BMS.BLL.Services.BaseServices;
 using BMS.BLL.Services.IServices;
@@ -13,6 +14,7 @@ using BMS.Core.Exceptions;
 using BMS.Core.Helpers;
 using BMS.DAL;
 using BMS.DAL.Migrations;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -50,6 +52,30 @@ namespace BMS.BLL.Services
             }
         }
 
+        public async Task<ServiceActionResult> CreateOrder(Guid cartId, Guid voucherId)
+        {
+            var carts = (await _unitOfWork.CartRepository.GetAllAsyncAsQueryable()).Where(x => x.Id == cartId).Include(y => y.CartDetails).SingleOrDefault();
+            if(carts == null) { return new ServiceActionResult() { Detail = $"Cart is not exits or deleted" }; }
+            Order order = new Order();
+            order.Id = new Guid();
+            order.Status = OrderStatus.DRAFT.ToString();
+            order.ShopId = carts.ShopId;
+            order.CustomerId = carts.CustomerId;
+            order.TotalPrice = carts.CartDetails.Sum(x => (x.Quantity * x.Price));
+            await _unitOfWork.OrderRepository.AddAsync(order);
+            foreach (var item in carts.CartDetails)
+            {
+                OrderItem orderItem = new OrderItem();
+                orderItem.Id = item.Id;
+                orderItem.OrderId = order.Id;
+                orderItem.ProductId = item.ProductId;
+                orderItem.Quantity = item.Quantity;
+                orderItem.Price = item.Price;
+                await _unitOfWork.OrderItemRepository.AddAsync(orderItem);
+            }
+            return new ServiceActionResult() { Detail = "Order is already create" };
+        }
+
         public async Task<ServiceActionResult> GetListOrders(SearchOrderRequest request)
         {
             IQueryable<Order> orderQuery = (await _unitOfWork.OrderRepository.GetAllAsyncAsQueryable()).Include(a => a.OrderItems);
@@ -75,7 +101,7 @@ namespace BMS.BLL.Services
 
         public async Task<ServiceActionResult> GetOrderByID(Guid id)
         {
-            var order = (await _unitOfWork.OrderRepository.GetAllAsyncAsQueryable()).Include(a => a.OrderItems).Where(x => x.Id == id);
+            var order = (await _unitOfWork.OrderRepository.GetAllAsyncAsQueryable()).Include(a => a.OrderItems).Where(x => x.Id == id).SingleOrDefault();
             if (order != null)
             {
                 var returnOrder = _mapper.Map<OrderResponse>(order);
@@ -132,6 +158,21 @@ namespace BMS.BLL.Services
             .BuildPaginatedResult<Order, OrderResponse>(_mapper, orderQuery, request.PageSize, request.PageIndex);
 
             return new ServiceActionResult(true) { Data = paginationResult };
+        }
+
+        public async Task<ServiceActionResult> GetStatusOrder(Guid orderId)
+        {
+            var order = (await _unitOfWork.OrderRepository.GetAllAsyncAsQueryable()).Where(x => x.Id == orderId).SingleOrDefault();
+            if (order != null)
+            {
+                var returnOrder = _mapper.Map<OrderResponse>(order);
+
+                return new ServiceActionResult(true) { Data = order.Status };
+            }
+            else
+            {
+                return new ServiceActionResult(false, "Order is not exits or deleted");
+            }
         }
 
         public async Task<ServiceActionResult> GetTotalOrder(TotalOrdersRequest request)

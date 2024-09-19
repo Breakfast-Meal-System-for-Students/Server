@@ -36,9 +36,9 @@ namespace BMS.API.Controllers
                 async () => await _staffService.DeleteStaff(id).ConfigureAwait(false)
             ).ConfigureAwait(false);
         }
-        [HttpPost("GetListStaff")]
+        [HttpGet("GetListStaff")]
         [Authorize(Roles = UserRoleConstants.ADMIN)]
-        public async Task<IActionResult> GetListStaff(SearchStaffRequest request)
+        public async Task<IActionResult> GetListStaff([FromQuery] SearchStaffRequest request)
         {
             return await ExecuteServiceLogic(
                 async () => await _staffService.GetListStaff(request).ConfigureAwait(false)
@@ -47,7 +47,7 @@ namespace BMS.API.Controllers
 
         [HttpGet("GetStaffById{id}")]
         [Authorize(Roles = UserRoleConstants.ADMIN)]
-        public async Task<IActionResult> GetStaffById(Guid id)
+        public async Task<IActionResult> GetStaffById([FromQuery] Guid id)
         {
             return await ExecuteServiceLogic(
                 async () => await _staffService.GetStaffById(id).ConfigureAwait(false)

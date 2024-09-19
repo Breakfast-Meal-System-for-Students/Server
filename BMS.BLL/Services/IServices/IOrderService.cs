@@ -6,6 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using BMS.Core.Domains.Enums;
+using BMS.Core.Domains.Entities;
 
 namespace BMS.BLL.Services.IServices
 {
@@ -18,5 +19,7 @@ namespace BMS.BLL.Services.IServices
         Task<ServiceActionResult> ChangeOrderStatus(Guid id, OrderStatus status);
         Task<ServiceActionResult> GetTotalOrder(TotalOrdersRequest request);
 
+        Task<ServiceActionResult> CreateOrder(Guid cartId, Guid voucherId);
+        Task<ServiceActionResult> GetStatusOrder(Guid orderId);
     }
 }
