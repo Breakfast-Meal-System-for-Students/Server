@@ -17,8 +17,10 @@ namespace BMS.DAL
         public IFeedbackRepository FeedbackRepository => new FeedbackRepository(_dbContext);
         public ITransactionRepository TransactionRepository => new TransactionRepository(_dbContext);
         public IOrderRepository OrderRepository => new OrderRepository(_dbContext);
+        public ICartRepository CartRepository => new CartRepository(_dbContext);
+        public ICartDetailRepository CartDetailRepository => new CartDetailRepository(_dbContext);
         public DbContext _dbContext { get; }
-
+        
         public UnitOfWork(DbContext dbContext)
         {
             _dbContext = dbContext;

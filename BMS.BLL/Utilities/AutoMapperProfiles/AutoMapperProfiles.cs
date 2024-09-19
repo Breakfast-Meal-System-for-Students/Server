@@ -17,6 +17,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using BMS.BLL.Models.Responses.Roles;
+using BMS.BLL.Models.Responses.Cart;
+using BMS.BLL.Models.Requests.Cart;
 
 namespace BMS.BLL.Utilities.AutoMapperProfiles
 {
@@ -87,6 +89,10 @@ namespace BMS.BLL.Utilities.AutoMapperProfiles
                 .ForMember(dest => dest.Image, opt => opt.Ignore()); 
 
                 CreateMap<Category, CategoryResponse>();
+                #endregion
+                #region cart
+                CreateMap<Cart, CartResponse>();
+                CreateMap<CartDetailRequest, CartDetail>();
                 #endregion
             }
         }

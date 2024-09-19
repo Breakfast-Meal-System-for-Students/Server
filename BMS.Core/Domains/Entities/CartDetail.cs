@@ -17,7 +17,6 @@ namespace BMS.Core.Domains.Entities
 
         public int Quantity { get; set; }
         public double Price { get; set; }
-        public DateTime CreateDate { get; set; } = DateTime.Now;
     }
 
 }

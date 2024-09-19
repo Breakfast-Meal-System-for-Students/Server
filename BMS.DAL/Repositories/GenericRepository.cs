@@ -2,6 +2,7 @@
 using BMS.Core.Models;
 using BMS.DAL.Repositories.IRepositories;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Internal;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -31,6 +32,13 @@ namespace BMS.DAL.Repositories
         public async Task AddAsync(T entity, CancellationToken cancellationToken = default)
         {
             await DbContext.AddAsync(entity, cancellationToken);
+        }
+
+        public async Task UpdateAsync(T entity, bool saveChanges = true)
+        {
+            Entities.Update(entity);
+
+            if (saveChanges) await DbContext.SaveChangesAsync();
         }
 
 
