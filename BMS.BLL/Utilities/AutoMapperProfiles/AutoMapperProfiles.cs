@@ -17,6 +17,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using BMS.BLL.Models.Responses.Roles;
+using BMS.BLL.Models.Requests.Product;
+using BMS.BLL.Models.Responses.Product;
 
 namespace BMS.BLL.Utilities.AutoMapperProfiles
 {
@@ -87,6 +89,16 @@ namespace BMS.BLL.Utilities.AutoMapperProfiles
                 .ForMember(dest => dest.Image, opt => opt.Ignore()); 
 
                 CreateMap<Category, CategoryResponse>();
+                #endregion
+                #region product  
+
+                CreateMap<Product, UpdateProductRequest>()
+                 .ForMember(dest => dest.Images, opt => opt.Ignore());
+                CreateMap<CreateProductRequest, Product>()
+                .ForMember(dest => dest.Images, opt => opt.Ignore());
+
+                CreateMap<Product, ProductResponse>();
+
                 #endregion
             }
         }

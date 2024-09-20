@@ -12,7 +12,7 @@ namespace BMS.Core.Domains.Entities
         public string Url { get; set; } = null!;
 
         public Guid ProductId { get; set; }
-        public Product Product { get; set; } = null!;
+        public Product? Product { get; set; } = null!;
     }
 
 }

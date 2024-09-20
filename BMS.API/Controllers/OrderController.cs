@@ -1,5 +1,6 @@
 ﻿using BMS.API.Controllers.Base;
 using BMS.BLL.Models.Requests.Admin;
+using BMS.BLL.Models.Requests.Category;
 using BMS.BLL.Services;
 using BMS.BLL.Services.BaseServices;
 using BMS.BLL.Services.IServices;
@@ -71,6 +72,15 @@ namespace BMS.API.Controllers
             return await ExecuteServiceLogic(
                 async () => await _orderService.ChangeOrderStatus(id, status).ConfigureAwait(false)
             ).ConfigureAwait(false);
+        }
+
+        [HttpPut("{id}")]
+        //[Authorize(Roles = UserRoleConstants.SHOP)]
+        public async Task<IActionResult> UpdateStatusOrder(Guid Id, string status)
+        {
+            return await ExecuteServiceLogic(
+                               async () => await _orderService.UpdateStatusOrder(Id, status).ConfigureAwait(false)
+                                          ).ConfigureAwait(false);
         }
     }
 }

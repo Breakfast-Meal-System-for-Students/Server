@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace BMS.Core.Domains.Entities
 {
-    public class Coupon : EntityBase<Guid>
+    public class Coupon : EntityBase<Guid> ,ISoftDelete
     {
         public string Name { get; set; } = null!;
         public DateTime StartDate { get; set; }
@@ -21,6 +21,10 @@ namespace BMS.Core.Domains.Entities
         public Shop Shop { get; set; } = null!;
 
         public ICollection<CouponUsage> CouponUsages { get; set; } = new List<CouponUsage>();
+
+        // Implement ISoftDelete properties
+        public bool IsDeleted { get; set; } = false; // Default value here
+        public DateTime? DeletedDate { get; set; }
     }
 
 }

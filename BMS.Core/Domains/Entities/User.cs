@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace BMS.Core.Domains.Entities
 {
-    public class User : IdentityUser<Guid>
+    public class User : IdentityUser<Guid>, ISoftDelete
     {
         
         public string? FirstName { get; set; } = null!;
@@ -31,5 +31,9 @@ namespace BMS.Core.Domains.Entities
         public ICollection<Notification>? Notifications { get; set; } = new List<Notification>();
         public ICollection<Feedback>? Feedbacks { get; set; } = new List<Feedback>();
         public ICollection<CouponUsage>? CouponUsages { get; set; } = new List<CouponUsage>();
+
+        // Implement ISoftDelete properties
+        public bool IsDeleted { get; set; } = false; // Default value here
+        public DateTime? DeletedDate { get; set; }
     }
 }
