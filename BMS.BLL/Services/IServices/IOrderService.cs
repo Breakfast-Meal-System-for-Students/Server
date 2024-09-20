@@ -21,5 +21,6 @@ namespace BMS.BLL.Services.IServices
 
         Task<ServiceActionResult> CreateOrder(Guid cartId, Guid voucherId);
         Task<ServiceActionResult> GetStatusOrder(Guid orderId);
+        Task<ServiceActionResult> UpdateStatusOrder(Guid id, string status);
     }
 }

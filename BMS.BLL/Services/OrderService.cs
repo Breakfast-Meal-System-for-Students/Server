@@ -2,6 +2,7 @@
 using Azure.Core;
 using BMS.BLL.Models;
 using BMS.BLL.Models.Requests.Admin;
+using BMS.BLL.Models.Requests.Category;
 using BMS.BLL.Models.Responses.Admin;
 using BMS.BLL.Models.Responses.Cart;
 using BMS.BLL.Models.Responses.Users;
@@ -220,5 +221,20 @@ namespace BMS.BLL.Services
                 Data = orders.Count()
             };
         }
+
+        public async Task<ServiceActionResult> UpdateStatusOrder(Guid id, string status)
+        {
+
+
+            var order = await _unitOfWork.OrderRepository.FindAsync(id) ?? throw new ArgumentNullException("Order is not exist");
+            order.Status = status;
+     
+            order.LastUpdateDate = DateTime.Now;
+           
+            await _unitOfWork.CommitAsync();
+
+            return new ServiceActionResult(true) { Data = order };
+        }
+
     }
 }

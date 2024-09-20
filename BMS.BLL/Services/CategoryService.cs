@@ -36,7 +36,7 @@ namespace BMS.BLL.Services
         public async Task<ServiceActionResult> GetAllCategory(CategoryRequest queryParameters)
         {
 
-            IQueryable<Category> categoryQueryable = (await _unitOfWork.CategoryRepositoy.GetAllAsyncAsQueryable());
+            IQueryable<Category> categoryQueryable = (await _unitOfWork.CategoryRepositoy.GetAllAsyncAsQueryable()).Where(a=> a.IsDeleted==false);
 
 
 
@@ -94,7 +94,7 @@ namespace BMS.BLL.Services
 
         public async Task<ServiceActionResult> DeleteCategory(Guid id)
         {
-            await _unitOfWork.CategoryRepositoy.DeleteAsync(id);
+            await _unitOfWork.CategoryRepositoy.SoftDeleteByIdAsync(id);
             return new ServiceActionResult();
         }
 

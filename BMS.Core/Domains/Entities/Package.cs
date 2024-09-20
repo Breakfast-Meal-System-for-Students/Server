@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace BMS.Core.Domains.Entities
 {
-    public class Package : EntityBase<Guid>
+    public class Package : EntityBase<Guid>,ISoftDelete
     {
         public string Name { get; set; } = null!;
         public double Price { get; set; }
@@ -15,6 +15,9 @@ namespace BMS.Core.Domains.Entities
         public int Duration { get; set; }
 
         public ICollection<PackageHistory> PackageHistories { get; set; } = new List<PackageHistory>();
+        // Implement ISoftDelete properties
+        public bool IsDeleted { get; set; } = false; // Default value here
+        public DateTime? DeletedDate { get; set; }
     }
 
 }

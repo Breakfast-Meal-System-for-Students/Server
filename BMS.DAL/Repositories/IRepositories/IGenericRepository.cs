@@ -92,5 +92,8 @@ namespace BMS.DAL.Repositories.IRepositories
        int? pageIndex = null, // Optional parameter for pagination (page number)
        int? pageSize = null   // Optional parameter for pagination (number of records per page)
    );
+        Task SoftDeleteAsync(T entity, bool saveChanges = true, CancellationToken cancellationToken = default);
+        Task SoftDeleteByIdAsync(Guid id, bool saveChanges = true, CancellationToken cancellationToken = default);
+
     }
 }

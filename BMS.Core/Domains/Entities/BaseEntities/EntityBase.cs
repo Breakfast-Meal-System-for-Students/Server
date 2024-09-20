@@ -21,4 +21,10 @@ namespace BMS.Core.Domains.Entities.BaseEntities
         public DateTime CreateDate { get; set; } = DateTime.Now;
         public DateTime LastUpdateDate { get; set; } = DateTime.Now;
     }
+
+    public interface ISoftDelete
+    {
+        bool IsDeleted { get; set; }
+        DateTime? DeletedDate { get; set; }
+    }
 }
