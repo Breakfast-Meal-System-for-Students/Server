@@ -9,10 +9,11 @@ namespace BMS.BLL.Models.Responses.Cart
 {
     public class CartResponse
     {
+        public Guid Id { get; set; }
         public Guid CustomerId { get; set; }
 
-
+        public Guid ShopId { get; set; }
         public bool IsPurchase { get; set; }
-        public ICollection<CartDetail> CartDetails { get; set; } = new List<CartDetail>();
+        public ICollection<CartDetailResponse> CartDetails { get; set; } = new List<CartDetailResponse>();
     }
 }

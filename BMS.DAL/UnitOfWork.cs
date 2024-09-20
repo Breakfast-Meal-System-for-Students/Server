@@ -21,6 +21,8 @@ namespace BMS.DAL
         public ICartDetailRepository CartDetailRepository => new CartDetailRepository(_dbContext);
         public INotificationRepository NotificationRepository => new NotificationRepository(_dbContext);
         public IOrderItemRepository OrderItemRepository => new OrderItemRepository(_dbContext);
+        public ICouponUsageRepository CouponUsageRepository => new CouponUsageRepository(_dbContext);
+        public ICouponRepository CouponRepository => new CouponRepository(_dbContext);
         public DbContext _dbContext { get; }
         
         public UnitOfWork(DbContext dbContext)

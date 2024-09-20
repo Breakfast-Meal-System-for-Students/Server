@@ -13,7 +13,6 @@ using BMS.Core.Domains.Enums;
 using BMS.Core.Exceptions;
 using BMS.Core.Helpers;
 using BMS.DAL;
-using BMS.DAL.Migrations;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -55,9 +54,11 @@ namespace BMS.BLL.Services
         public async Task<ServiceActionResult> CreateOrder(Guid cartId, Guid voucherId)
         {
             var carts = (await _unitOfWork.CartRepository.GetAllAsyncAsQueryable()).Where(x => x.Id == cartId).Include(y => y.CartDetails).SingleOrDefault();
+            var coupon = await _unitOfWork.CouponRepository.FindAsync(voucherId);
             if(carts == null) { return new ServiceActionResult() { Detail = $"Cart is not exits or deleted" }; }
+            if (coupon == null) { return new ServiceActionResult() { Detail = $"Coupon is not exits or deleted" }; }
             Order order = new Order();
-            order.Id = new Guid();
+            order.Id = Guid.NewGuid();
             order.Status = OrderStatus.DRAFT.ToString();
             order.ShopId = carts.ShopId;
             order.CustomerId = carts.CustomerId;
@@ -66,6 +67,7 @@ namespace BMS.BLL.Services
             foreach (var item in carts.CartDetails)
             {
                 OrderItem orderItem = new OrderItem();
+                orderItem.Id = Guid.NewGuid();
                 orderItem.Id = item.Id;
                 orderItem.OrderId = order.Id;
                 orderItem.ProductId = item.ProductId;
@@ -73,6 +75,21 @@ namespace BMS.BLL.Services
                 orderItem.Price = item.Price;
                 await _unitOfWork.OrderItemRepository.AddAsync(orderItem);
             }
+
+            CouponUsage couponUsage = new CouponUsage();
+            couponUsage.Id = Guid.NewGuid();
+            couponUsage.CouponId = voucherId;
+            couponUsage.OrderId = order.Id;
+            couponUsage.UserId = order.CustomerId;
+            await _unitOfWork.CouponUsageRepository.AddAsync(couponUsage);
+            Notification notification = new Notification();
+            notification.Id = Guid.NewGuid();
+            notification.UserId = order.CustomerId;
+            notification.OrderId = order.Id;
+            notification.ShopId = order.ShopId;
+            notification.Object = "Order";
+            notification.Status = NotificationStatus.Draft.ToString();
+            await _unitOfWork.NotificationRepository.AddAsync(notification);
             return new ServiceActionResult() { Detail = "Order is already create" };
         }
 

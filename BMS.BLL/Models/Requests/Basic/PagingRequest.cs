@@ -10,6 +10,5 @@ namespace BMS.BLL.Models.Requests.Basic
     {
         public int PageIndex { get; set; }
         public int PageSize { get; set; }
-        public PagingRequest(int pageIndex, int pageSize) { PageIndex = pageIndex; PageSize = pageSize; }
     }
 }

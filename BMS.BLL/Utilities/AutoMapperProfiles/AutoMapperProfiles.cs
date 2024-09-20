@@ -19,6 +19,7 @@ using System.Threading.Tasks;
 using BMS.BLL.Models.Responses.Roles;
 using BMS.BLL.Models.Responses.Cart;
 using BMS.BLL.Models.Requests.Cart;
+using System.Reflection;
 
 namespace BMS.BLL.Utilities.AutoMapperProfiles
 {
@@ -91,7 +92,9 @@ namespace BMS.BLL.Utilities.AutoMapperProfiles
                 CreateMap<Category, CategoryResponse>();
                 #endregion
                 #region cart
-                CreateMap<Cart, CartResponse>();
+                CreateMap<CartDetail, CartDetailResponse>();
+                CreateMap<Cart, CartResponse>()
+                    .ForMember(dest => dest.CartDetails, opt => opt.MapFrom(src => src.CartDetails));
                 CreateMap<CartDetailRequest, CartDetail>();
                 #endregion
             }

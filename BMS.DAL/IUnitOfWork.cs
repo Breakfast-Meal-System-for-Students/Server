@@ -18,6 +18,9 @@ namespace BMS.DAL
         public ICartRepository CartRepository { get; }
         public ICartDetailRepository CartDetailRepository { get; }
         public INotificationRepository NotificationRepository { get; }
+        public IOrderItemRepository OrderItemRepository { get; }
+        public ICouponUsageRepository CouponUsageRepository { get; }
+        public ICouponRepository CouponRepository { get; }
         void Commit();
         Task CommitAsync();
         void Rollback();

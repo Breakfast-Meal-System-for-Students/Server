@@ -10,7 +10,6 @@ using BMS.BLL.Services.IServices;
 using BMS.Core.Domains.Entities;
 using BMS.Core.Helpers;
 using BMS.DAL;
-using BMS.DAL.Migrations;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Azure;
@@ -33,7 +32,7 @@ namespace BMS.BLL.Services
         {
             Expression<Func<Cart, bool>> filter = cart => (cart.CustomerId == userId && cart.ShopId == shopId);
             var cart = await _unitOfWork.CartRepository.FindAsyncAsQueryable(filter);
-            if (cart == null)
+            if (cart == null || cart.FirstOrDefault() == null)
             {
                 Cart newCart = new Cart();
                 newCart.Id = new Guid();
@@ -42,6 +41,7 @@ namespace BMS.BLL.Services
                 newCart.IsPurchase = false;
                 await _unitOfWork.CartRepository.AddAsync(newCart);
                 request.CartId = newCart.Id;
+                await _unitOfWork.CartRepository.AddAsync(newCart);
                 CartDetail cartDetails = _mapper.Map<CartDetail>(request);
                 await _unitOfWork.CartDetailRepository.AddAsync(cartDetails);
             } else
@@ -53,7 +53,7 @@ namespace BMS.BLL.Services
             return new ServiceActionResult(true)
             {
                 Detail = "Add Product to Cart Successfully",
-                Data = (await _unitOfWork.CartRepository.FindAsyncAsQueryable(filter)).Include(x => x.CartDetails).FirstOrDefault()
+                Data = _mapper.Map<CartResponse>((await _unitOfWork.CartRepository.FindAsyncAsQueryable(filter)).Include(x => x.CartDetails).FirstOrDefault())
             };
         }
         

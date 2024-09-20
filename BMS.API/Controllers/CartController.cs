@@ -30,7 +30,7 @@ namespace BMS.API.Controllers
         [HttpGet("GetAllCartForUser")]
         [Authorize]
         //[Authorize(Roles = UserRoleConstants.USER)]
-        public async Task<IActionResult> GetAllCartForUser([FromForm]PagingRequest request)
+        public async Task<IActionResult> GetAllCartForUser([FromQuery]PagingRequest request)
         {
             return await ExecuteServiceLogic(
                 async () => await _cartService.GetAllCartForUser(_userClaims.UserId, request).ConfigureAwait(false)
@@ -40,7 +40,7 @@ namespace BMS.API.Controllers
         [HttpGet("GetAllCartItemInCart")]
         [Authorize]
         //[Authorize(Roles = UserRoleConstants.USER)]
-        public async Task<IActionResult> GetAllCartItemInCart(Guid cartId, [FromForm]PagingRequest request)
+        public async Task<IActionResult> GetAllCartItemInCart(Guid cartId, [FromQuery]PagingRequest request)
         {
             return await ExecuteServiceLogic(
                 async () => await _cartService.GetAllCartItemInCart(cartId, request).ConfigureAwait(false)
