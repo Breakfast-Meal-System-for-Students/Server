@@ -19,6 +19,8 @@ using System.Threading.Tasks;
 using BMS.BLL.Models.Responses.Roles;
 using BMS.BLL.Models.Requests.Product;
 using BMS.BLL.Models.Responses.Product;
+using BMS.BLL.Models.Requests.RegisterCategory;
+using BMS.BLL.Models.Responses.RegisterCategory;
 
 namespace BMS.BLL.Utilities.AutoMapperProfiles
 {
@@ -99,6 +101,12 @@ namespace BMS.BLL.Utilities.AutoMapperProfiles
 
                 CreateMap<Product, ProductResponse>();
 
+                #endregion
+                #region registerCategory  
+
+                CreateMap<CreateRegisterCategoryRequest,RegisterCategory >();
+
+                CreateMap<RegisterCategory, RegisterCategoryResponse>();
                 #endregion
             }
         }

@@ -208,7 +208,13 @@ namespace BMS.DAL.DataContext
                 .WithMany(cu => cu.Carts)
                 .HasForeignKey(c => c.CustomerId)
                 .OnDelete(DeleteBehavior.Cascade);
-
+ 
+            // One-to-Many relationship between Shop and Order
+            modelBuilder.Entity<Cart>()
+                .HasOne(o => o.Shop)
+                .WithMany(s => s.Carts)
+                .HasForeignKey(o => o.ShopId)
+                .OnDelete(DeleteBehavior.Restrict);
             // Cấu hình quan hệ 1-n giữa Cart và CartDetail
             modelBuilder.Entity<CartDetail>()
                 .HasOne(cd => cd.Cart)

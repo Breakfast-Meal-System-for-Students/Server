@@ -13,7 +13,6 @@ using BMS.Core.Domains.Enums;
 using BMS.Core.Exceptions;
 using BMS.Core.Helpers;
 using BMS.DAL;
-using BMS.DAL.Migrations;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using System;

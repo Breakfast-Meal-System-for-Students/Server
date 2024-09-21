@@ -13,10 +13,13 @@ namespace BMS.API.Controllers
     {
         private readonly ICategoryService _categoryService;
 
+        private readonly IRegisterCategoryService _registercategoryService;
 
-        public CategoryController(ICategoryService categoryService)
+        public CategoryController(ICategoryService categoryService, IRegisterCategoryService registerCategoryService)
         {
             _categoryService = categoryService;
+
+            _registercategoryService = registerCategoryService;
     
             _baseService = (BaseService)_categoryService;
         }
