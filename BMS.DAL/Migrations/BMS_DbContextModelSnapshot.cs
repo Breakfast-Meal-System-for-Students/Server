@@ -40,9 +40,14 @@ namespace BMS.DAL.Migrations
                     b.Property<DateTime>("LastUpdateDate")
                         .HasColumnType("datetime2");
 
+                    b.Property<Guid>("ShopId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.HasKey("Id");
 
                     b.HasIndex("CustomerId");
+
+                    b.HasIndex("ShopId");
 
                     b.ToTable("Carts");
                 });
@@ -116,20 +121,20 @@ namespace BMS.DAL.Migrations
                     b.HasData(
                         new
                         {
-                            Id = new Guid("49448aab-ec5b-44b5-a5c8-fbadf320e7e7"),
-                            CreateDate = new DateTime(2024, 9, 18, 14, 14, 20, 404, DateTimeKind.Local).AddTicks(4890),
+                            Id = new Guid("776eb3ad-5f64-4cba-afec-38ebcd37399e"),
+                            CreateDate = new DateTime(2024, 9, 21, 10, 42, 40, 287, DateTimeKind.Local).AddTicks(3461),
                             Description = "Rice",
                             IsDeleted = false,
-                            LastUpdateDate = new DateTime(2024, 9, 18, 14, 14, 20, 404, DateTimeKind.Local).AddTicks(4901),
+                            LastUpdateDate = new DateTime(2024, 9, 21, 10, 42, 40, 287, DateTimeKind.Local).AddTicks(3474),
                             Name = "Rice"
                         },
                         new
                         {
-                            Id = new Guid("806c86f3-61de-4b54-8d58-755ebd214f8a"),
-                            CreateDate = new DateTime(2024, 9, 18, 14, 14, 20, 404, DateTimeKind.Local).AddTicks(4905),
+                            Id = new Guid("8a0bb8ba-d798-4938-b0f8-156c21dbfab0"),
+                            CreateDate = new DateTime(2024, 9, 21, 10, 42, 40, 287, DateTimeKind.Local).AddTicks(3480),
                             Description = "SuShi",
                             IsDeleted = false,
-                            LastUpdateDate = new DateTime(2024, 9, 18, 14, 14, 20, 404, DateTimeKind.Local).AddTicks(4906),
+                            LastUpdateDate = new DateTime(2024, 9, 21, 10, 42, 40, 287, DateTimeKind.Local).AddTicks(3480),
                             Name = "SuShi"
                         });
                 });
@@ -582,25 +587,25 @@ namespace BMS.DAL.Migrations
                     b.HasData(
                         new
                         {
-                            Id = new Guid("d7e8d45c-fd4b-45c8-82f4-0c9e341e59ed"),
+                            Id = new Guid("cba0632d-ac59-4374-a044-0f33d7a3dfe1"),
                             Name = "Admin",
                             NormalizedName = "Admin"
                         },
                         new
                         {
-                            Id = new Guid("38e369b2-1402-4760-9172-fe0647018689"),
+                            Id = new Guid("766f193a-b84c-42ab-9a84-cf3f01badeb2"),
                             Name = "Staff",
                             NormalizedName = "Staff"
                         },
                         new
                         {
-                            Id = new Guid("d7168551-4367-490a-b429-021122fad471"),
+                            Id = new Guid("fd9d7262-f7bd-4c0f-b6c2-222c889661d6"),
                             Name = "User",
                             NormalizedName = "User"
                         },
                         new
                         {
-                            Id = new Guid("b7f3e764-b654-4ede-9eb4-2a0e0ed12c39"),
+                            Id = new Guid("872a2662-7b25-404d-af52-a8868feae13d"),
                             Name = "Shop",
                             NormalizedName = "Shop"
                         });
@@ -893,7 +898,15 @@ namespace BMS.DAL.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("BMS.Core.Domains.Entities.Shop", "Shop")
+                        .WithMany("Carts")
+                        .HasForeignKey("ShopId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
                     b.Navigation("Customer");
+
+                    b.Navigation("Shop");
                 });
 
             modelBuilder.Entity("BMS.Core.Domains.Entities.CartDetail", b =>
@@ -1241,6 +1254,8 @@ namespace BMS.DAL.Migrations
 
             modelBuilder.Entity("BMS.Core.Domains.Entities.Shop", b =>
                 {
+                    b.Navigation("Carts");
+
                     b.Navigation("Coupons");
 
                     b.Navigation("Feedbacks");
