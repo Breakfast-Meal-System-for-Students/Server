@@ -103,7 +103,7 @@ namespace BMS.BLL.Utilities.AutoMapperProfiles
                 .ForMember(dest => dest.Images, opt => opt.Ignore());
 
                 CreateMap<Product, ProductResponse>();
-
+                #endregion
                 #region cart
                 CreateMap<CartDetail, CartDetailResponse>();
                 CreateMap<Cart, CartResponse>()

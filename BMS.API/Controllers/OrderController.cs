@@ -90,6 +90,7 @@ namespace BMS.API.Controllers
             return await ExecuteServiceLogic(
                 async () => await _orderService.GetStatusOrder(orderId).ConfigureAwait(false)
             ).ConfigureAwait(false);
+        }
         [HttpPut("{id}")]
         //[Authorize(Roles = UserRoleConstants.SHOP)]
         public async Task<IActionResult> UpdateStatusOrder(Guid Id, string status)
