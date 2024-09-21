@@ -30,26 +30,7 @@ namespace BMS.BLL.Services
             _fileStorageService = fileStorageService;
         }
 
-        public async Task<ServiceActionResult> GetCategoryByShop(Guid shopId, RegisterCategoryRequest queryParameters)
-        {
 
-            IQueryable<RegisterCategory> reCategoryQueryable = (await _unitOfWork.RegisterCategoryRepository.GetAllAsyncAsQueryable()).Where(a => a.ShopId == shopId);
-
-
-            if (!string.IsNullOrEmpty(queryParameters.Search))
-            {
-                //   categoryQueryable = categoryQueryable.Where(m => m.Description.Contains(queryParameters.Search));
-            }
-
-            reCategoryQueryable = queryParameters.IsDesc ? reCategoryQueryable.OrderByDescending(a => a.CreateDate) : reCategoryQueryable.OrderBy(a => a.CreateDate);
-
-            var paginationResult = PaginationHelper
-            .BuildPaginatedResult<RegisterCategory, RegisterCategoryResponse>(_mapper, reCategoryQueryable, queryParameters.PageSize, queryParameters.PageIndex);
-
-
-
-            return new ServiceActionResult() { Data = paginationResult };
-        }
         public async Task<ServiceActionResult> GetCategoryByProduct(Guid productId,RegisterCategoryRequest queryParameters)
         {
 

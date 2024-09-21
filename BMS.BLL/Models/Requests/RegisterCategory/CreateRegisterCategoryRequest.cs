@@ -10,7 +10,7 @@ namespace BMS.BLL.Models.Requests.RegisterCategory
     {
         public Guid CategoryId { get; set; } 
 
-        public Guid ShopId { get; set; } 
+      //  public Guid ShopId { get; set; } 
 
         public Guid ProductId { get; set; }
     }

@@ -12,8 +12,8 @@ namespace BMS.Core.Domains.Entities
         public Guid CategoryId { get; set; } // Foreign key to Category
         public Category? Category { get; set; } = null!;
 
-        public Guid ShopId { get; set; } // Foreign key to Shop
-        public Shop? Shop { get; set; } = null!;
+        //public Guid ShopId { get; set; } // Foreign key to Shop
+        //public Shop? Shop { get; set; } = null!;
 
         public Product? Product { get; set; } = null!;
         public Guid ProductId { get; set; }

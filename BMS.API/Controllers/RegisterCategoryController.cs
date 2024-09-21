@@ -45,13 +45,7 @@ namespace BMS.API.Controllers
                                async () => await _registerCategoryService.GetCategoryByProduct(productId, pagingRequest).ConfigureAwait(false)
                                           ).ConfigureAwait(false);
         }
-        [HttpGet("all-category-by-shop-id")]
-        public async Task<IActionResult> GetAllCategorybyShopId(Guid shopId, [FromQuery] RegisterCategoryRequest pagingRequest)
-        {
-            return await ExecuteServiceLogic(
-                               async () => await _registerCategoryService.GetCategoryByProduct(shopId, pagingRequest).ConfigureAwait(false)
-                                          ).ConfigureAwait(false);
-        }
+
         [HttpGet("all-product-by-category-id")]
         public async Task<IActionResult> GetAllProductByCategory(Guid categoryId, [FromQuery] RegisterCategoryRequest pagingRequest)
         {
