@@ -68,7 +68,7 @@ namespace BMS.DAL.DataContext
             modelBuilder.Entity<RegisterCategory>(entity =>
             {
                 // Configure composite primary key
-                entity.HasKey(rc => new { rc.CategoryId, rc.ShopId ,rc.ProductId});
+                entity.HasKey(rc => new { rc.CategoryId ,rc.ProductId});
 
                 // Configure relationships between RegisterCategory and Category
                 entity.HasOne(rc => rc.Category)
@@ -76,16 +76,16 @@ namespace BMS.DAL.DataContext
                       .HasForeignKey(rc => rc.CategoryId)
                       .OnDelete(DeleteBehavior.Cascade); // Cascade delete when a Category is deleted
 
-                // Configure relationships between RegisterCategory and Shop
-                entity.HasOne(rc => rc.Shop)
-                      .WithMany(s => s.RegisterCategorys) // Navigational property in Shop
-                      .HasForeignKey(rc => rc.ShopId)
-                      .OnDelete(DeleteBehavior.Cascade); // Cascade delete when a Shop is deleted
+                //// Configure relationships between RegisterCategory and Shop
+                //entity.HasOne(rc => rc.Shop)
+                //      .WithMany(s => s.RegisterCategorys) // Navigational property in Shop
+                //      .HasForeignKey(rc => rc.ShopId)
+                //      .OnDelete(DeleteBehavior.Cascade); // Cascade delete when a Shop is deleted
 
                 // Configure relationships between RegisterCategory and Product
                 entity.HasOne(rc => rc.Product)
                       .WithMany(s => s.RegisterCategorys) // Navigational property in Product
-                      .HasForeignKey(rc => rc.ShopId)
+                      .HasForeignKey(rc => rc.ProductId)
                       .OnDelete(DeleteBehavior.Cascade); // Cascade delete when a Product is deleted
             });
 
