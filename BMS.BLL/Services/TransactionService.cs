@@ -25,6 +25,23 @@ namespace BMS.BLL.Services
         {
         }
 
+        public async Task<ServiceActionResult> AddTransaction(Guid orderId)
+        {
+            var order = (await _unitOfWork.OrderRepository.GetAllAsyncAsQueryable()).Where(x => x.Id == orderId).Include(y => y.OrderItems).SingleOrDefault();
+            if (order == null) 
+            {
+                return new ServiceActionResult() { Detail = $"Order is not exits or deleted" }; 
+            }
+            Transaction transaction = new Transaction();
+            transaction.Id = Guid.NewGuid();
+            transaction.OrderId = orderId;
+            transaction.Status = TransactionStatus.NOTPAID;
+            transaction.Method = TransactionMethod.Cash.ToString();
+            transaction.Price = order.TotalPrice;
+            await _unitOfWork.TransactionRepository.AddAsync(transaction);
+            return new ServiceActionResult() { Detail = "Transaction is already create" };
+        }
+
         public async Task<ServiceActionResult> ChangeTransactionStatus(Guid id, TransactionStatus status)
         {
             throw new NotImplementedException();
@@ -154,12 +171,12 @@ namespace BMS.BLL.Services
 
         public async Task<ServiceActionResult> GetTransactionByID(Guid id)
         {
-            var transaction = (await _unitOfWork.TransactionRepository.GetAllAsyncAsQueryable()).Include(a => a.Order).Where(x => x.Id == id);
+            var transaction = (await _unitOfWork.TransactionRepository.GetAllAsyncAsQueryable()).Include(a => a.Order).Where(x => x.Id == id).FirstOrDefault();
             if (transaction != null)
             {
-                var returnOrder = _mapper.Map<OrderResponse>(transaction);
+                var returnTransaction = _mapper.Map<TransactionResponse>(transaction);
 
-                return new ServiceActionResult(true) { Data = returnOrder };
+                return new ServiceActionResult(true) { Data = returnTransaction };
             }
             else
             {
@@ -169,10 +186,10 @@ namespace BMS.BLL.Services
 
         public async Task<ServiceActionResult> GetTransactionByOrderID(Guid id)
         {
-            var transaction = (await _unitOfWork.TransactionRepository.GetAllAsyncAsQueryable()).Include(a => a.Order).Where(x => x.OrderId == id);
+            var transaction = (await _unitOfWork.TransactionRepository.GetAllAsyncAsQueryable()).Include(a => a.Order).Where(x => x.OrderId == id).ToList();
             if (transaction != null)
             {
-                var returnOrder = _mapper.Map<OrderResponse>(transaction);
+                var returnOrder = _mapper.Map<TransactionResponse>(transaction);
 
                 return new ServiceActionResult(true) { Data = returnOrder };
             }
@@ -226,6 +243,31 @@ namespace BMS.BLL.Services
             .BuildPaginatedResult<Transaction, TransactionResponse>(_mapper, transactionQuery, request.PageSize, request.PageIndex);
 
             return new ServiceActionResult(true) { Data = paginationResult };
+        }
+
+        public async Task<ServiceActionResult> UpdateTransaction(Guid transactionId, TransactionMethod transactionMethod, TransactionStatus transactionStatus)
+        {
+            var transaction = (await _unitOfWork.TransactionRepository.GetAllAsyncAsQueryable()).Include(a => a.Order).Where(x => x.Id == transactionId).FirstOrDefault();
+            if (transaction != null)
+            {
+                if(transactionMethod != 0)
+                {
+                    transaction.Method = transactionMethod.ToString();
+                    transaction.LastUpdateDate = DateTime.Now;
+                }
+                if(transactionStatus != 0)
+                {
+                    transaction.Status = transactionStatus;
+                    transaction.LastUpdateDate = DateTime.Now;
+                }
+
+                await _unitOfWork.TransactionRepository.UpdateAsync(transaction);
+                return new ServiceActionResult(true) { Detail = $"Transaction {transactionId} is already update" };
+            }
+            else
+            {
+                return new ServiceActionResult(false, "Transaction is not exits or deleted");
+            }
         }
     }
 }
