@@ -60,7 +60,7 @@ namespace BMS.BLL.Services
 
         public async Task<ServiceActionResult> DeleteCart(Guid cartId)
         {
-            var cart = await _unitOfWork.CartRepository.FindAsync(cartId.ToString());
+            var cart = await _unitOfWork.CartRepository.FindAsync(cartId);
             if (cart == null)
             {
                 return new ServiceActionResult(false, "Cart is not exits or deleted");
@@ -140,7 +140,7 @@ namespace BMS.BLL.Services
             return new ServiceActionResult(true)
             {
                 Detail = "Add Product to Cart Successfully",
-                Data = (await _unitOfWork.CartRepository.FindAsyncAsQueryable(filter)).Include(x => x.CartDetails).FirstOrDefault()
+                Data = _mapper.Map<CartResponse>((await _unitOfWork.CartRepository.FindAsyncAsQueryable(filter)).Include(x => x.CartDetails).FirstOrDefault())
             };
         }
     }
