@@ -21,6 +21,8 @@ using BMS.BLL.Models.Requests.Product;
 using BMS.BLL.Models.Responses.Product;
 using BMS.BLL.Models.Requests.RegisterCategory;
 using BMS.BLL.Models.Responses.RegisterCategory;
+using BMS.BLL.Models.Requests.Coupon;
+using BMS.BLL.Models.Responses.Coupon;
 
 namespace BMS.BLL.Utilities.AutoMapperProfiles
 {
@@ -107,6 +109,12 @@ namespace BMS.BLL.Utilities.AutoMapperProfiles
                 CreateMap<CreateRegisterCategoryRequest,RegisterCategory >();
 
                 CreateMap<RegisterCategory, RegisterCategoryResponse>();
+                #endregion
+                #region coupon
+                CreateMap<Coupon, UpdateCouponRequest>();
+                CreateMap<CreateCouponRequest, Coupon>();
+
+                CreateMap<Coupon, CouponResponse>();
                 #endregion
             }
         }

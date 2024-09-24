@@ -46,6 +46,7 @@ namespace BMS.BLL
             services.AddScoped<IAccountService, AccountService>();
             services.AddScoped<IProductService, ProductService>();
             services.AddScoped<IRegisterCategoryService, RegisterCategoryService>();
+            services.AddScoped<ICouponService, CouponService>();
             #endregion
 
             #region Validation

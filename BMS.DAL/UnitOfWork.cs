@@ -19,6 +19,8 @@ namespace BMS.DAL
         public IOrderRepository OrderRepository => new OrderRepository(_dbContext);
         public IProductRepository ProductRepository => new ProductRepository(_dbContext);
         public IRegisterCategoryRepository RegisterCategoryRepository => new RegisterCategoryRepository(_dbContext);
+        public ICouponRepository CouponRepository => new CouponRepository(_dbContext);
+
         public DbContext _dbContext { get; }
 
         public UnitOfWork(DbContext dbContext)

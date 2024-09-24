@@ -17,6 +17,7 @@ namespace BMS.DAL
         public IOrderRepository OrderRepository { get; }
         public IProductRepository ProductRepository { get; }
         public IRegisterCategoryRepository RegisterCategoryRepository { get; }
+        public ICouponRepository CouponRepository { get; }
         void Commit();
         Task CommitAsync();
         void Rollback();

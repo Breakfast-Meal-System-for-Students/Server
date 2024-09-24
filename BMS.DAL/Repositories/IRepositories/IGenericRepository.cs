@@ -61,7 +61,7 @@ namespace BMS.DAL.Repositories.IRepositories
         /// <param name="saveChanges"></param>
         /// <returns></returns>
         Task DeleteAsync(T entity, bool saveChanges = true);
-
+        Task<T?> FindAsync(Expression<Func<T, bool>> predicate);
         /// <summary>
         ///     Remove multiple items from an entity by asynchronous method
         /// </summary>
