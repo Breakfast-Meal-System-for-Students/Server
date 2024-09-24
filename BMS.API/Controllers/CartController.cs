@@ -1,4 +1,5 @@
 ﻿using BMS.API.Controllers.Base;
+using BMS.API.Hub;
 using BMS.BLL.Models;
 using BMS.BLL.Models.Requests.Admin;
 using BMS.BLL.Models.Requests.Basic;
@@ -10,6 +11,7 @@ using BMS.Core.Domains.Constants;
 using BMS.Core.Domains.Entities;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.SignalR;
 
 namespace BMS.API.Controllers
 {
@@ -18,13 +20,15 @@ namespace BMS.API.Controllers
         private readonly ICartService _cartService;
         private readonly IUserClaimsService _userClaimsService;
         private UserClaims _userClaims;
+        private readonly IHubContext<CartHub> _hubContext;
 
-        public CartController(ICartService cartService, IUserClaimsService userClaimsService)
+        public CartController(ICartService cartService, IUserClaimsService userClaimsService, IHubContext<CartHub> hubContext)
         {
             _cartService = cartService;
             _userClaimsService = userClaimsService;
             _userClaims = userClaimsService.GetUserClaims();
             _baseService = (BaseService)cartService;
+            _hubContext = hubContext;
         }
 
         [HttpGet("GetAllCartForUser")]
@@ -52,9 +56,16 @@ namespace BMS.API.Controllers
         //[Authorize(Roles = UserRoleConstants.USER)]
         public async Task<IActionResult> DeleteCart([FromQuery]Guid cartId)
         {
-            return await ExecuteServiceLogic(
-                async () => await _cartService.DeleteCart(cartId).ConfigureAwait(false)
-            ).ConfigureAwait(false);
+            var result = await _cartService.DeleteCart(cartId).ConfigureAwait(false);
+
+            if (result.IsSuccess)
+            {
+                // Notify all clients with the same userId
+                await _hubContext.Clients.Group(_userClaims.UserId.ToString())
+                    .SendAsync("CartUpdated", _userClaims.UserId);
+            }
+
+            return await ExecuteServiceLogic(() => Task.FromResult(result)).ConfigureAwait(false);
         }
 
         [HttpDelete("DeleteCartItem")]
@@ -62,9 +73,16 @@ namespace BMS.API.Controllers
         //[Authorize(Roles = UserRoleConstants.USER)]
         public async Task<IActionResult> DeleteCartItem([FromQuery]Guid cartItemId)
         {
-            return await ExecuteServiceLogic(
-                async () => await _cartService.DeleteCartItem(cartItemId).ConfigureAwait(false)
-            ).ConfigureAwait(false);
+            var result = await _cartService.DeleteCartItem(cartItemId).ConfigureAwait(false);
+
+            if (result.IsSuccess)
+            {
+                // Notify all clients with the same userId
+                await _hubContext.Clients.Group(_userClaims.UserId.ToString())
+                    .SendAsync("CartUpdated", _userClaims.UserId);
+            }
+
+            return await ExecuteServiceLogic(() => Task.FromResult(result)).ConfigureAwait(false);
         }
 
         [HttpPost("AddCartDetail")]
@@ -72,9 +90,15 @@ namespace BMS.API.Controllers
         //[Authorize(Roles = UserRoleConstants.USER)]
         public async Task<IActionResult> AddCartDetail(Guid shopId, [FromBody]CartDetailRequest request)
         {
-            return await ExecuteServiceLogic(
-                async () => await _cartService.AddCartDetail(_userClaims.UserId, shopId, request).ConfigureAwait(false)
-            ).ConfigureAwait(false);
+            var result = await _cartService.AddCartDetail(_userClaims.UserId, shopId, request).ConfigureAwait(false);
+
+            if (result.IsSuccess)
+            {
+                await _hubContext.Clients.Group(_userClaims.UserId.ToString())
+                    .SendAsync("CartUpdated", _userClaims.UserId);
+            }
+
+            return await ExecuteServiceLogic(() => Task.FromResult(result)).ConfigureAwait(false);
         }
 
         [HttpPost("UpdateCartDetail")]
@@ -82,9 +106,16 @@ namespace BMS.API.Controllers
         //[Authorize(Roles = UserRoleConstants.USER)]
         public async Task<IActionResult> UpdateCartDetail(Guid userId, Guid shopId, [FromBody]CartDetailRequest request)
         {
-            return await ExecuteServiceLogic(
-                async () => await _cartService.UpdateCartDetail(userId, shopId, request).ConfigureAwait(false)
-            ).ConfigureAwait(false);
+            var result = await _cartService.UpdateCartDetail(userId, shopId, request).ConfigureAwait(false);
+
+            if (result.IsSuccess)
+            {
+                // Notify all clients with the same userId
+                await _hubContext.Clients.Group(userId.ToString())
+                    .SendAsync("CartUpdated", userId);
+            }
+
+            return await ExecuteServiceLogic(() => Task.FromResult(result)).ConfigureAwait(false);
         }
 
         [HttpGet("GetCartDetail")]

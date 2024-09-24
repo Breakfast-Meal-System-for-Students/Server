@@ -4,6 +4,8 @@ using BMS.DAL;
 using BMS.BLL;
 using BMS.API.Extensions;
 using Microsoft.OpenApi.Models;
+using Microsoft.AspNetCore.SignalR;
+using BMS.API.Hub;
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
@@ -47,6 +49,7 @@ builder.Services.AddSwaggerGen(option =>
     });
 });
 
+builder.Services.AddSignalR();
 var app = builder.Build();
 EnsureMigrate(app);
 // Configure the HTTP request pipeline.
@@ -64,6 +67,8 @@ app.UseHttpsRedirection();
 app.UseCors("AllowReactApp");
 app.UseRouting();
 
+app.MapHub<CartHub>("/cartHub");
+app.MapHub<MyHub>("/myhub");
 // Authentication and Authorization middleware should be placed here
 app.UseAuthentication();  // Enable authentication middleware
 app.UseAuthorization();   // Enable authorization middleware
