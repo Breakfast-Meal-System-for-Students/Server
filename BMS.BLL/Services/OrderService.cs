@@ -2,7 +2,9 @@
 using Azure.Core;
 using BMS.BLL.Models;
 using BMS.BLL.Models.Requests.Admin;
+using BMS.BLL.Models.Requests.Category;
 using BMS.BLL.Models.Responses.Admin;
+using BMS.BLL.Models.Responses.Cart;
 using BMS.BLL.Models.Responses.Users;
 using BMS.BLL.Services.BaseServices;
 using BMS.BLL.Services.IServices;
@@ -12,7 +14,7 @@ using BMS.Core.Domains.Enums;
 using BMS.Core.Exceptions;
 using BMS.Core.Helpers;
 using BMS.DAL;
-using BMS.DAL.Migrations;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -50,6 +52,48 @@ namespace BMS.BLL.Services
             }
         }
 
+        public async Task<ServiceActionResult> CreateOrder(Guid cartId, Guid voucherId)
+        {
+            var carts = (await _unitOfWork.CartRepository.GetAllAsyncAsQueryable()).Where(x => x.Id == cartId).Include(y => y.CartDetails).SingleOrDefault();
+            var coupon = await _unitOfWork.CouponRepository.FindAsync(voucherId);
+            if(carts == null) { return new ServiceActionResult() { Detail = $"Cart is not exits or deleted" }; }
+            if (coupon == null) { return new ServiceActionResult() { Detail = $"Coupon is not exits or deleted" }; }
+            Order order = new Order();
+            order.Id = Guid.NewGuid();
+            order.Status = OrderStatus.DRAFT.ToString();
+            order.ShopId = carts.ShopId;
+            order.CustomerId = carts.CustomerId;
+            order.TotalPrice = carts.CartDetails.Sum(x => (x.Quantity * x.Price));
+            await _unitOfWork.OrderRepository.AddAsync(order);
+            foreach (var item in carts.CartDetails)
+            {
+                OrderItem orderItem = new OrderItem();
+                orderItem.Id = Guid.NewGuid();
+                orderItem.Id = item.Id;
+                orderItem.OrderId = order.Id;
+                orderItem.ProductId = item.ProductId;
+                orderItem.Quantity = item.Quantity;
+                orderItem.Price = item.Price;
+                await _unitOfWork.OrderItemRepository.AddAsync(orderItem);
+            }
+
+            CouponUsage couponUsage = new CouponUsage();
+            couponUsage.Id = Guid.NewGuid();
+            couponUsage.CouponId = voucherId;
+            couponUsage.OrderId = order.Id;
+            couponUsage.UserId = order.CustomerId;
+            await _unitOfWork.CouponUsageRepository.AddAsync(couponUsage);
+            Notification notification = new Notification();
+            notification.Id = Guid.NewGuid();
+            notification.UserId = order.CustomerId;
+            notification.OrderId = order.Id;
+            notification.ShopId = order.ShopId;
+            notification.Object = "Order";
+            notification.Status = NotificationStatus.Draft.ToString();
+            await _unitOfWork.NotificationRepository.AddAsync(notification);
+            return new ServiceActionResult() { Detail = "Order is already create" };
+        }
+
         public async Task<ServiceActionResult> GetListOrders(SearchOrderRequest request)
         {
             IQueryable<Order> orderQuery = (await _unitOfWork.OrderRepository.GetAllAsyncAsQueryable()).Include(a => a.OrderItems);
@@ -75,7 +119,7 @@ namespace BMS.BLL.Services
 
         public async Task<ServiceActionResult> GetOrderByID(Guid id)
         {
-            var order = (await _unitOfWork.OrderRepository.GetAllAsyncAsQueryable()).Include(a => a.OrderItems).Where(x => x.Id == id);
+            var order = (await _unitOfWork.OrderRepository.GetAllAsyncAsQueryable()).Include(a => a.OrderItems).Where(x => x.Id == id).SingleOrDefault();
             if (order != null)
             {
                 var returnOrder = _mapper.Map<OrderResponse>(order);
@@ -134,6 +178,21 @@ namespace BMS.BLL.Services
             return new ServiceActionResult(true) { Data = paginationResult };
         }
 
+        public async Task<ServiceActionResult> GetStatusOrder(Guid orderId)
+        {
+            var order = (await _unitOfWork.OrderRepository.GetAllAsyncAsQueryable()).Where(x => x.Id == orderId).SingleOrDefault();
+            if (order != null)
+            {
+                var returnOrder = _mapper.Map<OrderResponse>(order);
+
+                return new ServiceActionResult(true) { Data = order.Status };
+            }
+            else
+            {
+                return new ServiceActionResult(false, "Order is not exits or deleted");
+            }
+        }
+
         public async Task<ServiceActionResult> GetTotalOrder(TotalOrdersRequest request)
         {
             var orders = (await _unitOfWork.OrderRepository.GetAllAsyncAsQueryable());
@@ -162,5 +221,20 @@ namespace BMS.BLL.Services
                 Data = orders.Count()
             };
         }
+
+        public async Task<ServiceActionResult> UpdateStatusOrder(Guid id, string status)
+        {
+
+
+            var order = await _unitOfWork.OrderRepository.FindAsync(id) ?? throw new ArgumentNullException("Order is not exist");
+            order.Status = status;
+     
+            order.LastUpdateDate = DateTime.Now;
+           
+            await _unitOfWork.CommitAsync();
+
+            return new ServiceActionResult(true) { Data = order };
+        }
+
     }
 }

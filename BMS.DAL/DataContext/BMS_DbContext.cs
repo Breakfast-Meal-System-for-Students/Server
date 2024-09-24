@@ -53,7 +53,7 @@ namespace BMS.DAL.DataContext
             modelBuilder.Entity<UserRole>(entity =>
             {
                 entity.HasKey(ur => new { ur.UserId, ur.RoleId });
-
+                
                 entity.HasOne(ur => ur.User)
                       .WithMany(u => u.UserRoles)
                       .HasForeignKey(ur => ur.UserId)
@@ -65,30 +65,20 @@ namespace BMS.DAL.DataContext
                       .OnDelete(DeleteBehavior.Cascade);
             });
             //
-            modelBuilder.Entity<RegisterCategory>(entity =>
-            {
-                // Configure composite primary key
-                entity.HasKey(rc => new { rc.CategoryId, rc.ShopId ,rc.ProductId});
-
-                // Configure relationships between RegisterCategory and Category
-                entity.HasOne(rc => rc.Category)
+   
+            // One-to-Many relationship between User and Order
+            modelBuilder.Entity<RegisterCategory>()
+                .HasOne(rc => rc.Category)
                       .WithMany(c => c.RegisterCategorys) // Navigational property in Category
                       .HasForeignKey(rc => rc.CategoryId)
-                      .OnDelete(DeleteBehavior.Cascade); // Cascade delete when a Category is deleted
+                      .OnDelete(DeleteBehavior.Cascade);
 
-                // Configure relationships between RegisterCategory and Shop
-                entity.HasOne(rc => rc.Shop)
-                      .WithMany(s => s.RegisterCategorys) // Navigational property in Shop
-                      .HasForeignKey(rc => rc.ShopId)
-                      .OnDelete(DeleteBehavior.Cascade); // Cascade delete when a Shop is deleted
-
-                // Configure relationships between RegisterCategory and Product
-                entity.HasOne(rc => rc.Product)
-                      .WithMany(s => s.RegisterCategorys) // Navigational property in Product
-                      .HasForeignKey(rc => rc.ShopId)
-                      .OnDelete(DeleteBehavior.Cascade); // Cascade delete when a Product is deleted
-            });
-
+            // One-to-Many relationship between Shop and Order
+            modelBuilder.Entity<RegisterCategory>()
+                .HasOne(rc => rc.Product)
+                      .WithMany(c => c.RegisterCategorys) // Navigational property in Category
+                      .HasForeignKey(rc => rc.ProductId)
+                      .OnDelete(DeleteBehavior.Cascade);
             // One-to-Many relationship between User and Order
             modelBuilder.Entity<Order>()
                 .HasOne(o => o.Customer)
@@ -208,7 +198,13 @@ namespace BMS.DAL.DataContext
                 .WithMany(cu => cu.Carts)
                 .HasForeignKey(c => c.CustomerId)
                 .OnDelete(DeleteBehavior.Cascade);
-
+ 
+            // One-to-Many relationship between Shop and Order
+            modelBuilder.Entity<Cart>()
+                .HasOne(o => o.Shop)
+                .WithMany(s => s.Carts)
+                .HasForeignKey(o => o.ShopId)
+                .OnDelete(DeleteBehavior.Restrict);
             // Cấu hình quan hệ 1-n giữa Cart và CartDetail
             modelBuilder.Entity<CartDetail>()
                 .HasOne(cd => cd.Cart)

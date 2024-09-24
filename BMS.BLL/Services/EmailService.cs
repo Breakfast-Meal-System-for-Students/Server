@@ -60,7 +60,7 @@ namespace BMS.BLL.Services
         {
      
             var encodedToken = WebUtility.UrlEncode(token);
-            await SendEmailAsync(user.Email, "Confirm Your Account Registration", EmailHelper.GetConfirmEmailBody($"https://localhost:7039/api/Auth/confirm-email?userId={user.Id}&token={encodedToken}", user.UserName, "breakfastmealsystem@gmail.com"), true);
+            await SendEmailAsync(user.Email, "Confirm Your Account Registration", EmailHelper.GetConfirmEmailBody($"https://bms-fs-api.azurewebsites.net/api/Auth/confirm-email?userId={user.Id}&token={encodedToken}", user.UserName, "breakfastmealsystem@gmail.com"), true);
         }
 
     }

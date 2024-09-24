@@ -17,8 +17,18 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using BMS.BLL.Models.Responses.Roles;
+using BMS.BLL.Models.Requests.Product;
+using BMS.BLL.Models.Responses.Product;
+using BMS.BLL.Models.Requests.RegisterCategory;
+using BMS.BLL.Models.Responses.RegisterCategory;
+using BMS.BLL.Models.Requests.Coupon;
+using BMS.BLL.Models.Responses.Coupon;
+using BMS.BLL.Models.Requests.Package;
+using BMS.BLL.Models.Responses.Package;
 using BMS.BLL.Models.Responses.Cart;
 using BMS.BLL.Models.Requests.Cart;
+using System.Reflection;
+
 
 namespace BMS.BLL.Utilities.AutoMapperProfiles
 {
@@ -90,9 +100,38 @@ namespace BMS.BLL.Utilities.AutoMapperProfiles
 
                 CreateMap<Category, CategoryResponse>();
                 #endregion
+                #region product  
+
+                CreateMap<Product, UpdateProductRequest>()
+                 .ForMember(dest => dest.Images, opt => opt.Ignore());
+                CreateMap<CreateProductRequest, Product>()
+                .ForMember(dest => dest.Images, opt => opt.Ignore());
+
+                CreateMap<Product, ProductResponse>();
+                #endregion
                 #region cart
-                CreateMap<Cart, CartResponse>();
+                CreateMap<CartDetail, CartDetailResponse>();
+                CreateMap<Cart, CartResponse>()
+                    .ForMember(dest => dest.CartDetails, opt => opt.MapFrom(src => src.CartDetails));
                 CreateMap<CartDetailRequest, CartDetail>();
+                #endregion
+                #region registerCategory  
+
+                CreateMap<CreateRegisterCategoryRequest,RegisterCategory >();
+
+                CreateMap<RegisterCategory, RegisterCategoryResponse>();
+                #endregion
+                #region coupon
+                CreateMap<Coupon, UpdateCouponRequest>();
+                CreateMap<CreateCouponRequest, Coupon>();
+
+                CreateMap<Coupon, CouponResponse>();
+                #endregion
+                #region package
+                CreateMap<Package, UpdatePackageRequest>();
+                CreateMap<CreatePackageRequest, Package>();
+
+                CreateMap<Package, PackageResponse>();
                 #endregion
             }
         }

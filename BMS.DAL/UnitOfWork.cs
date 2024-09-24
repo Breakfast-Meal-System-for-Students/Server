@@ -17,8 +17,18 @@ namespace BMS.DAL
         public IFeedbackRepository FeedbackRepository => new FeedbackRepository(_dbContext);
         public ITransactionRepository TransactionRepository => new TransactionRepository(_dbContext);
         public IOrderRepository OrderRepository => new OrderRepository(_dbContext);
+        public IProductRepository ProductRepository => new ProductRepository(_dbContext);
         public ICartRepository CartRepository => new CartRepository(_dbContext);
         public ICartDetailRepository CartDetailRepository => new CartDetailRepository(_dbContext);
+        public INotificationRepository NotificationRepository => new NotificationRepository(_dbContext);
+        public IOrderItemRepository OrderItemRepository => new OrderItemRepository(_dbContext);
+        public ICouponUsageRepository CouponUsageRepository => new CouponUsageRepository(_dbContext);
+        public ICouponRepository CouponRepository => new CouponRepository(_dbContext);
+        public IRegisterCategoryRepository RegisterCategoryRepository => new RegisterCategoryRepository(_dbContext);
+        public ICouponRepository CouponRepository => new CouponRepository(_dbContext);
+        public IPackageRepository PackageRepository => new PackageRepository(_dbContext);
+        public IPackageHistoryRepository PackageHistoryRepository => new PackageHistoryRepository(_dbContext);
+
         public DbContext _dbContext { get; }
         
         public UnitOfWork(DbContext dbContext)

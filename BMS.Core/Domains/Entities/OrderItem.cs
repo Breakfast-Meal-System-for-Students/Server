@@ -10,7 +10,7 @@ namespace BMS.Core.Domains.Entities
     public class OrderItem : EntityBase<Guid>
     {
         public int Quantity { get; set; }
-
+        public double Price { get; set; }
         public Guid ProductId { get; set; }
         public Product Product { get; set; } = null!;
 

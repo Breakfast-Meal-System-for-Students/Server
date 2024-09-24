@@ -1,4 +1,5 @@
-﻿using BMS.Core.Helpers;
+﻿using BMS.Core.Domains.Entities.BaseEntities;
+using BMS.Core.Helpers;
 using BMS.Core.Models;
 using BMS.DAL.Repositories.IRepositories;
 using Microsoft.EntityFrameworkCore;
@@ -133,7 +134,10 @@ namespace BMS.DAL.Repositories
         {
             return await Entities.FindAsync(keyValues);
         }
-
+        public virtual async Task<T?> FindAsync(Expression<Func<T, bool>> predicate)
+        {
+            return await Entities.FirstOrDefaultAsync(predicate);
+        }
         public virtual IEnumerable<T> GetDetail(
      Expression<Func<T, bool>> filter = null,
     Func<IQueryable<T>, IOrderedQueryable<T>> orderBy = null,
@@ -221,6 +225,35 @@ namespace BMS.DAL.Repositories
         public async Task<IQueryable<T>> GetAllAsyncAsQueryable()
         {
             return await Task.FromResult(Entities.AsQueryable());
+        }
+        // Adding a SoftDelete method
+        public async Task SoftDeleteAsync(T entity, bool saveChanges = true, CancellationToken cancellationToken = default)
+        {
+            if (entity is ISoftDelete softDeleteEntity)
+            {
+                softDeleteEntity.IsDeleted = true;
+                softDeleteEntity.DeletedDate = DateTime.Now;
+
+                DbContext.Update(entity);
+
+                if (saveChanges)
+                {
+                    await DbContext.SaveChangesAsync(cancellationToken);
+                }
+            }
+            else
+            {
+                throw new InvalidOperationException($"{nameof(T)} does not implement ISoftDelete");
+            }
+        }
+
+        public async Task SoftDeleteByIdAsync(Guid id, bool saveChanges = true, CancellationToken cancellationToken = default)
+        {
+            var entity = await Entities.FindAsync(id);
+            if (entity != null)
+            {
+                await SoftDeleteAsync(entity, saveChanges, cancellationToken);
+            }
         }
     }
 }
