@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace BMS.DAL.Migrations
 {
     /// <inheritdoc />
-    public partial class v103_AddColumnPriceInOrder : Migration
+    public partial class v102_AddColumnPriceInOrder : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -16,32 +16,32 @@ namespace BMS.DAL.Migrations
             migrationBuilder.DeleteData(
                 table: "AspNetRoles",
                 keyColumn: "Id",
-                keyValue: new Guid("515e9800-fc1b-4969-bfc6-12e1312e4c70"));
+                keyValue: new Guid("19cedbee-6b0e-4056-ae33-cdefb87d6eba"));
 
             migrationBuilder.DeleteData(
                 table: "AspNetRoles",
                 keyColumn: "Id",
-                keyValue: new Guid("8caf1fe3-6485-4a51-a182-17905d06fa41"));
+                keyValue: new Guid("1d2159f5-e412-4714-8fcc-15ee5a90681a"));
 
             migrationBuilder.DeleteData(
                 table: "AspNetRoles",
                 keyColumn: "Id",
-                keyValue: new Guid("b6da9c71-11fa-4385-a880-43883a779805"));
+                keyValue: new Guid("35077bd5-1787-40ea-94cd-b25328ce8ad5"));
 
             migrationBuilder.DeleteData(
                 table: "AspNetRoles",
                 keyColumn: "Id",
-                keyValue: new Guid("d65c7293-8646-4cdb-9949-2ffa014b6b64"));
+                keyValue: new Guid("f48cddb7-b377-4e30-a8ea-077651bc0642"));
 
             migrationBuilder.DeleteData(
                 table: "Categories",
                 keyColumn: "Id",
-                keyValue: new Guid("435d4e27-87c1-4adc-b0de-972ac53304e3"));
+                keyValue: new Guid("6f148eac-b9fa-4e9b-bf80-386e00294a28"));
 
             migrationBuilder.DeleteData(
                 table: "Categories",
                 keyColumn: "Id",
-                keyValue: new Guid("ccb39ba3-340e-4752-a8ba-6ef2aab1576b"));
+                keyValue: new Guid("a9f8cd9e-969f-4c43-acc1-9bbb58d74c4a"));
 
             migrationBuilder.AddColumn<double>(
                 name: "Price",
@@ -55,10 +55,10 @@ namespace BMS.DAL.Migrations
                 columns: new[] { "Id", "ConcurrencyStamp", "Name", "NormalizedName" },
                 values: new object[,]
                 {
-                    { new Guid("09de8588-5900-4caa-b6ea-a8e72517945b"), null, "User", "User" },
-                    { new Guid("2645ed37-c27f-43c8-8b6a-917e96c22a53"), null, "Staff", "Staff" },
-                    { new Guid("ee36f2b6-47a2-4f36-a512-d8b8522e1450"), null, "Shop", "Shop" },
-                    { new Guid("fb435ef1-1b14-434c-9f05-a317fd5e7225"), null, "Admin", "Admin" }
+                    { new Guid("0e26662a-da7a-46de-af43-3402eaa9fb81"), null, "User", "User" },
+                    { new Guid("75b6ef7a-f03d-4f08-bf77-cbae20362528"), null, "Admin", "Admin" },
+                    { new Guid("c8e7f53e-9cf1-4ffa-b4c6-55903a73e42f"), null, "Shop", "Shop" },
+                    { new Guid("f5041366-9906-4a25-baf4-78f3d1c4ab41"), null, "Staff", "Staff" }
                 });
 
             migrationBuilder.InsertData(
@@ -66,8 +66,8 @@ namespace BMS.DAL.Migrations
                 columns: new[] { "Id", "CreateDate", "DeletedDate", "Description", "Image", "IsDeleted", "LastUpdateDate", "Name" },
                 values: new object[,]
                 {
-                    { new Guid("32a0b04a-6f78-4255-9253-a9a8646d8701"), new DateTime(2024, 9, 23, 16, 15, 3, 695, DateTimeKind.Local).AddTicks(3993), null, "Rice", null, false, new DateTime(2024, 9, 23, 16, 15, 3, 695, DateTimeKind.Local).AddTicks(4006), "Rice" },
-                    { new Guid("d7e38ff9-346b-461d-b333-841765a8babc"), new DateTime(2024, 9, 23, 16, 15, 3, 695, DateTimeKind.Local).AddTicks(4010), null, "SuShi", null, false, new DateTime(2024, 9, 23, 16, 15, 3, 695, DateTimeKind.Local).AddTicks(4011), "SuShi" }
+                    { new Guid("340f61b6-994d-426a-a037-5fc9c93d4d56"), new DateTime(2024, 9, 25, 0, 12, 1, 382, DateTimeKind.Local).AddTicks(4833), null, "SuShi", null, false, new DateTime(2024, 9, 25, 0, 12, 1, 382, DateTimeKind.Local).AddTicks(4833), "SuShi" },
+                    { new Guid("f645678b-fa73-4f3a-b859-dfc16eced1a9"), new DateTime(2024, 9, 25, 0, 12, 1, 382, DateTimeKind.Local).AddTicks(4819), null, "Rice", null, false, new DateTime(2024, 9, 25, 0, 12, 1, 382, DateTimeKind.Local).AddTicks(4829), "Rice" }
                 });
         }
 
@@ -77,42 +77,46 @@ namespace BMS.DAL.Migrations
             migrationBuilder.DeleteData(
                 table: "AspNetRoles",
                 keyColumn: "Id",
-                keyValue: new Guid("09de8588-5900-4caa-b6ea-a8e72517945b"));
+                keyValue: new Guid("0e26662a-da7a-46de-af43-3402eaa9fb81"));
 
             migrationBuilder.DeleteData(
                 table: "AspNetRoles",
                 keyColumn: "Id",
-                keyValue: new Guid("2645ed37-c27f-43c8-8b6a-917e96c22a53"));
+                keyValue: new Guid("75b6ef7a-f03d-4f08-bf77-cbae20362528"));
 
             migrationBuilder.DeleteData(
                 table: "AspNetRoles",
                 keyColumn: "Id",
-                keyValue: new Guid("ee36f2b6-47a2-4f36-a512-d8b8522e1450"));
+                keyValue: new Guid("c8e7f53e-9cf1-4ffa-b4c6-55903a73e42f"));
 
             migrationBuilder.DeleteData(
                 table: "AspNetRoles",
                 keyColumn: "Id",
-                keyValue: new Guid("fb435ef1-1b14-434c-9f05-a317fd5e7225"));
+                keyValue: new Guid("f5041366-9906-4a25-baf4-78f3d1c4ab41"));
 
             migrationBuilder.DeleteData(
                 table: "Categories",
                 keyColumn: "Id",
-                keyValue: new Guid("32a0b04a-6f78-4255-9253-a9a8646d8701"));
+                keyValue: new Guid("340f61b6-994d-426a-a037-5fc9c93d4d56"));
 
             migrationBuilder.DeleteData(
                 table: "Categories",
                 keyColumn: "Id",
-                keyValue: new Guid("d7e38ff9-346b-461d-b333-841765a8babc"));
+                keyValue: new Guid("f645678b-fa73-4f3a-b859-dfc16eced1a9"));
+
+            migrationBuilder.DropColumn(
+                name: "Price",
+                table: "OrderItems");
 
             migrationBuilder.InsertData(
                 table: "AspNetRoles",
                 columns: new[] { "Id", "ConcurrencyStamp", "Name", "NormalizedName" },
                 values: new object[,]
                 {
-                    { new Guid("515e9800-fc1b-4969-bfc6-12e1312e4c70"), null, "Shop", "Shop" },
-                    { new Guid("8caf1fe3-6485-4a51-a182-17905d06fa41"), null, "Staff", "Staff" },
-                    { new Guid("b6da9c71-11fa-4385-a880-43883a779805"), null, "Admin", "Admin" },
-                    { new Guid("d65c7293-8646-4cdb-9949-2ffa014b6b64"), null, "User", "User" }
+                    { new Guid("19cedbee-6b0e-4056-ae33-cdefb87d6eba"), null, "Shop", "Shop" },
+                    { new Guid("1d2159f5-e412-4714-8fcc-15ee5a90681a"), null, "Staff", "Staff" },
+                    { new Guid("35077bd5-1787-40ea-94cd-b25328ce8ad5"), null, "Admin", "Admin" },
+                    { new Guid("f48cddb7-b377-4e30-a8ea-077651bc0642"), null, "User", "User" }
                 });
 
             migrationBuilder.InsertData(
@@ -120,8 +124,8 @@ namespace BMS.DAL.Migrations
                 columns: new[] { "Id", "CreateDate", "DeletedDate", "Description", "Image", "IsDeleted", "LastUpdateDate", "Name" },
                 values: new object[,]
                 {
-                    { new Guid("435d4e27-87c1-4adc-b0de-972ac53304e3"), new DateTime(2024, 9, 21, 20, 40, 26, 147, DateTimeKind.Local).AddTicks(425), null, "Rice", null, false, new DateTime(2024, 9, 21, 20, 40, 26, 147, DateTimeKind.Local).AddTicks(437), "Rice" },
-                    { new Guid("ccb39ba3-340e-4752-a8ba-6ef2aab1576b"), new DateTime(2024, 9, 21, 20, 40, 26, 147, DateTimeKind.Local).AddTicks(464), null, "SuShi", null, false, new DateTime(2024, 9, 21, 20, 40, 26, 147, DateTimeKind.Local).AddTicks(465), "SuShi" }
+                    { new Guid("6f148eac-b9fa-4e9b-bf80-386e00294a28"), new DateTime(2024, 9, 21, 21, 17, 40, 513, DateTimeKind.Local).AddTicks(3983), null, "SuShi", null, false, new DateTime(2024, 9, 21, 21, 17, 40, 513, DateTimeKind.Local).AddTicks(3983), "SuShi" },
+                    { new Guid("a9f8cd9e-969f-4c43-acc1-9bbb58d74c4a"), new DateTime(2024, 9, 21, 21, 17, 40, 513, DateTimeKind.Local).AddTicks(3934), null, "Rice", null, false, new DateTime(2024, 9, 21, 21, 17, 40, 513, DateTimeKind.Local).AddTicks(3946), "Rice" }
                 });
         }
     }

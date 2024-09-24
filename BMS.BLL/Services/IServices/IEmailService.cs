@@ -13,5 +13,6 @@ namespace BMS.BLL.Services.IServices
         Task SendEmailAsync(string ToEmail, string Subject, string Body, bool IsBodyHtml = false);
 
         Task SendEmailConfirmationMoblieAsync(User user, string token);
+        Task SendEmailNotificationToShopAndUserAboutOrder(String url, string token, Order order, User user, Shop shop);
     }
 }

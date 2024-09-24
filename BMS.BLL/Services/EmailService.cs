@@ -63,5 +63,11 @@ namespace BMS.BLL.Services
             await SendEmailAsync(user.Email, "Confirm Your Account Registration", EmailHelper.GetConfirmEmailBody($"https://bms-fs-api.azurewebsites.net/api/Auth/confirm-email?userId={user.Id}&token={encodedToken}", user.UserName, "breakfastmealsystem@gmail.com"), true);
         }
 
+        public async Task SendEmailNotificationToShopAndUserAboutOrder(String url, string token, Order order, User user, Shop shop)
+        {
+            var encodedToken = WebUtility.UrlEncode(token);
+            await SendEmailAsync(user.Email, "Confirm Your Account Registration", EmailHelper.GetNotificationMail($"{url}&token={encodedToken}", user.UserName, "breakfastmealsystem@gmail.com", order), true);
+        }
+
     }
 }
