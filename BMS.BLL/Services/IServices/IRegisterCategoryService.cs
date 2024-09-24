@@ -12,7 +12,6 @@ namespace BMS.BLL.Services.IServices
 
     public interface IRegisterCategoryService
     {
-        Task<ServiceActionResult> GetCategoryByShop(Guid shopId, RegisterCategoryRequest queryParameters);
         Task<ServiceActionResult> GetCategoryByProduct(Guid productId, RegisterCategoryRequest queryParameters);
         Task<ServiceActionResult> GetProductByCategory(Guid categoryId, RegisterCategoryRequest queryParameters);
         Task<ServiceActionResult> AddReCategory(CreateRegisterCategoryRequest request);

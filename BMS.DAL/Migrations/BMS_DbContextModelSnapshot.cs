@@ -121,20 +121,20 @@ namespace BMS.DAL.Migrations
                     b.HasData(
                         new
                         {
-                            Id = new Guid("776eb3ad-5f64-4cba-afec-38ebcd37399e"),
-                            CreateDate = new DateTime(2024, 9, 21, 10, 42, 40, 287, DateTimeKind.Local).AddTicks(3461),
+                            Id = new Guid("a9f8cd9e-969f-4c43-acc1-9bbb58d74c4a"),
+                            CreateDate = new DateTime(2024, 9, 21, 21, 17, 40, 513, DateTimeKind.Local).AddTicks(3934),
                             Description = "Rice",
                             IsDeleted = false,
-                            LastUpdateDate = new DateTime(2024, 9, 21, 10, 42, 40, 287, DateTimeKind.Local).AddTicks(3474),
+                            LastUpdateDate = new DateTime(2024, 9, 21, 21, 17, 40, 513, DateTimeKind.Local).AddTicks(3946),
                             Name = "Rice"
                         },
                         new
                         {
-                            Id = new Guid("8a0bb8ba-d798-4938-b0f8-156c21dbfab0"),
-                            CreateDate = new DateTime(2024, 9, 21, 10, 42, 40, 287, DateTimeKind.Local).AddTicks(3480),
+                            Id = new Guid("6f148eac-b9fa-4e9b-bf80-386e00294a28"),
+                            CreateDate = new DateTime(2024, 9, 21, 21, 17, 40, 513, DateTimeKind.Local).AddTicks(3983),
                             Description = "SuShi",
                             IsDeleted = false,
-                            LastUpdateDate = new DateTime(2024, 9, 21, 10, 42, 40, 287, DateTimeKind.Local).AddTicks(3480),
+                            LastUpdateDate = new DateTime(2024, 9, 21, 21, 17, 40, 513, DateTimeKind.Local).AddTicks(3983),
                             Name = "SuShi"
                         });
                 });
@@ -530,28 +530,27 @@ namespace BMS.DAL.Migrations
 
             modelBuilder.Entity("BMS.Core.Domains.Entities.RegisterCategory", b =>
                 {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<Guid>("CategoryId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid>("ShopId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid>("ProductId")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<DateTime>("CreateDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
                     b.Property<DateTime>("LastUpdateDate")
                         .HasColumnType("datetime2");
 
-                    b.HasKey("CategoryId", "ShopId", "ProductId");
+                    b.Property<Guid>("ProductId")
+                        .HasColumnType("uniqueidentifier");
 
-                    b.HasIndex("ShopId");
+                    b.HasKey("Id");
+
+                    b.HasIndex("CategoryId");
+
+                    b.HasIndex("ProductId");
 
                     b.ToTable("RegisterCategorys");
                 });
@@ -587,25 +586,25 @@ namespace BMS.DAL.Migrations
                     b.HasData(
                         new
                         {
-                            Id = new Guid("cba0632d-ac59-4374-a044-0f33d7a3dfe1"),
+                            Id = new Guid("35077bd5-1787-40ea-94cd-b25328ce8ad5"),
                             Name = "Admin",
                             NormalizedName = "Admin"
                         },
                         new
                         {
-                            Id = new Guid("766f193a-b84c-42ab-9a84-cf3f01badeb2"),
+                            Id = new Guid("1d2159f5-e412-4714-8fcc-15ee5a90681a"),
                             Name = "Staff",
                             NormalizedName = "Staff"
                         },
                         new
                         {
-                            Id = new Guid("fd9d7262-f7bd-4c0f-b6c2-222c889661d6"),
+                            Id = new Guid("f48cddb7-b377-4e30-a8ea-077651bc0642"),
                             Name = "User",
                             NormalizedName = "User"
                         },
                         new
                         {
-                            Id = new Guid("872a2662-7b25-404d-af52-a8868feae13d"),
+                            Id = new Guid("19cedbee-6b0e-4056-ae33-cdefb87d6eba"),
                             Name = "Shop",
                             NormalizedName = "Shop"
                         });
@@ -1112,21 +1111,13 @@ namespace BMS.DAL.Migrations
 
                     b.HasOne("BMS.Core.Domains.Entities.Product", "Product")
                         .WithMany("RegisterCategorys")
-                        .HasForeignKey("ShopId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("BMS.Core.Domains.Entities.Shop", "Shop")
-                        .WithMany("RegisterCategorys")
-                        .HasForeignKey("ShopId")
+                        .HasForeignKey("ProductId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Category");
 
                     b.Navigation("Product");
-
-                    b.Navigation("Shop");
                 });
 
             modelBuilder.Entity("BMS.Core.Domains.Entities.Shop", b =>
@@ -1269,8 +1260,6 @@ namespace BMS.DAL.Migrations
                     b.Navigation("PackageHistories");
 
                     b.Navigation("Products");
-
-                    b.Navigation("RegisterCategorys");
                 });
 
             modelBuilder.Entity("BMS.Core.Domains.Entities.User", b =>

@@ -14,6 +14,7 @@ using System.Text;
 using System.Threading.Tasks;
 using BMS.BLL.Models.Requests.RegisterCategory;
 using BMS.BLL.Models.Responses.RegisterCategory;
+using Microsoft.EntityFrameworkCore;
 
 namespace BMS.BLL.Services
 {
@@ -30,30 +31,11 @@ namespace BMS.BLL.Services
             _fileStorageService = fileStorageService;
         }
 
-        public async Task<ServiceActionResult> GetCategoryByShop(Guid shopId, RegisterCategoryRequest queryParameters)
-        {
 
-            IQueryable<RegisterCategory> reCategoryQueryable = (await _unitOfWork.RegisterCategoryRepository.GetAllAsyncAsQueryable()).Where(a => a.ShopId == shopId);
-
-
-            if (!string.IsNullOrEmpty(queryParameters.Search))
-            {
-                //   categoryQueryable = categoryQueryable.Where(m => m.Description.Contains(queryParameters.Search));
-            }
-
-            reCategoryQueryable = queryParameters.IsDesc ? reCategoryQueryable.OrderByDescending(a => a.CreateDate) : reCategoryQueryable.OrderBy(a => a.CreateDate);
-
-            var paginationResult = PaginationHelper
-            .BuildPaginatedResult<RegisterCategory, RegisterCategoryResponse>(_mapper, reCategoryQueryable, queryParameters.PageSize, queryParameters.PageIndex);
-
-
-
-            return new ServiceActionResult() { Data = paginationResult };
-        }
         public async Task<ServiceActionResult> GetCategoryByProduct(Guid productId,RegisterCategoryRequest queryParameters)
         {
 
-            IQueryable<RegisterCategory> reCategoryQueryable = (await _unitOfWork.RegisterCategoryRepository.GetAllAsyncAsQueryable()).Where(a => a.ProductId == productId);
+            IQueryable<RegisterCategory> reCategoryQueryable = (await _unitOfWork.RegisterCategoryRepository.GetAllAsyncAsQueryable()).Where(a => a.ProductId == productId).Include(a => a.Category);
 
 
             if (!string.IsNullOrEmpty(queryParameters.Search))
@@ -73,7 +55,7 @@ namespace BMS.BLL.Services
         public async Task<ServiceActionResult> GetProductByCategory(Guid categoryId, RegisterCategoryRequest queryParameters)
         {
 
-            IQueryable<RegisterCategory> reCategoryQueryable = (await _unitOfWork.RegisterCategoryRepository.GetAllAsyncAsQueryable()).Where(a => a.CategoryId == categoryId);
+            IQueryable<RegisterCategory> reCategoryQueryable = (await _unitOfWork.RegisterCategoryRepository.GetAllAsyncAsQueryable()).Where(a => a.CategoryId == categoryId).Include(a=>a.Product);
 
 
             if (!string.IsNullOrEmpty(queryParameters.Search))
