@@ -20,6 +20,8 @@ namespace BMS.DAL
         public IProductRepository ProductRepository => new ProductRepository(_dbContext);
         public IRegisterCategoryRepository RegisterCategoryRepository => new RegisterCategoryRepository(_dbContext);
         public ICouponRepository CouponRepository => new CouponRepository(_dbContext);
+        public IPackageRepository PackageRepository => new PackageRepository(_dbContext);
+        public IPackageHistoryRepository PackageHistoryRepository => new PackageHistoryRepository(_dbContext);
 
         public DbContext _dbContext { get; }
 
