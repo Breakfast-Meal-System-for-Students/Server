@@ -96,6 +96,7 @@ namespace BMS.BLL.Services
             string roleName = "";
             switch (role)
             {
+                case 0: roleName = UserRoleConstants.USER; break;
                 case 1: roleName = UserRoleConstants.ADMIN; break;
                 case 2: roleName = UserRoleConstants.STAFF; break;
                 case 3: roleName = UserRoleConstants.USER; break;
@@ -114,7 +115,7 @@ namespace BMS.BLL.Services
             }
 
             var token = await _userManager.GenerateEmailConfirmationTokenAsync(userEntity);
-            await _emailService.SendEmailConfirmationAsync(userEntity, token);
+            await _emailService.SendEmailConfirmationMoblieAsync(userEntity, token);
 
             return new ServiceActionResult(true);
         }

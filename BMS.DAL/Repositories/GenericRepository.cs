@@ -134,7 +134,10 @@ namespace BMS.DAL.Repositories
         {
             return await Entities.FindAsync(keyValues);
         }
-
+        public virtual async Task<T?> FindAsync(Expression<Func<T, bool>> predicate)
+        {
+            return await Entities.FirstOrDefaultAsync(predicate);
+        }
         public virtual IEnumerable<T> GetDetail(
      Expression<Func<T, bool>> filter = null,
     Func<IQueryable<T>, IOrderedQueryable<T>> orderBy = null,

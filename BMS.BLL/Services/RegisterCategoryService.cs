@@ -14,6 +14,7 @@ using System.Text;
 using System.Threading.Tasks;
 using BMS.BLL.Models.Requests.RegisterCategory;
 using BMS.BLL.Models.Responses.RegisterCategory;
+using Microsoft.EntityFrameworkCore;
 
 namespace BMS.BLL.Services
 {
@@ -34,7 +35,7 @@ namespace BMS.BLL.Services
         public async Task<ServiceActionResult> GetCategoryByProduct(Guid productId,RegisterCategoryRequest queryParameters)
         {
 
-            IQueryable<RegisterCategory> reCategoryQueryable = (await _unitOfWork.RegisterCategoryRepository.GetAllAsyncAsQueryable()).Where(a => a.ProductId == productId);
+            IQueryable<RegisterCategory> reCategoryQueryable = (await _unitOfWork.RegisterCategoryRepository.GetAllAsyncAsQueryable()).Where(a => a.ProductId == productId).Include(a => a.Category);
 
 
             if (!string.IsNullOrEmpty(queryParameters.Search))
@@ -54,7 +55,7 @@ namespace BMS.BLL.Services
         public async Task<ServiceActionResult> GetProductByCategory(Guid categoryId, RegisterCategoryRequest queryParameters)
         {
 
-            IQueryable<RegisterCategory> reCategoryQueryable = (await _unitOfWork.RegisterCategoryRepository.GetAllAsyncAsQueryable()).Where(a => a.CategoryId == categoryId);
+            IQueryable<RegisterCategory> reCategoryQueryable = (await _unitOfWork.RegisterCategoryRepository.GetAllAsyncAsQueryable()).Where(a => a.CategoryId == categoryId).Include(a=>a.Product);
 
 
             if (!string.IsNullOrEmpty(queryParameters.Search))

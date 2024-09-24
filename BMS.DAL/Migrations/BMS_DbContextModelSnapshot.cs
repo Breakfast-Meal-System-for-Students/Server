@@ -533,30 +533,27 @@ namespace BMS.DAL.Migrations
 
             modelBuilder.Entity("BMS.Core.Domains.Entities.RegisterCategory", b =>
                 {
-                    b.Property<Guid>("CategoryId")
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid>("ProductId")
+                    b.Property<Guid>("CategoryId")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<DateTime>("CreateDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
                     b.Property<DateTime>("LastUpdateDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<Guid?>("ShopId")
+                    b.Property<Guid>("ProductId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.HasKey("CategoryId", "ProductId");
+                    b.HasKey("Id");
+
+                    b.HasIndex("CategoryId");
 
                     b.HasIndex("ProductId");
-
-                    b.HasIndex("ShopId");
 
                     b.ToTable("RegisterCategorys");
                 });
@@ -1121,10 +1118,6 @@ namespace BMS.DAL.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("BMS.Core.Domains.Entities.Shop", null)
-                        .WithMany("RegisterCategorys")
-                        .HasForeignKey("ShopId");
-
                     b.Navigation("Category");
 
                     b.Navigation("Product");
@@ -1270,8 +1263,6 @@ namespace BMS.DAL.Migrations
                     b.Navigation("PackageHistories");
 
                     b.Navigation("Products");
-
-                    b.Navigation("RegisterCategorys");
                 });
 
             modelBuilder.Entity("BMS.Core.Domains.Entities.User", b =>

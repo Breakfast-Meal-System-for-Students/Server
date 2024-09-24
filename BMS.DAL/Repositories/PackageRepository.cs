@@ -9,10 +9,10 @@ using System.Threading.Tasks;
 
 namespace BMS.DAL.Repositories
 {
-
-    public class CouponRepository : GenericRepository<Coupon>, ICouponRepository
+ 
+    public class PackageRepository : GenericRepository<Package>, IPackageRepository
     {
-        public CouponRepository(DbContext dbContext) : base(dbContext)
+        public PackageRepository(DbContext dbContext) : base(dbContext)
         {
         }
     }
