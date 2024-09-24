@@ -22,8 +22,9 @@ namespace BMS.DAL
                     , sqlOptions =>
                     {
                         sqlOptions.MaxBatchSize(100); // Default value is 100, use a higher value to optimize
-                        sqlOptions.CommandTimeout(60); // Still keep timeout to avoid timeouts on larger queries
-                    });
+                        sqlOptions.CommandTimeout(120); // Still keep timeout to avoid timeouts on larger queries
+                        sqlOptions.EnableRetryOnFailure(5);
+                    }).EnableSensitiveDataLogging();
             });
             services.AddScoped<IUnitOfWork, UnitOfWork>();
             // services.AddScoped<IUserRepository, UserRepository>();

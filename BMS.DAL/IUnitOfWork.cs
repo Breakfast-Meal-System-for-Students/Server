@@ -1,4 +1,5 @@
 ﻿using BMS.DAL.Repositories.IRepositories;
+using Microsoft.EntityFrameworkCore.Storage;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -27,5 +28,7 @@ namespace BMS.DAL
         Task CommitAsync();
         void Rollback();
         Task RollbackAsync();
+
+        Task<IDbContextTransaction> BeginTransaction();
     }
 }

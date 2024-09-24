@@ -4,6 +4,7 @@ using BMS.BLL.Models.Requests.Admin;
 using BMS.BLL.Models.Responses.Admin;
 using BMS.BLL.Services.BaseServices;
 using BMS.BLL.Services.IServices;
+using BMS.Core.Domains.Constants;
 using BMS.Core.Domains.Entities;
 using BMS.Core.Domains.Enums;
 using BMS.Core.Helpers;
@@ -72,57 +73,69 @@ namespace BMS.BLL.Services
 
         public async Task<ServiceActionResult> GetTopShopHaveHighTransaction(TopShopOrUserRequest request)
         {
-            var shops = (await _unitOfWork.ShopRepository.GetAllAsyncAsQueryable())
-                        .Include(shop => shop.Orders)
-                        .ThenInclude(order => order.Transactions);
+            IQueryable<Shop> shopQuery = (await _unitOfWork.ShopRepository.GetAllAsyncAsQueryable())
+                                        .Include(a => a.Orders)
+                                        .ThenInclude(b => b.Transactions);
+
             if (request.Year != 0)
             {
                 if (request.Month != 0)
                 {
-                    shops = (Microsoft.EntityFrameworkCore.Query.IIncludableQueryable<Shop, ICollection<Transaction>>)shops.Where(x => x.Orders.All(x => x.Transactions.All(y => y.CreateDate.Year == request.Year && y.CreateDate.Month == request.Month && y.Status == TransactionStatus.PAID)));
-                } else
+                    shopQuery = shopQuery.Where(x => x.Orders
+                        .All(order => order.Transactions
+                            .All(y => y.CreateDate.Year == request.Year
+                                      && y.CreateDate.Month == request.Month
+                                      && y.Status == TransactionStatus.PAID)));
+                }
+                else
                 {
-                    shops = (Microsoft.EntityFrameworkCore.Query.IIncludableQueryable<Shop, ICollection<Transaction>>)shops.Where(x => x.Orders.All(x => x.Transactions.All(y => y.CreateDate.Year == request.Year && y.Status == TransactionStatus.PAID)));
+                    shopQuery = shopQuery.Where(x => x.Orders
+                        .All(order => order.Transactions
+                            .All(y => y.CreateDate.Year == request.Year
+                                      && y.Status == TransactionStatus.PAID)));
                 }
             }
 
-            shops = (Microsoft.EntityFrameworkCore.Query.IIncludableQueryable<Shop, ICollection<Transaction>>)shops
-                        .GroupBy(shop => shop.Id)
-                        .Select(group => new
-                        {
-                            ShopId = group.Key,
-                            ShopName = group.FirstOrDefault().Name,
-                            TotalTransactionAmount = group
-                                .SelectMany(shop => shop.Orders)
-                                .SelectMany(order => order.Transactions)
-                                .Sum(transaction => transaction.Price)
-                        }).OrderByDescending(x => x.TotalTransactionAmount);
-            var paginationResult = PaginationHelper
-            .BuildPaginatedResult<Shop, TopResponse>(_mapper, shops, request.PageSize, request.PageIndex);
+            // Nhóm theo ID và tính tổng giao dịch
+            var shopTransactions = shopQuery
+                .GroupBy(shop => shop.Id)
+                .Select(group => new
+                {
+                    ShopId = group.Key,
+                    ShopName = group.FirstOrDefault().Name,
+                    TotalTransactionAmount = group
+                        .SelectMany(shop => shop.Orders)
+                        .SelectMany(order => order.Transactions)
+                        .Where(transaction => transaction.Status == TransactionStatus.PAID)  // Chỉ lấy những giao dịch đã thanh toán
+                        .Sum(transaction => transaction.Price)
+                })
+                .OrderByDescending(x => x.TotalTransactionAmount); // Sắp xếp theo tổng giao dịch giảm dần
+
+            // Phân trang kết quả
+            var paginationResult = PaginationHelper.BuildPaginatedResult(shopTransactions, request.PageSize, request.PageIndex);
 
             return new ServiceActionResult(true) { Data = paginationResult };
-
         }
 
         public async Task<ServiceActionResult> GetTopUserHaveHighTransaction(TopShopOrUserRequest request)
         {
-            var users = (await _unitOfWork.UserRepository.GetAllAsyncAsQueryable())
-                        .Include(shop => shop.Orders)
-                        .ThenInclude(order => order.Transactions);
+            IQueryable<User> users = (await _unitOfWork.UserRepository.GetAllAsyncAsQueryable())
+                                    .Include(shop => shop.Orders)
+                                    .ThenInclude(order => order.Transactions);
             if (request.Year != 0)
             {
                 if (request.Month != 0)
                 {
-                    users = (Microsoft.EntityFrameworkCore.Query.IIncludableQueryable<User, ICollection<Transaction>>)users.Where(x => x.Orders.All(x => x.Transactions.All(y => y.CreateDate.Year == request.Year && y.CreateDate.Month == request.Month && y.Status == TransactionStatus.PAID)));
+                    users = users.Where(x => x.Orders.All(x => x.Transactions.All(y => y.CreateDate.Year == request.Year && y.CreateDate.Month == request.Month && y.Status == TransactionStatus.PAID)));
                 }
                 else
                 {
-                    users = (Microsoft.EntityFrameworkCore.Query.IIncludableQueryable<User, ICollection<Transaction>>)users.Where(x => x.Orders.All(x => x.Transactions.All(y => y.CreateDate.Year == request.Year && y.Status == TransactionStatus.PAID)));
+                    users = users.Where(x => x.Orders.All(x => x.Transactions.All(y => y.CreateDate.Year == request.Year && y.Status == TransactionStatus.PAID)));
                 }
             }
 
-            users = (Microsoft.EntityFrameworkCore.Query.IIncludableQueryable<User, ICollection<Transaction>>)users
-                        .GroupBy(shop => shop.Id)
+            var usersTransaction = users
+                        .GroupBy(user => user.Id)
                         .Select(group => new
                         {
                             Id = group.Key,
@@ -132,15 +145,14 @@ namespace BMS.BLL.Services
                                 .SelectMany(order => order.Transactions)
                                 .Sum(transaction => transaction.Price)
                         }).OrderByDescending(x => x.TotalTransactionAmount);
-            var paginationResult = PaginationHelper
-            .BuildPaginatedResult<User, TopResponse>(_mapper, users, request.PageSize, request.PageIndex);
+            var paginationResult = PaginationHelper.BuildPaginatedResult(usersTransaction, request.PageSize, request.PageIndex);
 
             return new ServiceActionResult(true) { Data = paginationResult };
         }
 
         public async Task<ServiceActionResult> GetTotalTransaction(TotalTRansactionRequest request)
         {
-            var transactions = (await _unitOfWork.OrderRepository.GetAllAsyncAsQueryable());
+            var transactions = (await _unitOfWork.TransactionRepository.GetAllAsyncAsQueryable());
             if (request.Year != 0)
             {
                 if (request.Month != 0)
@@ -161,7 +173,7 @@ namespace BMS.BLL.Services
             }
             if (request.Status != 0)
             {
-                transactions = transactions.Where(x => x.Status.Equals(request.Status.ToString()));
+                transactions = transactions.Where(x => x.Status.Equals(request.Status));
             }
             return new ServiceActionResult()
             {
@@ -189,7 +201,7 @@ namespace BMS.BLL.Services
             var transaction = (await _unitOfWork.TransactionRepository.GetAllAsyncAsQueryable()).Include(a => a.Order).Where(x => x.OrderId == id).ToList();
             if (transaction != null)
             {
-                var returnOrder = _mapper.Map<TransactionResponse>(transaction);
+                var returnOrder = _mapper.Map<List<TransactionResponse>>(transaction);
 
                 return new ServiceActionResult(true) { Data = returnOrder };
             }
