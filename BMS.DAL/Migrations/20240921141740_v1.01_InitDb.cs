@@ -600,16 +600,15 @@ namespace BMS.DAL.Migrations
                 name: "RegisterCategorys",
                 columns: table => new
                 {
-                    CategoryId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    ShopId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    ProductId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    CategoryId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    ProductId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     CreateDate = table.Column<DateTime>(type: "datetime2", nullable: false),
                     LastUpdateDate = table.Column<DateTime>(type: "datetime2", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_RegisterCategorys", x => new { x.CategoryId, x.ShopId, x.ProductId });
+                    table.PrimaryKey("PK_RegisterCategorys", x => x.Id);
                     table.ForeignKey(
                         name: "FK_RegisterCategorys_Categories_CategoryId",
                         column: x => x.CategoryId,
@@ -617,15 +616,9 @@ namespace BMS.DAL.Migrations
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_RegisterCategorys_Products_ShopId",
-                        column: x => x.ShopId,
+                        name: "FK_RegisterCategorys_Products_ProductId",
+                        column: x => x.ProductId,
                         principalTable: "Products",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_RegisterCategorys_Shops_ShopId",
-                        column: x => x.ShopId,
-                        principalTable: "Shops",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -635,10 +628,10 @@ namespace BMS.DAL.Migrations
                 columns: new[] { "Id", "ConcurrencyStamp", "Name", "NormalizedName" },
                 values: new object[,]
                 {
-                    { new Guid("766f193a-b84c-42ab-9a84-cf3f01badeb2"), null, "Staff", "Staff" },
-                    { new Guid("872a2662-7b25-404d-af52-a8868feae13d"), null, "Shop", "Shop" },
-                    { new Guid("cba0632d-ac59-4374-a044-0f33d7a3dfe1"), null, "Admin", "Admin" },
-                    { new Guid("fd9d7262-f7bd-4c0f-b6c2-222c889661d6"), null, "User", "User" }
+                    { new Guid("19cedbee-6b0e-4056-ae33-cdefb87d6eba"), null, "Shop", "Shop" },
+                    { new Guid("1d2159f5-e412-4714-8fcc-15ee5a90681a"), null, "Staff", "Staff" },
+                    { new Guid("35077bd5-1787-40ea-94cd-b25328ce8ad5"), null, "Admin", "Admin" },
+                    { new Guid("f48cddb7-b377-4e30-a8ea-077651bc0642"), null, "User", "User" }
                 });
 
             migrationBuilder.InsertData(
@@ -646,8 +639,8 @@ namespace BMS.DAL.Migrations
                 columns: new[] { "Id", "CreateDate", "DeletedDate", "Description", "Image", "IsDeleted", "LastUpdateDate", "Name" },
                 values: new object[,]
                 {
-                    { new Guid("776eb3ad-5f64-4cba-afec-38ebcd37399e"), new DateTime(2024, 9, 21, 10, 42, 40, 287, DateTimeKind.Local).AddTicks(3461), null, "Rice", null, false, new DateTime(2024, 9, 21, 10, 42, 40, 287, DateTimeKind.Local).AddTicks(3474), "Rice" },
-                    { new Guid("8a0bb8ba-d798-4938-b0f8-156c21dbfab0"), new DateTime(2024, 9, 21, 10, 42, 40, 287, DateTimeKind.Local).AddTicks(3480), null, "SuShi", null, false, new DateTime(2024, 9, 21, 10, 42, 40, 287, DateTimeKind.Local).AddTicks(3480), "SuShi" }
+                    { new Guid("6f148eac-b9fa-4e9b-bf80-386e00294a28"), new DateTime(2024, 9, 21, 21, 17, 40, 513, DateTimeKind.Local).AddTicks(3983), null, "SuShi", null, false, new DateTime(2024, 9, 21, 21, 17, 40, 513, DateTimeKind.Local).AddTicks(3983), "SuShi" },
+                    { new Guid("a9f8cd9e-969f-4c43-acc1-9bbb58d74c4a"), new DateTime(2024, 9, 21, 21, 17, 40, 513, DateTimeKind.Local).AddTicks(3934), null, "Rice", null, false, new DateTime(2024, 9, 21, 21, 17, 40, 513, DateTimeKind.Local).AddTicks(3946), "Rice" }
                 });
 
             migrationBuilder.CreateIndex(
@@ -800,9 +793,14 @@ namespace BMS.DAL.Migrations
                 column: "ShopId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_RegisterCategorys_ShopId",
+                name: "IX_RegisterCategorys_CategoryId",
                 table: "RegisterCategorys",
-                column: "ShopId");
+                column: "CategoryId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_RegisterCategorys_ProductId",
+                table: "RegisterCategorys",
+                column: "ProductId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Shops_UserId",

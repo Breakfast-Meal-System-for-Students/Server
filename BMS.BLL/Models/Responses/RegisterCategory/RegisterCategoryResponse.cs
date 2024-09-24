@@ -13,7 +13,7 @@ namespace BMS.BLL.Models.Responses.RegisterCategory
         public Guid CategoryId { get; set; } // Foreign key to Category
         public CategoryResponse? Category { get; set; } = null!;
 
-        public Guid ShopId { get; set; } // Foreign key to Shop
+      //  public Guid ShopId { get; set; } // Foreign key to Shop
       //  public Shop? Shop { get; set; } = null!;
 
         public ProductResponse? Product { get; set; } = null!;
