@@ -29,7 +29,7 @@ namespace BMS.API.Controllers
         }
         [HttpPost("GetListUser")]
         [Authorize(Roles = UserRoleConstants.ADMIN)]
-        public async Task<IActionResult> GetListUser(SearchStaffRequest request)
+        public async Task<IActionResult> GetListUser([FromForm]SearchStaffRequest request)
         {
             return await ExecuteServiceLogic(
                 async () => await _userService.GetListUser(request).ConfigureAwait(false)

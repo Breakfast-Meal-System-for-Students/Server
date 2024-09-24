@@ -25,6 +25,10 @@ using BMS.BLL.Models.Requests.Coupon;
 using BMS.BLL.Models.Responses.Coupon;
 using BMS.BLL.Models.Requests.Package;
 using BMS.BLL.Models.Responses.Package;
+using BMS.BLL.Models.Responses.Cart;
+using BMS.BLL.Models.Requests.Cart;
+using System.Reflection;
+
 
 namespace BMS.BLL.Utilities.AutoMapperProfiles
 {
@@ -104,7 +108,12 @@ namespace BMS.BLL.Utilities.AutoMapperProfiles
                 .ForMember(dest => dest.Images, opt => opt.Ignore());
 
                 CreateMap<Product, ProductResponse>();
-
+                #endregion
+                #region cart
+                CreateMap<CartDetail, CartDetailResponse>();
+                CreateMap<Cart, CartResponse>()
+                    .ForMember(dest => dest.CartDetails, opt => opt.MapFrom(src => src.CartDetails));
+                CreateMap<CartDetailRequest, CartDetail>();
                 #endregion
                 #region registerCategory  
 

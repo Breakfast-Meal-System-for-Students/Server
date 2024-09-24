@@ -44,6 +44,7 @@ namespace BMS.BLL
             services.AddScoped<IOrderService, OrderService>();
             services.AddScoped<ITransactionService, TransactionService>();
             services.AddScoped<IAccountService, AccountService>();
+            services.AddScoped<ICartService, CartService>();
             services.AddScoped<IProductService, ProductService>();
             services.AddScoped<IRegisterCategoryService, RegisterCategoryService>();
             services.AddScoped<ICouponService, CouponService>();

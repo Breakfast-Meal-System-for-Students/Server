@@ -15,6 +15,12 @@ namespace BMS.DAL
         public ICategoryRepository CategoryRepositoy { get; }
         public ITransactionRepository TransactionRepository { get; }
         public IOrderRepository OrderRepository { get; }
+        public ICartRepository CartRepository { get; }
+        public ICartDetailRepository CartDetailRepository { get; }
+        public INotificationRepository NotificationRepository { get; }
+        public IOrderItemRepository OrderItemRepository { get; }
+        public ICouponUsageRepository CouponUsageRepository { get; }
+        public ICouponRepository CouponRepository { get; }
         public IProductRepository ProductRepository { get; }
         public IRegisterCategoryRepository RegisterCategoryRepository { get; }
         public ICouponRepository CouponRepository { get; }
