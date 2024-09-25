@@ -28,6 +28,7 @@ using BMS.BLL.Models.Responses.Package;
 using BMS.BLL.Models.Responses.Cart;
 using BMS.BLL.Models.Requests.Cart;
 using System.Reflection;
+using BMS.BLL.Models.Responses.Image;
 
 
 namespace BMS.BLL.Utilities.AutoMapperProfiles
@@ -132,6 +133,11 @@ namespace BMS.BLL.Utilities.AutoMapperProfiles
                 CreateMap<CreatePackageRequest, Package>();
 
                 CreateMap<Package, PackageResponse>();
+                #endregion
+                #region image
+              
+
+                CreateMap<Image, ImageResponse>();
                 #endregion
             }
         }

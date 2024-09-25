@@ -17,6 +17,7 @@ namespace BMS.BLL.Services.IServices
 
         Task<ServiceActionResult> UpdateProduct(Guid id, UpdateProductRequest request);
         Task<ServiceActionResult> DeleteProduct(Guid id);
+        Task<ServiceActionResult> GetProduct(Guid id);
 
     }
 }
