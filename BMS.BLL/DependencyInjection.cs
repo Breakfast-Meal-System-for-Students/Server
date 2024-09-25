@@ -50,6 +50,7 @@ namespace BMS.BLL
             services.AddScoped<ICouponService, CouponService>();
             services.AddScoped<IPackageService, PackageService>();
             services.AddScoped<INotificationService, NotificationService>();
+            services.AddScoped<IVnPayService, VnPayService>();
             #endregion
 
             #region Validation
