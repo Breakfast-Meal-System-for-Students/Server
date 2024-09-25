@@ -76,6 +76,7 @@ namespace BMS.API.Extensions
                 opt.AddPolicy("ModeratePhotoRole", policy => policy.RequireRole("Admin", "Moderator"));
             });
 
+            services.AddHostedService<NotificationBackgroundService>();
             return services;
         }
 

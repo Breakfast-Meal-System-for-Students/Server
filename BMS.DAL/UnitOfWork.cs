@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore.Storage;
 
 namespace BMS.DAL
 {
@@ -66,6 +67,11 @@ namespace BMS.DAL
         {
             Console.WriteLine("Transaction rollback");
             await Task.CompletedTask;
+        }
+
+        public async Task<IDbContextTransaction> BeginTransaction()
+        {
+            return await _dbContext.Database.BeginTransactionAsync();
         }
     }
 }

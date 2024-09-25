@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using BMS.DAL;
+using Microsoft.EntityFrameworkCore.Storage;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -26,6 +27,10 @@ namespace BMS.BLL.Services.BaseServices
         public async Task Rollback()
         {
              await _unitOfWork.RollbackAsync();
+        }
+        public async Task<IDbContextTransaction> BeginTransaction()
+        {
+             return await _unitOfWork.BeginTransaction();
         }
     }
 }

@@ -54,44 +54,82 @@ namespace BMS.BLL.Services
 
         public async Task<ServiceActionResult> CreateOrder(Guid cartId, Guid voucherId)
         {
-            var carts = (await _unitOfWork.CartRepository.GetAllAsyncAsQueryable()).Where(x => x.Id == cartId).Include(y => y.CartDetails).SingleOrDefault();
-            var coupon = await _unitOfWork.CouponRepository.FindAsync(voucherId);
-            if(carts == null) { return new ServiceActionResult() { Detail = $"Cart is not exits or deleted" }; }
-            if (coupon == null) { return new ServiceActionResult() { Detail = $"Coupon is not exits or deleted" }; }
-            Order order = new Order();
-            order.Id = Guid.NewGuid();
-            order.Status = OrderStatus.DRAFT.ToString();
-            order.ShopId = carts.ShopId;
-            order.CustomerId = carts.CustomerId;
-            order.TotalPrice = carts.CartDetails.Sum(x => (x.Quantity * x.Price));
+            var carts = (await _unitOfWork.CartRepository.GetAllAsyncAsQueryable())
+                        .Where(x => x.Id == cartId)
+                        .Include(y => y.CartDetails)
+                        .SingleOrDefault();
+
+            if (carts == null)
+            {
+                return new ServiceActionResult() { Detail = "Cart does not exist or is deleted" };
+            }
+
+            if (voucherId != Guid.Empty)
+            {
+                var coupon = await _unitOfWork.CouponRepository.FindAsync(voucherId);
+                if (coupon == null)
+                {
+                    return new ServiceActionResult() { Detail = "Coupon does not exist or is deleted" };
+                }
+            }
+
+            Order order = new Order
+            {
+                Id = Guid.NewGuid(),
+                Status = OrderStatus.DRAFT.ToString(),
+                ShopId = carts.ShopId,
+                CustomerId = carts.CustomerId,
+                TotalPrice = carts.CartDetails.Sum(x => x.Quantity * x.Price)
+            };
+
+            // Add Order to the database
             await _unitOfWork.OrderRepository.AddAsync(order);
+
+            // Insert each OrderItem one by one
             foreach (var item in carts.CartDetails)
             {
-                OrderItem orderItem = new OrderItem();
-                orderItem.Id = Guid.NewGuid();
-                orderItem.Id = item.Id;
-                orderItem.OrderId = order.Id;
-                orderItem.ProductId = item.ProductId;
-                orderItem.Quantity = item.Quantity;
-                orderItem.Price = item.Price;
+                OrderItem orderItem = new OrderItem
+                {
+                    Id = Guid.NewGuid(), // Ensure a new unique ID for each item
+                    OrderId = order.Id,
+                    ProductId = item.ProductId,
+                    Quantity = item.Quantity,
+                    Price = item.Price
+                };
+
+                // Add OrderItem to the database individually
                 await _unitOfWork.OrderItemRepository.AddAsync(orderItem);
             }
 
-            CouponUsage couponUsage = new CouponUsage();
-            couponUsage.Id = Guid.NewGuid();
-            couponUsage.CouponId = voucherId;
-            couponUsage.OrderId = order.Id;
-            couponUsage.UserId = order.CustomerId;
-            await _unitOfWork.CouponUsageRepository.AddAsync(couponUsage);
-            Notification notification = new Notification();
-            notification.Id = Guid.NewGuid();
-            notification.UserId = order.CustomerId;
-            notification.OrderId = order.Id;
-            notification.ShopId = order.ShopId;
-            notification.Object = "Order";
-            notification.Status = NotificationStatus.Draft.ToString();
+            if (voucherId != Guid.Empty)
+            {
+                CouponUsage couponUsage = new CouponUsage
+                {
+                    Id = Guid.NewGuid(),
+                    CouponId = voucherId,
+                    OrderId = order.Id,
+                    UserId = order.CustomerId
+                };
+
+                // Add CouponUsage to the database
+                await _unitOfWork.CouponUsageRepository.AddAsync(couponUsage);
+            }
+
+            Notification notification = new Notification
+            {
+                Id = Guid.NewGuid(),
+                UserId = order.CustomerId,
+                OrderId = order.Id,
+                ShopId = order.ShopId,
+                Object = "Order",
+                Status = NotificationStatus.Draft.ToString()
+            };
+
+            // Add Notification to the database
             await _unitOfWork.NotificationRepository.AddAsync(notification);
-            return new ServiceActionResult() { Detail = "Order is already create" };
+
+            return new ServiceActionResult() { Detail = "Order has been created successfully" };
+
         }
 
         public async Task<ServiceActionResult> GetListOrders(SearchOrderRequest request)
@@ -101,7 +139,7 @@ namespace BMS.BLL.Services
             //var canParsed = Enum.TryParse(request.Status, true, out OrderStatus status);
             if (request.Status != 0)
             {
-                orderQuery = orderQuery.Where(m => m.Status.Equals(request.Status));
+                orderQuery = orderQuery.Where(m => m.Status.Equals(request.Status.ToString()));
             }
 
             //if (!string.IsNullOrEmpty(request.Search))
@@ -139,7 +177,7 @@ namespace BMS.BLL.Services
             //var canParsed = Enum.TryParse(request.Status, true, out OrderStatus status);
             if (request.Status != 0)
             {
-                orderQuery = orderQuery.Where(m => m.Status.Equals(request.Status));
+                orderQuery = orderQuery.Where(m => m.Status.Equals(request.Status.ToString()));
             }
 
             //if (!string.IsNullOrEmpty(request.Search))
@@ -162,7 +200,7 @@ namespace BMS.BLL.Services
             //var canParsed = Enum.TryParse(request.Status, true, out OrderStatus status);
             if (request.Status != 0)
             {
-                orderQuery = orderQuery.Where(m => m.Status.Equals(request.Status));
+                orderQuery = orderQuery.Where(m => m.Status.Equals(request.Status.ToString()));
             }
 
             //if (!string.IsNullOrEmpty(request.Search))

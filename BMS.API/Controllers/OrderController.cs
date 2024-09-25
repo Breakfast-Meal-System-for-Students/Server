@@ -31,7 +31,7 @@ namespace BMS.API.Controllers
 
         [HttpGet("GetOrderById{id}")]
         //[Authorize(Roles = UserRoleConstants.ADMIN)]
-        public async Task<IActionResult> GetOrderById([FromQuery]Guid id)
+        public async Task<IActionResult> GetOrderById(Guid id)
         {
             return await ExecuteServiceLogic(
                 async () => await _orderService.GetOrderByID(id).ConfigureAwait(false)
