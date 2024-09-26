@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Azure;
 using Azure.Core;
 using BMS.BLL.Models;
 using BMS.BLL.Models.Requests.Admin;
@@ -44,12 +45,39 @@ namespace BMS.BLL.Services
                     throw new BusinessRuleException($"Order is already in {status}, so that you can not change this");
                 }
                 if (s.CompareTo(status) > 0) throw new BusinessRuleException($"Order is already in {s}, so that you can not change back to {status}");
+                if (status.Equals(OrderStatus.COMPLETE))
+                {
+                    if (bool.Parse((await CheckOrderIsPayed(id)).Data.ToString()) == false)
+                    {
+                        Transaction transaction = new Transaction()
+                        {
+                            Id = Guid.NewGuid(),
+                            OrderId = order.Id,
+                            Price = Convert.ToDouble(order.TotalPrice),
+                            Method = TransactionMethod.Cash.ToString(),
+                            Status = TransactionStatus.PAID
+                        };
+
+                        await _unitOfWork.TransactionRepository.AddAsync(transaction);
+                    }
+                }
                 order.Status = status.ToString();
+                order.LastUpdateDate = DateTime.Now;
                 return new ServiceActionResult() { Detail = $" Change Order Status from {s} to {status} sucessfully" };
             } else
             {
                 throw new BusinessRuleException("Have Error in Status Order");
             }
+        }
+
+        public async Task<ServiceActionResult> CheckOrderIsPayed(Guid orderId)
+        {
+            var transactions = (await _unitOfWork.TransactionRepository.GetAllAsyncAsQueryable())
+                               .Where(x => x.OrderId == orderId && x.Status == TransactionStatus.PAID).SingleOrDefault();
+            return new ServiceActionResult()
+            {
+                Data = transactions == null ? false : true,
+            };
         }
 
         public async Task<ServiceActionResult> CreateOrder(Guid cartId, Guid voucherId)
@@ -64,14 +92,7 @@ namespace BMS.BLL.Services
                 return new ServiceActionResult() { Detail = "Cart does not exist or is deleted" };
             }
 
-            if (voucherId != Guid.Empty)
-            {
-                var coupon = await _unitOfWork.CouponRepository.FindAsync(voucherId);
-                if (coupon == null)
-                {
-                    return new ServiceActionResult() { Detail = "Coupon does not exist or is deleted" };
-                }
-            }
+            
 
             Order order = new Order
             {
@@ -82,6 +103,36 @@ namespace BMS.BLL.Services
                 TotalPrice = carts.CartDetails.Sum(x => x.Quantity * x.Price)
             };
 
+            double discount = 0;
+            if (voucherId != Guid.Empty)
+            {
+                var coupon = await _unitOfWork.CouponRepository.FindAsync(voucherId);
+                if (coupon == null || coupon.IsDeleted)
+                {
+                    return new ServiceActionResult() { Detail = "Coupon does not exist or is deleted" };
+                }
+                if (coupon.StartDate >= order.CreateDate)
+                {
+                    return new ServiceActionResult(false) { Detail = "The Date of Coupon is not yet start" };
+                } else if (coupon.EndDate <= order.CreateDate)
+                {
+                    return new ServiceActionResult(false) { Detail = "The Date of Coupon is Finish" };
+                } else if (order.TotalPrice < coupon.MinPrice)
+                {
+                    return new ServiceActionResult(false) { Detail = "Total Price of Order is not enough to use this voucher" };
+                }    
+                if (coupon.isPercentDiscount)
+                {
+                    discount = (order.TotalPrice * coupon.PercentDiscount) > coupon.MaxDiscount ? coupon.MaxDiscount : (order.TotalPrice * coupon.PercentDiscount);
+                } else
+                {
+                    discount = coupon.MinDiscount;
+                }
+            }
+            if(discount >= 0)
+            {
+                order.TotalPrice -= discount;
+            }
             // Add Order to the database
             await _unitOfWork.OrderRepository.AddAsync(order);
 
@@ -128,6 +179,7 @@ namespace BMS.BLL.Services
             // Add Notification to the database
             await _unitOfWork.NotificationRepository.AddAsync(notification);
 
+            await _unitOfWork.CartRepository.DeleteAsync(cartId);
             return new ServiceActionResult() { Detail = "Order has been created successfully" };
 
         }

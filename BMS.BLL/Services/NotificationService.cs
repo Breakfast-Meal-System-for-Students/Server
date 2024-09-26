@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using BMS.BLL.Models;
 using BMS.BLL.Services.BaseServices;
 using BMS.BLL.Services.IServices;
 using BMS.Core.Domains.Entities;
@@ -27,6 +28,16 @@ namespace BMS.BLL.Services
                     .Include(b => b.Shop)
                     .Include(c => c.Order)
                     .Where(x => x.Status == status.ToString()).ToList();
+        }
+
+        public async Task<ServiceActionResult> GetNotificationForShop(Guid ShopId)
+        {
+            throw new NotImplementedException();
+        }
+
+        public async Task<ServiceActionResult> GetNotificationForUser(Guid userId)
+        {
+            throw new NotImplementedException();
         }
 
         public async Task SaveChange()

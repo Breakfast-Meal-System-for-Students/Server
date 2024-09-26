@@ -1,14 +1,22 @@
 ﻿using BMS.API.Controllers.Base;
 using BMS.BLL.Models.Requests.VnPay;
 using BMS.BLL.Models.Responses.VnPay;
+using BMS.BLL.Services.BaseServices;
+using BMS.BLL.Services;
 using BMS.BLL.Services.IServices;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace BMS.API.Controllers
 {
-    public class PaymentController(IVnPayService _vnPayService) : BaseApiController
+    public class PaymentController : BaseApiController
     {
+        private readonly IVnPayService _vnPayService;
+        public PaymentController(IVnPayService vnPayService)
+        {
+            _vnPayService = vnPayService;
+            _baseService = (BaseService)vnPayService;
+        }
 
         [HttpPost("create-payment-url")]
         [Authorize]

@@ -77,6 +77,7 @@ namespace BMS.API.Extensions
             });
 
             services.AddHostedService<NotificationBackgroundService>();
+            services.Configure<VNPaySettings>(configuration.GetSection("VNPaySettings"));
             return services;
         }
 

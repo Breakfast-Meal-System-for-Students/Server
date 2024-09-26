@@ -99,5 +99,14 @@ namespace BMS.API.Controllers
                                async () => await _orderService.UpdateStatusOrder(Id, status).ConfigureAwait(false)
                                           ).ConfigureAwait(false);
         }
+
+        [HttpGet("CheckOrderIsPayed{orderId}")]
+        //[Authorize(Roles = UserRoleConstants.ADMIN)]
+        public async Task<IActionResult> CheckOrderIsPayed(Guid orderId)
+        {
+            return await ExecuteServiceLogic(
+                async () => await _orderService.CheckOrderIsPayed(orderId).ConfigureAwait(false)
+            ).ConfigureAwait(false);
+        }
     }
 }
