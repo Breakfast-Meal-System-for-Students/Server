@@ -147,6 +147,26 @@ namespace BMS.BLL.Services
 
             return new ServiceActionResult(true) { Data = returnProduct };
         }
+        public async Task<ServiceActionResult> GetAllProductByShopId(Guid id,ProductRequest queryParameters)
+        {
 
+            IQueryable<Product> ProductQueryable = (await _unitOfWork.ProductRepository.GetAllAsyncAsQueryable()).Where(a => a.IsDeleted == false & a.ShopId==id).Include(a => a.Images);
+
+
+
+            if (!string.IsNullOrEmpty(queryParameters.Search))
+            {
+                ProductQueryable = ProductQueryable.Where(m => m.Description.Contains(queryParameters.Search));
+            }
+
+            ProductQueryable = queryParameters.IsDesc ? ProductQueryable.OrderByDescending(a => a.CreateDate) : ProductQueryable.OrderBy(a => a.CreateDate);
+
+            var paginationResult = PaginationHelper
+            .BuildPaginatedResult<Product, ProductResponse>(_mapper, ProductQueryable, queryParameters.PageSize, queryParameters.PageIndex);
+
+
+
+            return new ServiceActionResult() { Data = paginationResult };
+        }
     }
 }
