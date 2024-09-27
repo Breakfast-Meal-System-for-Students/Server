@@ -61,5 +61,14 @@ namespace BMS.API.Controllers
                 async () => await _productService.GetProduct(id).ConfigureAwait(false)
             ).ConfigureAwait(false);
         }
+        [HttpGet(("all-product-by-shop-id"))]
+
+
+        public async Task<IActionResult> GetAllProductByShopid(Guid id, [FromQuery] ProductRequest pagingRequest)
+        {
+            return await ExecuteServiceLogic(
+                async () => await _productService.GetAllProductByShopId(id, pagingRequest).ConfigureAwait(false)
+            ).ConfigureAwait(false);
+        }
     }
 }
