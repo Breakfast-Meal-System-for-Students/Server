@@ -16,6 +16,7 @@ namespace BMS.BLL.Models.Responses.Users
         public string? Avatar { get; set; }
         public string Phone { get; set; } = null!;
         public string Password { get; set; } = null!;
+        public DateTime CreateDate { get; set; }
         public Role Role { get; set; }
     }
 }

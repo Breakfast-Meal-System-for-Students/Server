@@ -126,7 +126,6 @@ namespace BMS.BLL.Services
                     // exccule logic affter payment
                     Transaction transaction = new Transaction()
                     {
-                        Id = Guid.NewGuid(),
                         OrderId = order.Id,
                         Price = Convert.ToDouble(response.vnp_Amount),
                         Method = TransactionMethod.VnPay.ToString(),
@@ -153,7 +152,6 @@ namespace BMS.BLL.Services
                 {
                     Transaction transaction = new Transaction()
                     {
-                        Id = Guid.NewGuid(),
                         OrderId = order.Id,
                         Price = Convert.ToDouble(response.vnp_Amount),
                         Method = TransactionMethod.VnPay.ToString(),

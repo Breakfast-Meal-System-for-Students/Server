@@ -51,7 +51,6 @@ namespace BMS.BLL.Services
                     {
                         Transaction transaction = new Transaction()
                         {
-                            Id = Guid.NewGuid(),
                             OrderId = order.Id,
                             Price = Convert.ToDouble(order.TotalPrice),
                             Method = TransactionMethod.Cash.ToString(),
@@ -96,7 +95,6 @@ namespace BMS.BLL.Services
 
             Order order = new Order
             {
-                Id = Guid.NewGuid(),
                 Status = OrderStatus.DRAFT.ToString(),
                 ShopId = carts.ShopId,
                 CustomerId = carts.CustomerId,
@@ -141,14 +139,12 @@ namespace BMS.BLL.Services
             {
                 OrderItem orderItem = new OrderItem
                 {
-                    Id = Guid.NewGuid(), // Ensure a new unique ID for each item
                     OrderId = order.Id,
                     ProductId = item.ProductId,
                     Quantity = item.Quantity,
                     Price = item.Price
                 };
 
-                // Add OrderItem to the database individually
                 await _unitOfWork.OrderItemRepository.AddAsync(orderItem);
             }
 
@@ -156,7 +152,6 @@ namespace BMS.BLL.Services
             {
                 CouponUsage couponUsage = new CouponUsage
                 {
-                    Id = Guid.NewGuid(),
                     CouponId = voucherId,
                     OrderId = order.Id,
                     UserId = order.CustomerId
@@ -168,7 +163,6 @@ namespace BMS.BLL.Services
 
             Notification notification = new Notification
             {
-                Id = Guid.NewGuid(),
                 UserId = order.CustomerId,
                 OrderId = order.Id,
                 ShopId = order.ShopId,

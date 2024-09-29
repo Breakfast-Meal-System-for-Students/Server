@@ -20,9 +20,9 @@ namespace BMS.API.Controllers
             _baseService = (BaseService)orderService;
         }
 
-        [HttpPost("GetListOrders")]
+        [HttpGet("GetListOrders")]
         //[Authorize(Roles = UserRoleConstants.ADMIN)]
-        public async Task<IActionResult> GetListOrders(SearchOrderRequest request)
+        public async Task<IActionResult> GetListOrders([FromQuery]SearchOrderRequest request)
         {
             return await ExecuteServiceLogic(
                 async () => await _orderService.GetListOrders(request).ConfigureAwait(false)

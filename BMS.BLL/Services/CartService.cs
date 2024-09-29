@@ -35,7 +35,6 @@ namespace BMS.BLL.Services
             if (cart == null || cart.FirstOrDefault() == null)
             {
                 Cart newCart = new Cart();
-                newCart.Id = Guid.NewGuid();
                 newCart.CustomerId = userId;
                 newCart.ShopId = shopId;
                 newCart.IsPurchase = false;
@@ -43,7 +42,6 @@ namespace BMS.BLL.Services
                 request.CartId = newCart.Id;
                 await _unitOfWork.CartRepository.AddAsync(newCart);
                 CartDetail cartDetails = _mapper.Map<CartDetail>(request);
-                cartDetails.Id = Guid.NewGuid();
                 cartDetails.CartId = newCart.Id;
                 await _unitOfWork.CartDetailRepository.AddAsync(cartDetails);
             } else

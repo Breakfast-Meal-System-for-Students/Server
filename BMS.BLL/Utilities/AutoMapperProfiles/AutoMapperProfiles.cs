@@ -71,6 +71,7 @@ namespace BMS.BLL.Utilities.AutoMapperProfiles
 
                 #endregion
                 #region order
+                CreateMap<OrderItem, OrderItemResponse>();
                 CreateMap<Order, OrderResponse>()
                     .ForMember(dest => dest.OrderItems, opt => opt.MapFrom(src => src.OrderItems));
                 #endregion

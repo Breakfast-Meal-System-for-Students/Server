@@ -19,6 +19,6 @@ namespace BMS.BLL.Models.Responses.Admin
         public Guid ShopId { get; set; }
         public Core.Domains.Entities.Shop Shop { get; set; } = null!;
 
-        public ICollection<OrderItem> OrderItems { get; set; } = new List<OrderItem>();
+        public ICollection<OrderItemResponse> OrderItems { get; set; } = new List<OrderItemResponse>();
     }
 }

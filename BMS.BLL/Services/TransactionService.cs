@@ -34,7 +34,6 @@ namespace BMS.BLL.Services
                 return new ServiceActionResult() { Detail = $"Order is not exits or deleted" }; 
             }
             Transaction transaction = new Transaction();
-            transaction.Id = Guid.NewGuid();
             transaction.OrderId = orderId;
             transaction.Status = TransactionStatus.NOTPAID;
             transaction.Method = TransactionMethod.Cash.ToString();
