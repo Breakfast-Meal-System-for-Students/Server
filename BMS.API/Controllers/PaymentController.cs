@@ -14,8 +14,10 @@ namespace BMS.API.Controllers
     public class PaymentController : BaseApiController
     {
         private readonly IVnPayService _vnPayService;
-        public PaymentController(IVnPayService vnPayService)
+        private readonly IPayOSService _payOSService;
+        public PaymentController(IVnPayService vnPayService, IPayOSService payOSService)
         {
+            _payOSService = payOSService;
             _vnPayService = vnPayService;
             _baseService = (BaseService)vnPayService;
         }
