@@ -137,5 +137,25 @@ namespace BMS.API.Controllers
                 async () => await _cartService.GetCartInShopForUser(_userClaims.UserId, shopId).ConfigureAwait(false)
             ).ConfigureAwait(false);
         }
+
+        [HttpGet("GetCartByID{cartId}")]
+        [Authorize]
+        //[Authorize(Roles = UserRoleConstants.USER)]
+        public async Task<IActionResult> GetCartByID(Guid cartId)
+        {
+            return await ExecuteServiceLogic(
+                async () => await _cartService.GetCartByID(cartId).ConfigureAwait(false)
+            ).ConfigureAwait(false);
+        }
+
+        [HttpPost("ChangeCartToGroup")]
+        [Authorize]
+        //[Authorize(Roles = UserRoleConstants.USER)]
+        public async Task<IActionResult> ChangeCartToGroup([FromForm]Guid shopId)
+        {
+            return await ExecuteServiceLogic(
+                async () => await _cartService.ChangeCartToGroup(_userClaims.UserId, shopId).ConfigureAwait(false)
+            ).ConfigureAwait(false);
+        }
     }
 }

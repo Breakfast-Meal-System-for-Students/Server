@@ -14,10 +14,11 @@ namespace BMS.Core.Domains.Entities
 
         public Guid ShopId { get; set; }
         public Shop Shop { get; set; } = null!;
-        public bool IsPurchase { get; set; }
+        public bool IsGroup { get; set; }
 
         // Quan hệ 1-n với CartDetail
         public ICollection<CartDetail> CartDetails { get; set; } = new List<CartDetail>();
+        public ICollection<CartGroupUser> CartGroupUsers { get; set; } = new List<CartGroupUser>();
     }
 
 }

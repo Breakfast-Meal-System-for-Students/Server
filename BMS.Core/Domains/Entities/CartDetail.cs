@@ -15,6 +15,8 @@ namespace BMS.Core.Domains.Entities
         public Guid ProductId { get; set; } // Khóa ngoại tới Product
         public Product Product { get; set; } = null!; // Quan hệ n-1 với Product
 
+        public Guid? CartGroupUserId { get; set; }
+        public CartGroupUser CartGroupUser { get; set; } = null!;
         public int Quantity { get; set; }
         public double Price { get; set; }
     }

@@ -17,6 +17,7 @@ namespace BMS.BLL.Models.Responses.Users
         public string Phone { get; set; } = null!;
         public string Password { get; set; } = null!;
         public DateTime CreateDate { get; set; }
+        public bool IsDeleted { get; set; }
         public Role Role { get; set; }
     }
 }

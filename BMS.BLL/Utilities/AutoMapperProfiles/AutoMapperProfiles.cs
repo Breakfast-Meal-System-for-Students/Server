@@ -113,7 +113,9 @@ namespace BMS.BLL.Utilities.AutoMapperProfiles
                 CreateMap<Product, ProductResponse>();
                 #endregion
                 #region cart
-                CreateMap<CartDetail, CartDetailResponse>();
+                CreateMap<CartDetail, CartDetailResponse>()
+                    .ForMember(dest => dest.Images, opt => opt.MapFrom(src => src.Product!.Images))
+                    .ForMember(dest => dest.Name, opt => opt.MapFrom(src => src.Product!.Name));
                 CreateMap<Cart, CartResponse>()
                     .ForMember(dest => dest.CartDetails, opt => opt.MapFrom(src => src.CartDetails));
                 CreateMap<CartDetailRequest, CartDetail>();

@@ -22,5 +22,7 @@ namespace BMS.BLL.Services.IServices
         Task<ServiceActionResult> DeleteCart(Guid cartId);
         Task<ServiceActionResult> DeleteCartItem(Guid cartItemId);
         Task<ServiceActionResult> GetCartInShopForUser(Guid userId, Guid shopId);
+        Task<ServiceActionResult> GetCartByID(Guid cartId);
+        Task<ServiceActionResult> ChangeCartToGroup(Guid userId, Guid shopId);
     }
 }
