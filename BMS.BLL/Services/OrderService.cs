@@ -262,6 +262,23 @@ namespace BMS.BLL.Services
             return new ServiceActionResult(true) { Data = paginationResult };
         }
 
+        public async Task<ServiceActionResult> GetOrderForUser(Guid userId, SearchOrderRequest request)
+        {
+            IQueryable<Order> orderQuery = (await _unitOfWork.OrderRepository.GetAllAsyncAsQueryable()).Include(a => a.OrderItems).Where(x => x.CustomerId == userId);
+
+            if (request.Status != 0)
+            {
+                orderQuery = orderQuery.Where(m => m.Status.Equals(request.Status.ToString()));
+            }
+
+            orderQuery = request.IsDesc ? orderQuery.OrderByDescending(a => a.CreateDate) : orderQuery.OrderBy(a => a.CreateDate);
+
+            var paginationResult = PaginationHelper
+            .BuildPaginatedResult<Order, OrderResponse>(_mapper, orderQuery, request.PageSize, request.PageIndex);
+
+            return new ServiceActionResult(true) { Data = paginationResult };
+        }
+
         public async Task<ServiceActionResult> GetStatusOrder(Guid orderId)
         {
             var order = (await _unitOfWork.OrderRepository.GetAllAsyncAsQueryable()).Where(x => x.Id == orderId).SingleOrDefault();

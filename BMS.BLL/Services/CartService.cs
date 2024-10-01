@@ -40,7 +40,6 @@ namespace BMS.BLL.Services
                 newCart.IsPurchase = false;
                 await _unitOfWork.CartRepository.AddAsync(newCart);
                 request.CartId = newCart.Id;
-                await _unitOfWork.CartRepository.AddAsync(newCart);
                 CartDetail cartDetails = _mapper.Map<CartDetail>(request);
                 cartDetails.CartId = newCart.Id;
                 await _unitOfWork.CartDetailRepository.AddAsync(cartDetails);
@@ -53,7 +52,8 @@ namespace BMS.BLL.Services
             return new ServiceActionResult(true)
             {
                 Detail = "Add Product to Cart Successfully",
-                Data = _mapper.Map<CartResponse>((await _unitOfWork.CartRepository.FindAsyncAsQueryable(filter)).Include(x => x.CartDetails).FirstOrDefault())
+                //Data = _mapper.Map<CartResponse>((await _unitOfWork.CartRepository.FindAsyncAsQueryable(filter)).Include(x => x.CartDetails).FirstOrDefault())
+                Data = request.CartId
             };
         }
         
@@ -113,6 +113,16 @@ namespace BMS.BLL.Services
             return new ServiceActionResult(true) { Data = cartDetail };
         }
 
+        public async Task<ServiceActionResult> GetCartInShopForUser(Guid userId, Guid shopId)
+        {
+            Expression<Func<Cart, bool>> filter = cart => (cart.CustomerId == userId && cart.ShopId == shopId);
+            var cart = (await _unitOfWork.CartRepository.FindAsyncAsQueryable(filter)).Include(x => x.CartDetails).FirstOrDefault();
+            return new ServiceActionResult(true)
+            {
+                Data = _mapper.Map<CartResponse>(cart)
+            };
+        }
+
         public async Task<ServiceActionResult> UpdateCartDetail(Guid userId, Guid shopId, CartDetailRequest request)
         {
             Expression<Func<Cart, bool>> filter = cart => (cart.CustomerId == userId && cart.ShopId == shopId);
@@ -139,7 +149,7 @@ namespace BMS.BLL.Services
             }
             return new ServiceActionResult(true)
             {
-                Detail = "Add Product to Cart Successfully",
+                Detail = "Update Product to Cart Successfully",
                 Data = _mapper.Map<CartResponse>((await _unitOfWork.CartRepository.FindAsyncAsQueryable(filter)).Include(x => x.CartDetails).FirstOrDefault())
             };
         }

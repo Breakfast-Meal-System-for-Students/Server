@@ -104,15 +104,15 @@ namespace BMS.API.Controllers
         [HttpPost("UpdateCartDetail")]
         [Authorize]
         //[Authorize(Roles = UserRoleConstants.USER)]
-        public async Task<IActionResult> UpdateCartDetail(Guid userId, Guid shopId, [FromBody]CartDetailRequest request)
+        public async Task<IActionResult> UpdateCartDetail(Guid shopId, [FromBody]CartDetailRequest request)
         {
-            var result = await _cartService.UpdateCartDetail(userId, shopId, request).ConfigureAwait(false);
+
+            var result = await _cartService.UpdateCartDetail(_userClaims.UserId, shopId, request).ConfigureAwait(false);
 
             if (result.IsSuccess)
             {
-                // Notify all clients with the same userId
-                await _hubContext.Clients.Group(userId.ToString())
-                    .SendAsync("CartUpdated", userId);
+                await _hubContext.Clients.Group(_userClaims.UserId.ToString())
+                    .SendAsync("CartUpdated", _userClaims.UserId);
             }
 
             return await ExecuteServiceLogic(() => Task.FromResult(result)).ConfigureAwait(false);
@@ -125,6 +125,16 @@ namespace BMS.API.Controllers
         {
             return await ExecuteServiceLogic(
                 async () => await _cartService.GetCartDetail(cartDetailId).ConfigureAwait(false)
+            ).ConfigureAwait(false);
+        }
+
+        [HttpGet("GetCartInShopForUser")]
+        [Authorize]
+        //[Authorize(Roles = UserRoleConstants.USER)]
+        public async Task<IActionResult> GetCartInShopForUser([FromQuery] Guid shopId)
+        {
+            return await ExecuteServiceLogic(
+                async () => await _cartService.GetCartInShopForUser(_userClaims.UserId, shopId).ConfigureAwait(false)
             ).ConfigureAwait(false);
         }
     }

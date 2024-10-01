@@ -1,4 +1,5 @@
 ﻿using BMS.API.Controllers.Base;
+using BMS.BLL.Models;
 using BMS.BLL.Models.Requests.Admin;
 using BMS.BLL.Models.Requests.Category;
 using BMS.BLL.Services;
@@ -14,10 +15,14 @@ namespace BMS.API.Controllers
     public class OrderController : BaseApiController
     {
         private readonly IOrderService _orderService;
-        public OrderController(IOrderService orderService)
+        private readonly IUserClaimsService _userClaimsService;
+        private UserClaims _userClaims;
+        public OrderController(IOrderService orderService, IUserClaimsService userClaimsService)
         {
             _orderService = orderService;
             _baseService = (BaseService)orderService;
+            _userClaimsService = userClaimsService;
+            _userClaims = userClaimsService.GetUserClaims();
         }
 
         [HttpGet("GetListOrders")]
@@ -53,6 +58,15 @@ namespace BMS.API.Controllers
         {
             return await ExecuteServiceLogic(
                 async () => await _orderService.GetOrderByUser(id, request).ConfigureAwait(false)
+            ).ConfigureAwait(false);
+        }
+
+        [HttpGet("GetOrderForUser")]
+        [Authorize(Roles = UserRoleConstants.USER)]
+        public async Task<IActionResult> GetOrderForUser([FromQuery] SearchOrderRequest request)
+        {
+            return await ExecuteServiceLogic(
+                async () => await _orderService.GetOrderByUser(_userClaims.UserId, request).ConfigureAwait(false)
             ).ConfigureAwait(false);
         }
 

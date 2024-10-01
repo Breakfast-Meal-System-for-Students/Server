@@ -23,5 +23,6 @@ namespace BMS.BLL.Services.IServices
         Task<ServiceActionResult> GetStatusOrder(Guid orderId);
         Task<ServiceActionResult> UpdateStatusOrder(Guid id, string status);
         Task<ServiceActionResult> CheckOrderIsPayed(Guid orderId);
+        Task<ServiceActionResult> GetOrderForUser(Guid userId, SearchOrderRequest request);
     }
 }
