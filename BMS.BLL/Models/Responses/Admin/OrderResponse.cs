@@ -15,7 +15,7 @@ namespace BMS.BLL.Models.Responses.Admin
 
         public Guid CustomerId { get; set; }
         public User Customer { get; set; } = null!;
-
+        public byte[] QRCode { get; set; }
         public Guid ShopId { get; set; }
         public Core.Domains.Entities.Shop Shop { get; set; } = null!;
 

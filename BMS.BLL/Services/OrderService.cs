@@ -28,8 +28,10 @@ namespace BMS.BLL.Services
 {
     public class OrderService : BaseService, IOrderService
     {
-        public OrderService(IUnitOfWork unitOfWork, IMapper mapper) : base(unitOfWork, mapper)
+        private readonly IQRCodeService _qrCodeService;
+        public OrderService(IUnitOfWork unitOfWork, IMapper mapper, IQRCodeService qrCodeService) : base(unitOfWork, mapper)
         {
+            _qrCodeService = qrCodeService;
         }
 
         public async Task<ServiceActionResult> ChangeOrderStatus(Guid id, OrderStatus status)
@@ -131,10 +133,15 @@ namespace BMS.BLL.Services
             {
                 order.TotalPrice -= discount;
             }
-            // Add Order to the database
+
+            string qrContent = order.Id.ToString();
+            order.QRCode = _qrCodeService.GenerateQRCode(qrContent);
+            while (await CheckQRCodeExist(order.QRCode))
+            {
+                order.QRCode = _qrCodeService.GenerateQRCode(qrContent);
+            }
             await _unitOfWork.OrderRepository.AddAsync(order);
 
-            // Insert each OrderItem one by one
             foreach (var item in carts.CartDetails)
             {
                 OrderItem orderItem = new OrderItem
@@ -157,7 +164,6 @@ namespace BMS.BLL.Services
                     UserId = order.CustomerId
                 };
 
-                // Add CouponUsage to the database
                 await _unitOfWork.CouponUsageRepository.AddAsync(couponUsage);
             }
 
@@ -170,7 +176,6 @@ namespace BMS.BLL.Services
                 Status = NotificationStatus.Draft.ToString()
             };
 
-            // Add Notification to the database
             await _unitOfWork.NotificationRepository.AddAsync(notification);
 
             await _unitOfWork.CartRepository.DeleteAsync(cartId);
@@ -337,5 +342,32 @@ namespace BMS.BLL.Services
             return new ServiceActionResult(true) { Data = order };
         }
 
+        private string GetBase64QRCode(byte[] QRcode)
+        {
+            return Convert.ToBase64String(QRcode);
+        }
+
+        private async Task<bool> CheckQRCodeExist(byte[] QRcode)
+        {
+            return (await _unitOfWork.OrderRepository.GetAllAsyncAsQueryable()).Where(x => x.QRCode.Equals(QRcode)).Count() != 0;
+        }
+
+        public async Task<ServiceActionResult> CheckQRCodeOfUser(byte[] QRcode, Guid userId)
+        {
+            var order = (await _unitOfWork.OrderRepository.GetAllAsyncAsQueryable()).Where(x => x.QRCode.Equals(QRcode) && x.CustomerId == userId).FirstOrDefault();
+            if (order != null)
+            {
+                return new ServiceActionResult()
+                {
+                    Data = _mapper.Map<OrderResponse>(order)
+                };
+            } else
+            {
+                return new ServiceActionResult()
+                {
+                    Detail = "Order is not of User"
+                };
+            }
+        }
     }
 }

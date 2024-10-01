@@ -122,5 +122,14 @@ namespace BMS.API.Controllers
                 async () => await _orderService.CheckOrderIsPayed(orderId).ConfigureAwait(false)
             ).ConfigureAwait(false);
         }
+
+        [HttpPost("CheckQRCodeOfUser")]
+        //[Authorize(Roles = UserRoleConstants.ADMIN)]
+        public async Task<IActionResult> CheckQRCodeOfUser([FromForm] byte[] QRcode)
+        {
+            return await ExecuteServiceLogic(
+                async () => await _orderService.CheckQRCodeOfUser(QRcode, _userClaims.UserId).ConfigureAwait(false)
+            ).ConfigureAwait(false);
+        }
     }
 }

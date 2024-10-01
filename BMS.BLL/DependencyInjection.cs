@@ -52,6 +52,7 @@ namespace BMS.BLL
             services.AddScoped<INotificationService, NotificationService>();
             services.AddScoped<IVnPayService, VnPayService>();
             services.AddScoped<IPayOSService, PayOSService>();
+            services.AddScoped<IQRCodeService, QRCodeService>();
             #endregion
 
             #region Validation
