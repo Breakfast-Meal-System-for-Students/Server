@@ -26,9 +26,11 @@ namespace BMS.BLL.Services
     public class CartService : BaseService, ICartService
     {
         private readonly UserManager<User> _userManager;
-        public CartService(IUnitOfWork unitOfWork, IMapper mapper, UserManager<User> userManager) : base(unitOfWork, mapper)
+        private readonly ITokenService _tokenService;
+        public CartService(IUnitOfWork unitOfWork, IMapper mapper, UserManager<User> userManager, ITokenService tokenService) : base(unitOfWork, mapper)
         {
             _userManager = userManager;
+            _tokenService = tokenService;
         }
 
         public async Task<ServiceActionResult> AddCartDetail(Guid userId, Guid shopId, CartDetailRequest request)
@@ -60,6 +62,45 @@ namespace BMS.BLL.Services
             };
         }
 
+        public async Task<ServiceActionResult> AddCartDetailForGroup(Guid userId, Guid cartId, CartDetailRequest request)
+        {
+            var cart = (await _unitOfWork.CartRepository.GetAllAsyncAsQueryable()).Where(x => x.Id == cartId).FirstOrDefault();
+            if (cart == null)
+            {
+                return new ServiceActionResult(false, "Cart is not exits or deleted");
+            } else
+            {
+                if(cart.IsGroup == false)
+                {
+                    return new ServiceActionResult(false, "Cart is not group");
+                }
+                request.CartId = cart.Id;
+                CartDetail cartDetail = _mapper.Map<CartDetail>(request);
+                
+                var cartGroupUser = (await _unitOfWork.CartGroupUserRepository.GetAllAsyncAsQueryable()).Where(x => x.CartId == cartId && x.UserId == userId).FirstOrDefault();
+                if(cartGroupUser != null)
+                {
+                    cartDetail.CartGroupUser = cartGroupUser;
+                } else
+                {
+                    CartGroupUser newCartGroupUser = new CartGroupUser()
+                    {
+                        UserId = userId,
+                        CartId = cartId
+                    };
+                    await _unitOfWork.CartGroupUserRepository.AddAsync(newCartGroupUser);
+                    cartDetail.CartGroupUser = newCartGroupUser;
+                }
+                
+                await _unitOfWork.CartDetailRepository.AddAsync(cartDetail);
+                return new ServiceActionResult()
+                {
+                    Data = cartId,
+                    Detail = "Add CartDetail to GroupCart Successfully"
+                };
+            }
+        }
+
         public async Task<ServiceActionResult> ChangeCartToGroup(Guid userId, Guid shopId)
         {
             Expression<Func<Cart, bool>> filter = cart => (cart.CustomerId == userId && cart.ShopId == shopId);
@@ -73,7 +114,7 @@ namespace BMS.BLL.Services
                 await _unitOfWork.CartRepository.AddAsync(newCart);
                 return new ServiceActionResult() 
                 {
-                    Data = GenerateShareLink(newCart.Id)
+                    Data = await GenerateShareLink(newCart.Id)
                 };
             } else
             {
@@ -82,7 +123,7 @@ namespace BMS.BLL.Services
                 await _unitOfWork.CartRepository.UpdateAsync(cart);
                 return new ServiceActionResult() 
                 {
-                    Data = GenerateShareLink(cart.Id)
+                    Data = await GenerateShareLink(cart.Id)
                 };
             }
         }
@@ -98,6 +139,8 @@ namespace BMS.BLL.Services
                 await _unitOfWork.CartRepository.DeleteAsync(cart);
                 var cartDetails = (await _unitOfWork.CartDetailRepository.GetAllAsyncAsQueryable()).Where(x => x.CartId == cartId).AsEnumerable();
                 await _unitOfWork.CartDetailRepository.DeleteRangeAsync(cartDetails);
+                var cartGroupUsers = (await _unitOfWork.CartGroupUserRepository.GetAllAsyncAsQueryable()).Where(x => x.CartId == cartId).AsEnumerable();
+                await _unitOfWork.CartGroupUserRepository.DeleteRangeAsync(cartGroupUsers);
                 return new ServiceActionResult(true, "Delete Successfully");
             }
             
@@ -199,10 +242,11 @@ namespace BMS.BLL.Services
             };
         }
 
-        private string GenerateShareLink(Guid cartId)
+        private async Task<string> GenerateShareLink(Guid cartId)
         {
-            var baseUrl = "https://localhost:7039/api/Cart/GetCartByID";
-            return $"{baseUrl}{cartId}";
+            var baseUrl = "https://localhost:7039/api/Cart/GetCartBySharing/";
+            string tokenString = await _tokenService.GenerateTokenForShareLink(cartId);
+            return $"{baseUrl}{cartId}" + $"?access_token={tokenString}";
         }
     }
 }

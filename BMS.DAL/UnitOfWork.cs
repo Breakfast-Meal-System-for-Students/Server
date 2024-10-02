@@ -28,7 +28,7 @@ namespace BMS.DAL
         public IRegisterCategoryRepository RegisterCategoryRepository => new RegisterCategoryRepository(_dbContext);
         public IPackageRepository PackageRepository => new PackageRepository(_dbContext);
         public IPackageHistoryRepository PackageHistoryRepository => new PackageHistoryRepository(_dbContext);
-
+        public ICartGroupUserRepository CartGroupUserRepository => new CartGroupUserRepository(_dbContext);
         public DbContext _dbContext { get; }
         
         public UnitOfWork(DbContext dbContext)
