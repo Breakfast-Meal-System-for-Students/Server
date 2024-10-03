@@ -80,7 +80,7 @@ namespace BMS.BLL.Services
                 var cartGroupUser = (await _unitOfWork.CartGroupUserRepository.GetAllAsyncAsQueryable()).Where(x => x.CartId == cartId && x.UserId == userId).FirstOrDefault();
                 if(cartGroupUser != null)
                 {
-                    cartDetail.CartGroupUser = cartGroupUser;
+                    cartDetail.CartGroupUserId = cartGroupUser.Id;
                 } else
                 {
                     CartGroupUser newCartGroupUser = new CartGroupUser()
@@ -89,7 +89,7 @@ namespace BMS.BLL.Services
                         CartId = cartId
                     };
                     await _unitOfWork.CartGroupUserRepository.AddAsync(newCartGroupUser);
-                    cartDetail.CartGroupUser = newCartGroupUser;
+                    cartDetail.CartGroupUserId = newCartGroupUser.Id;
                 }
                 
                 await _unitOfWork.CartDetailRepository.AddAsync(cartDetail);
@@ -112,15 +112,19 @@ namespace BMS.BLL.Services
                 newCart.ShopId = shopId;
                 newCart.IsGroup = true;
                 await _unitOfWork.CartRepository.AddAsync(newCart);
-                return new ServiceActionResult() 
+                return new ServiceActionResult()
                 {
                     Data = await GenerateShareLink(newCart.Id)
                 };
             } else
             {
-                cart.IsGroup = true;
-                cart.LastUpdateDate = DateTime.Now;
-                await _unitOfWork.CartRepository.UpdateAsync(cart);
+                if (cart.IsGroup == false) 
+                { 
+                    cart.IsGroup = true;
+                    cart.LastUpdateDate = DateTime.Now;
+                    await _unitOfWork.CartRepository.UpdateAsync(cart);
+                }
+
                 return new ServiceActionResult() 
                 {
                     Data = await GenerateShareLink(cart.Id)

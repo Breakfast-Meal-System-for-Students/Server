@@ -19,6 +19,7 @@ namespace BMS.Core.Domains.Entities
         public CartGroupUser CartGroupUser { get; set; } = null!;
         public int Quantity { get; set; }
         public double Price { get; set; }
+        public string? Note { get; set; }
     }
 
 }
