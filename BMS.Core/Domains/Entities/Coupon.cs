@@ -16,7 +16,7 @@ namespace BMS.Core.Domains.Entities
         public double MaxDiscount { get; set; }
         public double MinPrice { get; set; }
         public double MinDiscount { get; set; }
-
+        public bool isPercentDiscount { get; set; }
         public Guid ShopId { get; set; }
         public Shop Shop { get; set; } = null!;
 

@@ -19,6 +19,7 @@ namespace BMS.Core.Domains.Entities
         public Guid ShopId { get; set; }
         public Shop Shop { get; set; } = null!;
 
+        public byte[] QRCode { get; set; }
         public ICollection<OrderItem> OrderItems { get; set; } = new List<OrderItem>();
         public ICollection<CouponUsage> CouponUsages { get; set; } = new List<CouponUsage>();
         public ICollection<Notification> Notifications { get; set; } = new List<Notification>();

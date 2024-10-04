@@ -1,4 +1,5 @@
-﻿using BMS.Core.Domains.Entities;
+﻿using BMS.BLL.Models.Responses.Image;
+using BMS.Core.Domains.Entities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,6 +17,6 @@ namespace BMS.BLL.Models.Responses.Product
 
         public Guid ShopId { get; set; }
 
-        public ICollection<Image> Images { get; set; } = new List<Image>();
+        public ICollection<ImageResponse> Images { get; set; } = new List<ImageResponse>();
     }
 }

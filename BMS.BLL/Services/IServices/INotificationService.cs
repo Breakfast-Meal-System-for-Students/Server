@@ -1,4 +1,6 @@
-﻿using BMS.Core.Domains.Entities;
+﻿using BMS.BLL.Models;
+using BMS.BLL.Models.Requests.Notification;
+using BMS.Core.Domains.Entities;
 using BMS.Core.Domains.Enums;
 using System;
 using System.Collections.Generic;
@@ -12,5 +14,10 @@ namespace BMS.BLL.Services.IServices
     {
         Task<List<Notification>> GetAllNotificationsToSendMail(NotificationStatus status);
         Task SaveChange();
+        Task<ServiceActionResult> GetNotificationForShop(Guid shopId, GetNotificationRequest request);
+        Task<ServiceActionResult> CountNotificationForShop(Guid shopId);
+        Task<ServiceActionResult> CountNotificationForUser(Guid userId);
+        Task<ServiceActionResult> GetNotificationForUser(Guid userId, GetNotificationRequest request);
+        Task<ServiceActionResult> ChangeStatusNotification(Guid userId, Guid notificationId);
     }
 }

@@ -12,6 +12,9 @@ using BMS.Core.Domains.Entities;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
+using Microsoft.IdentityModel.Tokens;
+using System.IdentityModel.Tokens.Jwt;
+using System.Text;
 
 namespace BMS.API.Controllers
 {
@@ -21,14 +24,16 @@ namespace BMS.API.Controllers
         private readonly IUserClaimsService _userClaimsService;
         private UserClaims _userClaims;
         private readonly IHubContext<CartHub> _hubContext;
+        private readonly ITokenService _tokenService;
 
-        public CartController(ICartService cartService, IUserClaimsService userClaimsService, IHubContext<CartHub> hubContext)
+        public CartController(ICartService cartService, IUserClaimsService userClaimsService, IHubContext<CartHub> hubContext, ITokenService tokenService)
         {
             _cartService = cartService;
             _userClaimsService = userClaimsService;
             _userClaims = userClaimsService.GetUserClaims();
             _baseService = (BaseService)cartService;
             _hubContext = hubContext;
+            _tokenService = tokenService;
         }
 
         [HttpGet("GetAllCartForUser")]
@@ -95,7 +100,23 @@ namespace BMS.API.Controllers
             if (result.IsSuccess)
             {
                 await _hubContext.Clients.Group(_userClaims.UserId.ToString())
-                    .SendAsync("CartUpdated", _userClaims.UserId);
+                    .SendAsync("CartAdded", _userClaims.UserId);
+            }
+
+            return await ExecuteServiceLogic(() => Task.FromResult(result)).ConfigureAwait(false);
+        }
+
+        [HttpPost("AddCartDetailForGroup")]
+        [Authorize]
+        //[Authorize(Roles = UserRoleConstants.USER)]
+        public async Task<IActionResult> AddCartDetailForGroup(Guid cartId, [FromBody] CartDetailRequest request)
+        {
+            var result = await _cartService.AddCartDetailForGroup(_userClaims.UserId, cartId, request).ConfigureAwait(false);
+
+            if (result.IsSuccess)
+            {
+                await _hubContext.Clients.Group(_userClaims.UserId.ToString())
+                    .SendAsync("CartGroupAdded", _userClaims.UserId);
             }
 
             return await ExecuteServiceLogic(() => Task.FromResult(result)).ConfigureAwait(false);
@@ -104,15 +125,15 @@ namespace BMS.API.Controllers
         [HttpPost("UpdateCartDetail")]
         [Authorize]
         //[Authorize(Roles = UserRoleConstants.USER)]
-        public async Task<IActionResult> UpdateCartDetail(Guid userId, Guid shopId, [FromBody]CartDetailRequest request)
+        public async Task<IActionResult> UpdateCartDetail(Guid shopId, [FromBody]CartDetailRequest request)
         {
-            var result = await _cartService.UpdateCartDetail(userId, shopId, request).ConfigureAwait(false);
+
+            var result = await _cartService.UpdateCartDetail(_userClaims.UserId, shopId, request).ConfigureAwait(false);
 
             if (result.IsSuccess)
             {
-                // Notify all clients with the same userId
-                await _hubContext.Clients.Group(userId.ToString())
-                    .SendAsync("CartUpdated", userId);
+                await _hubContext.Clients.Group(_userClaims.UserId.ToString())
+                    .SendAsync("CartUpdated", _userClaims.UserId);
             }
 
             return await ExecuteServiceLogic(() => Task.FromResult(result)).ConfigureAwait(false);
@@ -125,6 +146,53 @@ namespace BMS.API.Controllers
         {
             return await ExecuteServiceLogic(
                 async () => await _cartService.GetCartDetail(cartDetailId).ConfigureAwait(false)
+            ).ConfigureAwait(false);
+        }
+
+        [HttpGet("GetCartInShopForUser")]
+        [Authorize]
+        //[Authorize(Roles = UserRoleConstants.USER)]
+        public async Task<IActionResult> GetCartInShopForUser([FromQuery] Guid shopId)
+        {
+            return await ExecuteServiceLogic(
+                async () => await _cartService.GetCartInShopForUser(_userClaims.UserId, shopId).ConfigureAwait(false)
+            ).ConfigureAwait(false);
+        }
+
+        [HttpGet("GetCartByID/{cartId}")]
+        [Authorize]
+        //[Authorize(Roles = UserRoleConstants.USER)]
+        public async Task<IActionResult> GetCartByID(Guid cartId)
+        {
+            return await ExecuteServiceLogic(
+                async () => await _cartService.GetCartByID(cartId).ConfigureAwait(false)
+            ).ConfigureAwait(false);
+        }
+
+        [HttpGet("GetCartBySharing/{cartId}")]
+        [Authorize]
+        public async Task<IActionResult> GetCartBySharing(Guid cartId, [FromQuery] string access_token)
+        {
+            var cartIdFromToken = await _tokenService.CheckTokenForShareLink(access_token);
+
+                if (cartIdFromToken == null || cartIdFromToken != cartId.ToString())
+                {
+                    return Unauthorized("Invalid access to the cart.");
+                }
+
+             return await ExecuteServiceLogic(
+                    async () => await _cartService.GetCartByID(cartId).ConfigureAwait(false)
+                ).ConfigureAwait(false);
+         }
+
+
+        [HttpPost("ChangeCartToGroup")]
+        [Authorize]
+        //[Authorize(Roles = UserRoleConstants.USER)]
+        public async Task<IActionResult> ChangeCartToGroup([FromForm]Guid shopId)
+        {
+            return await ExecuteServiceLogic(
+                async () => await _cartService.ChangeCartToGroup(_userClaims.UserId, shopId).ConfigureAwait(false)
             ).ConfigureAwait(false);
         }
     }

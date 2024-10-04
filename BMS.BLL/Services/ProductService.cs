@@ -14,6 +14,7 @@ using System.Text;
 using System.Threading.Tasks;
 using BMS.BLL.Models.Requests.Product;
 using Microsoft.EntityFrameworkCore;
+using BMS.BLL.Models.Responses.Package;
 
 namespace BMS.BLL.Services
 {
@@ -134,6 +135,38 @@ namespace BMS.BLL.Services
             await _unitOfWork.ProductRepository.SoftDeleteByIdAsync(id);
             return new ServiceActionResult();
         }
+        public async Task<ServiceActionResult> GetProduct(Guid id)
+        {
+            var product = (await _unitOfWork.ProductRepository.GetAllAsyncAsQueryable())
+                          .Where(a => a.IsDeleted == false && a.Id == id)
+                          .Include(a => a.Images)
+                          .FirstOrDefault()
+                          ?? throw new ArgumentNullException("Product does not exist or has been deleted");
 
+            var returnProduct = _mapper.Map<ProductResponse>(product);
+
+            return new ServiceActionResult(true) { Data = returnProduct };
+        }
+        public async Task<ServiceActionResult> GetAllProductByShopId(Guid id,ProductRequest queryParameters)
+        {
+
+            IQueryable<Product> ProductQueryable = (await _unitOfWork.ProductRepository.GetAllAsyncAsQueryable()).Where(a => a.IsDeleted == false & a.ShopId==id).Include(a => a.Images);
+
+
+
+            if (!string.IsNullOrEmpty(queryParameters.Search))
+            {
+                ProductQueryable = ProductQueryable.Where(m => m.Description.Contains(queryParameters.Search));
+            }
+
+            ProductQueryable = queryParameters.IsDesc ? ProductQueryable.OrderByDescending(a => a.CreateDate) : ProductQueryable.OrderBy(a => a.CreateDate);
+
+            var paginationResult = PaginationHelper
+            .BuildPaginatedResult<Product, ProductResponse>(_mapper, ProductQueryable, queryParameters.PageSize, queryParameters.PageIndex);
+
+
+
+            return new ServiceActionResult() { Data = paginationResult };
+        }
     }
 }

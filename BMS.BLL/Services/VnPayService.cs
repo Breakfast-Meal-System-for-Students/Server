@@ -4,12 +4,16 @@ using BMS.BLL.Helpers;
 using BMS.BLL.Models;
 using BMS.BLL.Models.Requests.VnPay;
 using BMS.BLL.Models.Responses.VnPay;
+using BMS.BLL.Services.BaseServices;
 using BMS.BLL.Services.IServices;
 using BMS.Core.Domains.Entities;
+using BMS.Core.Domains.Enums;
+using BMS.Core.Exceptions;
 using BMS.Core.Settings;
 using BMS.DAL;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.SignalR;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Generic;
@@ -21,30 +25,32 @@ using static System.Net.Mime.MediaTypeNames;
 
 namespace BMS.BLL.Services
 {
-    public class VnPayService : IVnPayService
+    public class VnPayService : BaseService, IVnPayService
     {
         private readonly VNPaySettings _vnPaySettings;
-        private readonly IUnitOfWork _unitOfWork;
-        private readonly IMapper _mapper;
 
         public VnPayService(IOptions<VNPaySettings> vnPaySettings,
             IUnitOfWork unitOfWork,
-            IMapper mapper)
+            IMapper mapper) : base(unitOfWork, mapper)
         {
             _vnPaySettings = vnPaySettings.Value;
-            _unitOfWork = unitOfWork;
-            _mapper = mapper;
         }
 
         public async Task<ServiceActionResult> CreatePaymentUrl(HttpContext context, VnPayRequest vnPayRequest)
         {
-            var orderId = new Guid(vnPayRequest.OrderInfo ?? throw new Exception("Invalid order"));
-            var order = await _unitOfWork.OrderRepository.FindAsync(orderId) ?? throw new Exception("Invalid order");
-            if (order.Status.Equals(Core.Domains.Enums.OrderStatus.COMPLETE))
+            var orderId = new Guid(vnPayRequest.OrderInfo ?? throw new BusinessRuleException("Invalid order"));
+            var order = await _unitOfWork.OrderRepository.FindAsync(orderId) ?? throw new BusinessRuleException("Invalid order");
+            if (order.Status.Equals(OrderStatus.COMPLETE))
             {
                 return new ServiceActionResult(false)
                 {
                     Detail = "Order is already paid"
+                };
+            } else if (order.Status.Equals(OrderStatus.CANCEL))
+            {
+                return new ServiceActionResult(false)
+                {
+                    Detail = "Order is Cancel"
                 };
             }
             var tick = DateTime.Now.Ticks.ToString();
@@ -93,14 +99,20 @@ namespace BMS.BLL.Services
             if (isIPN)
             {
                 Double.TryParse(response.vnp_Amount, out double result);
-                var orderId = new Guid(response.vnp_OrderInfo ?? throw new Exception("Invalid order"));
-                var order = await _unitOfWork.OrderRepository.FindAsync(orderId) ?? throw new Exception("Invalid application");
+                var orderId = new Guid(response.vnp_OrderInfo ?? throw new BusinessRuleException("Invalid order"));
+                var order = (await _unitOfWork.OrderRepository.GetAllAsyncAsQueryable()).Include(x => x.Transactions).FirstOrDefault(y => y.Id == orderId) ?? throw new BusinessRuleException("Invalid application");
 
                 if (order.Status.Equals(Core.Domains.Enums.OrderStatus.COMPLETE))
                 {
                     return new ServiceActionResult(false)
                     {
                         Detail = "Order is already paid"
+                    };
+                } else if (order.Status.Equals(OrderStatus.CANCEL))
+                {
+                    return new ServiceActionResult(false)
+                    {
+                        Detail = "Order is Cancel"
                     };
                 }
 
@@ -109,14 +121,22 @@ namespace BMS.BLL.Services
 
                 if (isPaySucceed)
                 {
-                     /// exccule logic affter payment
+                    // exccule logic affter payment
+                    Transaction transaction = new Transaction()
+                    {
+                        OrderId = order.Id,
+                        Price = Convert.ToDouble(response.vnp_Amount),
+                        Method = TransactionMethod.VnPay.ToString(),
+                        Status = TransactionStatus.PAID,
+                        CreateDate = DateTime.Parse(response.vnp_PayDate)
+                    };
 
-                    //Send notification to mentor
-                 
-             
+                    await _unitOfWork.TransactionRepository.AddAsync(transaction);
+                    
+                    
               
                  
-                    await _unitOfWork.CommitAsync();
+                    //await _unitOfWork.CommitAsync();
 
                
 
@@ -128,9 +148,19 @@ namespace BMS.BLL.Services
                 }
                 else
                 {
-                    return new ServiceActionResult(false)
+                    Transaction transaction = new Transaction()
                     {
-                        Detail = "Payment failed"
+                        OrderId = order.Id,
+                        Price = Convert.ToDouble(response.vnp_Amount),
+                        Method = TransactionMethod.VnPay.ToString(),
+                        Status = TransactionStatus.ERROR,
+                        CreateDate = DateTime.Parse(response.vnp_PayDate),
+                    };
+                    await _unitOfWork.TransactionRepository.AddAsync(transaction);
+                    return new ServiceActionResult(true)
+                    {
+                        Data = response,
+                        Detail = "Payment is Error"
                     };
                 }
 

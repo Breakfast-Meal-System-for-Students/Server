@@ -17,9 +17,9 @@ namespace BMS.API.Controllers
             _baseService = (BaseService)transactionService;
         }
 
-        [HttpPost("GetListTransactions")]
+        [HttpGet("GetListTransactions")]
         //[Authorize(Roles = UserRoleConstants.ADMIN)]
-        public async Task<IActionResult> GetListTransactions([FromForm]SearchTransactionRequest request)
+        public async Task<IActionResult> GetListTransactions([FromQuery]SearchTransactionRequest request)
         {
             return await ExecuteServiceLogic(
                 async () => await _transactionService.GetListTracsactions(request).ConfigureAwait(false)
@@ -80,18 +80,18 @@ namespace BMS.API.Controllers
             ).ConfigureAwait(false);
         }
 
-        [HttpPost("GetTopShopHaveHighTransaction")]
+        [HttpGet("GetTopShopHaveHighTransaction")]
         //[Authorize(Roles = UserRoleConstants.ADMIN)]
-        public async Task<IActionResult> GetTopShopHaveHighTransaction([FromForm] TopShopOrUserRequest request)
+        public async Task<IActionResult> GetTopShopHaveHighTransaction([FromQuery] TopShopOrUserRequest request)
         {
             return await ExecuteServiceLogic(
                 async () => await _transactionService.GetTopShopHaveHighTransaction(request).ConfigureAwait(false)
             ).ConfigureAwait(false);
         }
 
-        [HttpPost("GetTopUserHaveHighTransaction")]
+        [HttpGet("GetTopUserHaveHighTransaction")]
         //[Authorize(Roles = UserRoleConstants.ADMIN)]
-        public async Task<IActionResult> GetTopUserHaveHighTransaction([FromForm]TopShopOrUserRequest request)
+        public async Task<IActionResult> GetTopUserHaveHighTransaction([FromQuery]TopShopOrUserRequest request)
         {
             return await ExecuteServiceLogic(
                 async () => await _transactionService.GetTopUserHaveHighTransaction(request).ConfigureAwait(false)

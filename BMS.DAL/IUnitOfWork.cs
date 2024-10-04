@@ -26,6 +26,7 @@ namespace BMS.DAL
         public IRegisterCategoryRepository RegisterCategoryRepository { get; }
         public IPackageRepository PackageRepository { get; }
         public IPackageHistoryRepository PackageHistoryRepository { get; }
+        public ICartGroupUserRepository CartGroupUserRepository { get; }
         void Commit();
         Task CommitAsync();
         void Rollback();

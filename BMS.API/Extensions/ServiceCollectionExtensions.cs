@@ -5,6 +5,7 @@ using BMS.DAL.DataContext;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
+using Net.payOS;
 using System.Text;
 
 namespace BMS.API.Extensions
@@ -77,6 +78,7 @@ namespace BMS.API.Extensions
             });
 
             services.AddHostedService<NotificationBackgroundService>();
+            services.Configure<VNPaySettings>(configuration.GetSection("VNPaySettings"));
             return services;
         }
 
@@ -118,7 +120,20 @@ namespace BMS.API.Extensions
             return services;
         }
 
+        public static IServiceCollection AddVNPaySettings(this IServiceCollection services, IConfiguration configuration)
+        {
+            services.Configure<VNPaySettings>(configuration.GetSection(nameof(VNPaySettings)));
+            return services;
+        }
+        public static IServiceCollection AddPayOSSettings(this IServiceCollection services, IConfiguration configuration)
+        {
+            var payOSSettings = configuration.GetSection(nameof(PayOSSettings)).Get<PayOSSettings>() ?? throw new NullReferenceException("Missing payOS settings");
+            services.Configure<PayOSSettings>(configuration.GetSection(nameof(PayOSSettings)));
+            PayOS payOS = new PayOS(payOSSettings.ClientId, payOSSettings.ApiKey, payOSSettings.ChecksumKey);
 
+            services.AddSingleton(payOS);
+            return services;
+        }
 
     }
 }
