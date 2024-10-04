@@ -173,7 +173,7 @@ namespace BMS.BLL.Services
                 OrderId = order.Id,
                 ShopId = order.ShopId,
                 Object = "Order",
-                Status = NotificationStatus.Draft.ToString()
+                Status = NotificationStatus.UnRead
             };
 
             await _unitOfWork.NotificationRepository.AddAsync(notification);

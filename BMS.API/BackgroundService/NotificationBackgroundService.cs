@@ -23,10 +23,9 @@ public class NotificationBackgroundService : BackgroundService
     {
         while (!stoppingToken.IsCancellationRequested)
         {
-            // Thực hiện việc kiểm tra và gửi thông báo
             await ProcessNotifications();
 
-            // Đợi 30 phút rồi tiếp tục
+            // Đợi x phút rồi tiếp tục
             await Task.Delay(TimeSpan.FromMinutes(60*24), stoppingToken);
         }
     }
@@ -37,20 +36,16 @@ public class NotificationBackgroundService : BackgroundService
         {
             var emailService = scope.ServiceProvider.GetRequiredService<IEmailService>();
             var notificationService = scope.ServiceProvider.GetRequiredService<INotificationService>();
-            // Lấy tất cả các thông báo chưa gửi và có thời gian gửi đến
-            var notifications = await notificationService.GetAllNotificationsToSendMail(NotificationStatus.Draft);
+            
+            var notifications = await notificationService.GetAllNotificationsToSendMail(NotificationStatus.UnRead);
 
             foreach (var notification in notifications)
             {
-                // Gửi email
-
                 await emailService.SendEmailNotificationToShopAndUserAboutOrder("", "", notification.Order, notification.User, notification.Shop);
 
-                // Đánh dấu thông báo đã được gửi
-                notification.Status = NotificationStatus.Sended.ToString();
+                notification.Status = NotificationStatus.Sended;
             }
 
-            // Lưu thay đổi vào DB
             await notificationService.SaveChange();
         }
     }
