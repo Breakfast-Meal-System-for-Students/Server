@@ -54,6 +54,7 @@ namespace BMS.BLL
             services.AddScoped<IPayOSService, PayOSService>();
             services.AddScoped<IQRCodeService, QRCodeService>();
             services.AddScoped<ICartGroupUserService, CartGroupUserService>();
+            services.AddScoped<IShopService, ShopService>();
             #endregion
 
             #region Validation
