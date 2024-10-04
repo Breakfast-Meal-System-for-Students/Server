@@ -8,6 +8,8 @@ using BMS.BLL.Services.BaseServices;
 using BMS.BLL.Services.IServices;
 using BMS.Core.Domains.Entities;
 using BMS.Core.Domains.Enums;
+using BMS.Core.Exceptions;
+using BMS.Core.Exceptions.IExceptions;
 using BMS.Core.Helpers;
 using BMS.DAL;
 using Microsoft.EntityFrameworkCore;
@@ -24,6 +26,23 @@ namespace BMS.BLL.Services
         public NotificationService(IUnitOfWork unitOfWork, IMapper mapper) : base(unitOfWork, mapper)
         {
 
+        }
+
+        public async Task<ServiceActionResult> ChangeStatusNotification(Guid userId, Guid notificationId)
+        {
+            var notification = await _unitOfWork.NotificationRepository.FindAsync(notificationId);
+            if(notification == null) { throw new BusinessRuleException("Invalid Notification"); }
+            if(notification.UserId != userId)
+            {
+                throw new BusinessRuleException("Invalid userId");
+            }
+            notification.Status = NotificationStatus.Readed;
+            await _unitOfWork.NotificationRepository.UpdateAsync(notification);
+            return new ServiceActionResult() 
+            {
+                Data = notification.Id, 
+                Detail = "Notification is Readed"
+            };
         }
 
         public async Task<ServiceActionResult> CountNotificationForShop(Guid shopId)

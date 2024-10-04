@@ -185,7 +185,7 @@ namespace BMS.BLL.Services
 
         public async Task<ServiceActionResult> GetListOrders(SearchOrderRequest request)
         {
-            IQueryable<Order> orderQuery = (await _unitOfWork.OrderRepository.GetAllAsyncAsQueryable()).Include(a => a.OrderItems);
+            IQueryable<Order> orderQuery = (await _unitOfWork.OrderRepository.GetAllAsyncAsQueryable()).Include(a => a.OrderItems).Include(b => b.Customer);
 
             //var canParsed = Enum.TryParse(request.Status, true, out OrderStatus status);
             if (request.Status != 0)
@@ -208,7 +208,7 @@ namespace BMS.BLL.Services
 
         public async Task<ServiceActionResult> GetOrderByID(Guid id)
         {
-            var order = (await _unitOfWork.OrderRepository.GetAllAsyncAsQueryable()).Include(a => a.OrderItems).Where(x => x.Id == id).SingleOrDefault();
+            var order = (await _unitOfWork.OrderRepository.GetAllAsyncAsQueryable()).Include(a => a.OrderItems).Include(b => b.Customer).Where(x => x.Id == id).SingleOrDefault();
             if (order != null)
             {
                 var returnOrder = _mapper.Map<OrderResponse>(order);
@@ -223,7 +223,7 @@ namespace BMS.BLL.Services
 
         public async Task<ServiceActionResult> GetOrderByShop(Guid id, SearchOrderRequest request)
         {
-            IQueryable<Order> orderQuery = (await _unitOfWork.OrderRepository.GetAllAsyncAsQueryable()).Include(a => a.OrderItems).Where(x => x.ShopId == id);
+            IQueryable<Order> orderQuery = (await _unitOfWork.OrderRepository.GetAllAsyncAsQueryable()).Include(a => a.OrderItems).Include(b => b.Customer).Where(x => x.ShopId == id);
 
             //var canParsed = Enum.TryParse(request.Status, true, out OrderStatus status);
             if (request.Status != 0)
@@ -246,7 +246,7 @@ namespace BMS.BLL.Services
 
         public async Task<ServiceActionResult> GetOrderByUser(Guid id, SearchOrderRequest request)
         {
-            IQueryable<Order> orderQuery = (await _unitOfWork.OrderRepository.GetAllAsyncAsQueryable()).Include(a => a.OrderItems).Where(x => x.CustomerId == id);
+            IQueryable<Order> orderQuery = (await _unitOfWork.OrderRepository.GetAllAsyncAsQueryable()).Include(a => a.OrderItems).Include(b => b.Customer).Where(x => x.CustomerId == id);
 
             //var canParsed = Enum.TryParse(request.Status, true, out OrderStatus status);
             if (request.Status != 0)
@@ -269,7 +269,7 @@ namespace BMS.BLL.Services
 
         public async Task<ServiceActionResult> GetOrderForUser(Guid userId, SearchOrderRequest request)
         {
-            IQueryable<Order> orderQuery = (await _unitOfWork.OrderRepository.GetAllAsyncAsQueryable()).Include(a => a.OrderItems).Where(x => x.CustomerId == userId);
+            IQueryable<Order> orderQuery = (await _unitOfWork.OrderRepository.GetAllAsyncAsQueryable()).Include(a => a.OrderItems).Include(b => b.Customer).Where(x => x.CustomerId == userId);
 
             if (request.Status != 0)
             {

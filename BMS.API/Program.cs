@@ -71,6 +71,7 @@ app.UseRouting();
 
 app.MapHub<CartHub>("/cartHub");
 app.MapHub<MyHub>("/myhub");
+app.MapHub<NotificationHub>("/notificationHub");
 // Authentication and Authorization middleware should be placed here
 app.UseAuthentication();  // Enable authentication middleware
 app.UseAuthorization();   // Enable authorization middleware

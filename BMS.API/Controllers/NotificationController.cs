@@ -7,6 +7,7 @@ using BMS.BLL.Services.BaseServices;
 using BMS.BLL.Services.IServices;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.SignalR;
 
 namespace BMS.API.Controllers
 {
@@ -14,11 +15,13 @@ namespace BMS.API.Controllers
     {
         private readonly INotificationService _notificationService;
         private UserClaims _userClaims;
-        public NotificationController(INotificationService notificationService, IUserClaimsService userClaimsService)
+        private readonly IHubContext<NotificationHub> _hubContext;
+        public NotificationController(INotificationService notificationService, IUserClaimsService userClaimsService, IHubContext<NotificationHub> hubContext)
         {
             _notificationService = notificationService;
             _baseService = (BaseService)notificationService;
             _userClaims = userClaimsService.GetUserClaims();
+            _hubContext = hubContext;
         }
 
         [HttpGet("GetNotificationForShop")]

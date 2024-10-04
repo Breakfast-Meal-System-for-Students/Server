@@ -18,5 +18,6 @@ namespace BMS.BLL.Services.IServices
         Task<ServiceActionResult> CountNotificationForShop(Guid shopId);
         Task<ServiceActionResult> CountNotificationForUser(Guid userId);
         Task<ServiceActionResult> GetNotificationForUser(Guid userId, GetNotificationRequest request);
+        Task<ServiceActionResult> ChangeStatusNotification(Guid userId, Guid notificationId);
     }
 }
