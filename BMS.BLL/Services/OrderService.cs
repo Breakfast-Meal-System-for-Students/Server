@@ -17,21 +17,25 @@ using BMS.Core.Helpers;
 using BMS.DAL;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Xml.XPath;
 
 namespace BMS.BLL.Services
 {
     public class OrderService : BaseService, IOrderService
     {
         private readonly IQRCodeService _qrCodeService;
-        public OrderService(IUnitOfWork unitOfWork, IMapper mapper, IQRCodeService qrCodeService) : base(unitOfWork, mapper)
+        private readonly IHubContext<NotificationHub> _hubContext;
+        public OrderService(IUnitOfWork unitOfWork, IMapper mapper, IQRCodeService qrCodeService, IHubContext<NotificationHub> hubContext) : base(unitOfWork, mapper)
         {
             _qrCodeService = qrCodeService;
+            _hubContext = hubContext;
         }
 
         public async Task<ServiceActionResult> ChangeOrderStatus(Guid id, OrderStatus status)
@@ -40,16 +44,23 @@ namespace BMS.BLL.Services
             var canParsed = Enum.TryParse(order.Status, true, out OrderStatus s);
             if (canParsed)
             {
-                if (s.Equals(8)) throw new BusinessRuleException("Order is Completed, so that you can not change this");
-                if (s.Equals(7)) throw new BusinessRuleException("Order is Canceled, so that you can not change this");
+                if (s.Equals(OrderStatus.COMPLETE)) throw new BusinessRuleException("Order is Completed, so that you can not change this");
+                if (s.Equals(OrderStatus.CANCEL)) throw new BusinessRuleException("Order is Canceled, so that you can not change this");
                 if(Enum.Equals(status, s))
                 {
                     throw new BusinessRuleException($"Order is already in {status}, so that you can not change this");
                 }
                 if (s.CompareTo(status) > 0) throw new BusinessRuleException($"Order is already in {s}, so that you can not change back to {status}");
+                bool isPayed = bool.Parse((await CheckOrderIsPayed(id)).Data.ToString());
+                if (status.Equals(OrderStatus.CANCEL))
+                {
+                    if (!(s <= OrderStatus.CHECKING && isPayed == false))
+                    throw new BusinessRuleException($"Order is already in {s} or is payed. So that not Cancel");
+                }
+
                 if (status.Equals(OrderStatus.COMPLETE))
                 {
-                    if (bool.Parse((await CheckOrderIsPayed(id)).Data.ToString()) == false)
+                    if (isPayed == false)
                     {
                         Transaction transaction = new Transaction()
                         {
@@ -64,6 +75,21 @@ namespace BMS.BLL.Services
                 }
                 order.Status = status.ToString();
                 order.LastUpdateDate = DateTime.Now;
+                await _unitOfWork.OrderRepository.UpdateAsync(order);
+
+                Notification notification = new Notification
+                {
+                    UserId = order.CustomerId,
+                    OrderId = order.Id,
+                    ShopId = order.ShopId,
+                    Object = $"Change Status Order From {s} to {status} sucessfully",
+                    Status = NotificationStatus.UnRead,
+                    Title = GetTitleNotification(status)                                                     
+                };
+
+                await _unitOfWork.NotificationRepository.AddAsync(notification);
+                await _hubContext.Clients.User(notification.UserId.ToString()).SendAsync("UpdateStatus Order", notification.Object);
+                
                 return new ServiceActionResult() { Detail = $" Change Order Status from {s} to {status} sucessfully" };
             } else
             {
@@ -74,7 +100,7 @@ namespace BMS.BLL.Services
         public async Task<ServiceActionResult> CheckOrderIsPayed(Guid orderId)
         {
             var transactions = (await _unitOfWork.TransactionRepository.GetAllAsyncAsQueryable())
-                               .Where(x => x.OrderId == orderId && x.Status == TransactionStatus.PAID).SingleOrDefault();
+                               .Where(x => x.OrderId == orderId && x.Status == TransactionStatus.PAID).FirstOrDefault();
             return new ServiceActionResult()
             {
                 Data = transactions == null ? false : true,
@@ -172,13 +198,15 @@ namespace BMS.BLL.Services
                 UserId = order.CustomerId,
                 OrderId = order.Id,
                 ShopId = order.ShopId,
-                Object = "Order",
-                Status = NotificationStatus.UnRead
+                Object = "Create Order",
+                Status = NotificationStatus.UnRead,
+                Title = NotificationTitle.BOOKING_ORDER
             };
 
             await _unitOfWork.NotificationRepository.AddAsync(notification);
 
             await _unitOfWork.CartRepository.DeleteAsync(cartId);
+            await _hubContext.Clients.User(notification.UserId.ToString()).SendAsync("Create Order", notification.Object);
             return new ServiceActionResult() { Detail = "Order has been created successfully" };
 
         }
@@ -367,6 +395,29 @@ namespace BMS.BLL.Services
                 {
                     Detail = "Order is not of User"
                 };
+            }
+        }
+
+        private NotificationTitle GetTitleNotification(OrderStatus status)
+        {
+            switch (status)
+            {
+                case OrderStatus.ORDERED:
+                    return NotificationTitle.BOOKING_ORDER;
+                case OrderStatus.CHECKING:
+                    return NotificationTitle.CHECKING_ORDER;
+                case OrderStatus.PREPARING:
+                    return NotificationTitle.PREPARING_ORDER;
+                case OrderStatus.PREPARED:
+                    return NotificationTitle.PREPARED_ORDER;
+                case OrderStatus.TAKENOVER:
+                    return NotificationTitle.TAKENOVER_ORDER;
+                case OrderStatus.COMPLETE:
+                    return NotificationTitle.COMPLETE_ORDER;
+                case OrderStatus.CANCEL:
+                    return NotificationTitle.CANCEL_ORDER;
+                default:
+                    return 0;
             }
         }
     }
