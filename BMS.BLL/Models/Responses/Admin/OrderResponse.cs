@@ -19,8 +19,8 @@ namespace BMS.BLL.Models.Responses.Admin
         public string? Avatar { get; set; }
         public byte[] QRCode { get; set; }
         public Guid ShopId { get; set; }
-        public Core.Domains.Entities.Shop Shop { get; set; } = null!;
-
+        public string? ShopName { get; set; }
+        public string? ShopImage { get; set; } = null!;
         public ICollection<OrderItemResponse> OrderItems { get; set; } = new List<OrderItemResponse>();
     }
 }
