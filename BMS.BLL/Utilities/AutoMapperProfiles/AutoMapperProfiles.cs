@@ -79,8 +79,9 @@ namespace BMS.BLL.Utilities.AutoMapperProfiles
                     .ForMember(dest => dest.QRCode, opt => opt.MapFrom(src => src.QRCode))
                     .ForMember(dest => dest.FirstName, opt => opt.MapFrom(src => src.Customer.FirstName))
                     .ForMember(dest => dest.LastName, opt => opt.MapFrom(src => src.Customer.LastName))
-                    .ForMember(dest => dest.Avatar, opt => opt.MapFrom(src => src.Customer.Avatar));
-                    
+                    .ForMember(dest => dest.Avatar, opt => opt.MapFrom(src => src.Customer.Avatar))
+                    .ForMember(dest => dest.ShopName , opt => opt.MapFrom(src => src.Shop.Name))
+                    .ForMember(dest => dest.ShopImage, opt => opt.MapFrom(src => src.Shop.Image));
                 #endregion
 
                 #region transaction
