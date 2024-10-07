@@ -44,6 +44,7 @@ namespace BMS.BLL.Services
                 newCart.ShopId = shopId;
                 newCart.IsGroup = false;
                 await _unitOfWork.CartRepository.AddAsync(newCart);
+                await _unitOfWork.CommitAsync();
                 request.CartId = newCart.Id;
                 CartDetail cartDetails = _mapper.Map<CartDetail>(request);
                 cartDetails.CartId = newCart.Id;
@@ -52,7 +53,15 @@ namespace BMS.BLL.Services
             {
                 request.CartId = cart.FirstOrDefault().Id;
                 CartDetail cartDetails = _mapper.Map<CartDetail>(request);
-                await _unitOfWork.CartDetailRepository.AddAsync(cartDetails);
+                var cartDetailInDB = (await _unitOfWork.CartDetailRepository.GetAllAsyncAsQueryable()).Where(x => x.ProductId.Equals(cartDetails.ProductId) && x.CartId == cartDetails.CartId).FirstOrDefault();
+                if (cartDetailInDB != null && cartDetailInDB.Note.Equals(cartDetails.Note))
+                {
+                    cartDetailInDB.Quantity += cartDetails.Quantity;
+                    await _unitOfWork.CartDetailRepository.UpdateAsync(cartDetailInDB);
+                } else
+                {
+                    await _unitOfWork.CartDetailRepository.AddAsync(cartDetails);
+                }
             }
             return new ServiceActionResult(true)
             {
@@ -152,14 +161,14 @@ namespace BMS.BLL.Services
 
         public async Task<ServiceActionResult> DeleteCartItem(Guid cartItemId)
         {
-            var cartDetail = _unitOfWork.CartDetailRepository.FindAsync(cartItemId);
+            var cartDetail = await _unitOfWork.CartDetailRepository.FindAsync(cartItemId);
             if (cartDetail == null)
             {
                 return new ServiceActionResult(false, "CartDetail is not exits or deleted");
             }
             else
             {
-                await _unitOfWork.CartDetailRepository.DeleteAsync(cartItemId);
+                await _unitOfWork.CartDetailRepository.DeleteAsync(cartDetail);
                 return new ServiceActionResult(true, "Delete Successfully");
             }
         }

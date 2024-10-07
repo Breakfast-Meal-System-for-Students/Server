@@ -157,6 +157,10 @@ namespace BMS.BLL.Services
             }
             if(discount >= 0)
             {
+                if(order.TotalPrice - discount < 0)
+                {
+                    return new ServiceActionResult(false) { Detail = "Total Price of Order is < 0" };
+                }
                 order.TotalPrice -= discount;
             }
 
@@ -167,7 +171,6 @@ namespace BMS.BLL.Services
                 order.QRCode = _qrCodeService.GenerateQRCode(qrContent);
             }
             await _unitOfWork.OrderRepository.AddAsync(order);
-
             foreach (var item in carts.CartDetails)
             {
                 OrderItem orderItem = new OrderItem
