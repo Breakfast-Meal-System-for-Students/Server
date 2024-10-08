@@ -17,6 +17,8 @@ namespace BMS.Core.Domains.Entities
         public string? Image { get; set; } = null!;
         public string Address { get; set; } = null!;
         public double? Rate { get; set; }
+        public double? lat { get; set; }
+        public double? lng { get; set; }
         public ShopStatus Status { get; set; } = ShopStatus.PENDING;
 
         public Guid? UserId { get; set; }
