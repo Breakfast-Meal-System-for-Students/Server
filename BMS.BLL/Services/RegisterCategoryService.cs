@@ -55,7 +55,7 @@ namespace BMS.BLL.Services
         public async Task<ServiceActionResult> GetProductByCategory(Guid categoryId, RegisterCategoryRequest queryParameters)
         {
 
-            IQueryable<RegisterCategory> reCategoryQueryable = (await _unitOfWork.RegisterCategoryRepository.GetAllAsyncAsQueryable()).Where(a => a.CategoryId == categoryId).Include(a=>a.Product);
+            IQueryable<RegisterCategory> reCategoryQueryable = (await _unitOfWork.RegisterCategoryRepository.GetAllAsyncAsQueryable()).Where(a => a.CategoryId == categoryId).Include(a=>a.Product).ThenInclude(a=>a.Images);
 
 
             if (!string.IsNullOrEmpty(queryParameters.Search))
