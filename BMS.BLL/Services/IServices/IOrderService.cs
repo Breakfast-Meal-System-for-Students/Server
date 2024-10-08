@@ -7,6 +7,8 @@ using System.Text;
 using System.Threading.Tasks;
 using BMS.Core.Domains.Enums;
 using BMS.Core.Domains.Entities;
+using BMS.BLL.Models.Requests.Order;
+using Microsoft.Identity.Client;
 
 namespace BMS.BLL.Services.IServices
 {
@@ -19,11 +21,12 @@ namespace BMS.BLL.Services.IServices
         Task<ServiceActionResult> ChangeOrderStatus(Guid id, OrderStatus status);
         Task<ServiceActionResult> GetTotalOrder(TotalOrdersRequest request);
 
-        Task<ServiceActionResult> CreateOrder(Guid cartId, Guid voucherId);
+        Task<ServiceActionResult> CreateOrder(CreateOrderRequest request);
         Task<ServiceActionResult> GetStatusOrder(Guid orderId);
         Task<ServiceActionResult> UpdateStatusOrder(Guid id, string status);
         Task<ServiceActionResult> CheckOrderIsPayed(Guid orderId);
         Task<ServiceActionResult> GetOrderForUser(Guid userId, SearchOrderRequest request);
         Task<ServiceActionResult> CheckQRCodeOfUser(byte[] QRcode, Guid userId);
+        Task<List<Order>> GetOrdersForNotificaton();
     }
 }

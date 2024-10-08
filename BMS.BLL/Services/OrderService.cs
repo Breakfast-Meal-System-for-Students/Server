@@ -4,6 +4,7 @@ using Azure.Core;
 using BMS.BLL.Models;
 using BMS.BLL.Models.Requests.Admin;
 using BMS.BLL.Models.Requests.Category;
+using BMS.BLL.Models.Requests.Order;
 using BMS.BLL.Models.Responses.Admin;
 using BMS.BLL.Models.Responses.Cart;
 using BMS.BLL.Models.Responses.Users;
@@ -88,7 +89,7 @@ namespace BMS.BLL.Services
                 };
 
                 await _unitOfWork.NotificationRepository.AddAsync(notification);
-                await _hubContext.Clients.User(notification.UserId.ToString()).SendAsync("UpdateStatus Order", notification.Object);
+                await _hubContext.Clients.User(notification.UserId.ToString()).SendAsync($"Yhe Status Of Order is changed from {s} to {status}", notification.Object);
                 
                 return new ServiceActionResult() { Detail = $" Change Order Status from {s} to {status} sucessfully" };
             } else
@@ -107,10 +108,10 @@ namespace BMS.BLL.Services
             };
         }
 
-        public async Task<ServiceActionResult> CreateOrder(Guid cartId, Guid voucherId)
+        public async Task<ServiceActionResult> CreateOrder(CreateOrderRequest request)
         {
             var carts = (await _unitOfWork.CartRepository.GetAllAsyncAsQueryable())
-                        .Where(x => x.Id == cartId)
+                        .Where(x => x.Id == request.CartId)
                         .Include(y => y.CartDetails)
                         .SingleOrDefault();
 
@@ -123,16 +124,17 @@ namespace BMS.BLL.Services
 
             Order order = new Order
             {
-                Status = OrderStatus.DRAFT.ToString(),
+                Status = OrderStatus.ORDERED.ToString(),
                 ShopId = carts.ShopId,
                 CustomerId = carts.CustomerId,
-                TotalPrice = carts.CartDetails.Sum(x => x.Quantity * x.Price)
+                TotalPrice = carts.CartDetails.Sum(x => x.Quantity * x.Price),
+                OrderDate = request.OrderDate
             };
 
             double discount = 0;
-            if (voucherId != Guid.Empty)
+            if (request.VoucherId != Guid.Empty && request.VoucherId != null)
             {
-                var coupon = await _unitOfWork.CouponRepository.FindAsync(voucherId);
+                var coupon = await _unitOfWork.CouponRepository.FindAsync(request.VoucherId);
                 if (coupon == null || coupon.IsDeleted)
                 {
                     return new ServiceActionResult() { Detail = "Coupon does not exist or is deleted" };
@@ -184,11 +186,11 @@ namespace BMS.BLL.Services
                 await _unitOfWork.OrderItemRepository.AddAsync(orderItem);
             }
 
-            if (voucherId != Guid.Empty)
+            if (request.VoucherId != Guid.Empty)
             {
                 CouponUsage couponUsage = new CouponUsage
                 {
-                    CouponId = voucherId,
+                    CouponId = request.VoucherId,
                     OrderId = order.Id,
                     UserId = order.CustomerId
                 };
@@ -208,7 +210,7 @@ namespace BMS.BLL.Services
 
             await _unitOfWork.NotificationRepository.AddAsync(notification);
 
-            await _unitOfWork.CartRepository.DeleteAsync(cartId);
+            await _unitOfWork.CartRepository.DeleteAsync(request.CartId);
             await _hubContext.Clients.User(notification.UserId.ToString()).SendAsync("Create Order", notification.Object);
             return new ServiceActionResult() { Detail = "Order has been created successfully" };
 
@@ -422,6 +424,12 @@ namespace BMS.BLL.Services
                 default:
                     return 0;
             }
+        }
+
+        public async Task<List<Order>> GetOrdersForNotificaton()
+        {
+            var orders = (await _unitOfWork.OrderRepository.GetAllAsyncAsQueryable()).Where(x => x.OrderDate < DateTime.Now.AddMinutes(30) && x.OrderDate > DateTime.Now.AddMinutes(-30) && x.Status.Equals(OrderStatus.CHECKING.ToString())).ToList();
+            return orders;
         }
     }
 }

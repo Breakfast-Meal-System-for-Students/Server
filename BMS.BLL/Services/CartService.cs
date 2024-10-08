@@ -27,10 +27,12 @@ namespace BMS.BLL.Services
     {
         private readonly UserManager<User> _userManager;
         private readonly ITokenService _tokenService;
-        public CartService(IUnitOfWork unitOfWork, IMapper mapper, UserManager<User> userManager, ITokenService tokenService) : base(unitOfWork, mapper)
+        private readonly IShopService _shopService;
+        public CartService(IUnitOfWork unitOfWork, IMapper mapper, UserManager<User> userManager, ITokenService tokenService, IShopService shopService) : base(unitOfWork, mapper)
         {
             _userManager = userManager;
             _tokenService = tokenService;
+            _shopService = shopService;
         }
 
         public async Task<ServiceActionResult> AddCartDetail(Guid userId, Guid shopId, CartDetailRequest request)
@@ -112,6 +114,11 @@ namespace BMS.BLL.Services
 
         public async Task<ServiceActionResult> ChangeCartToGroup(Guid userId, Guid shopId)
         {
+            var shop = await _shopService.GetShop(shopId);
+            if (shop.Data == null)
+            {
+                throw new ArgumentNullException("Shop does not exist or has been deleted");
+            }
             Expression<Func<Cart, bool>> filter = cart => (cart.CustomerId == userId && cart.ShopId == shopId);
             var cart = (await _unitOfWork.CartRepository.FindAsyncAsQueryable(filter)).FirstOrDefault();
             if (cart == null)

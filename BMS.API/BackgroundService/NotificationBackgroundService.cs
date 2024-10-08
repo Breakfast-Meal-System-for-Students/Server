@@ -26,7 +26,7 @@ public class NotificationBackgroundService : BackgroundService
             await ProcessNotifications();
 
             // Đợi x phút rồi tiếp tục
-            await Task.Delay(TimeSpan.FromMinutes(60*24), stoppingToken);
+            await Task.Delay(TimeSpan.FromMinutes(60), stoppingToken);
         }
     }
 
@@ -36,15 +36,21 @@ public class NotificationBackgroundService : BackgroundService
         {
             var emailService = scope.ServiceProvider.GetRequiredService<IEmailService>();
             var notificationService = scope.ServiceProvider.GetRequiredService<INotificationService>();
-            
-            var notifications = await notificationService.GetAllNotificationsToSendMail(NotificationStatus.UnRead);
+            var orderService = scope.ServiceProvider.GetRequiredService<IOrderService>();
+            var orders = await orderService.GetOrdersForNotificaton();
+
+            foreach (var order in orders)
+            {
+                var notification = (await notificationService.CreateNotification(order)).Data;
+            }
+            /*var notifications = await notificationService.GetAllNotificationsToSendMail(NotificationStatus.UnRead);
 
             foreach (var notification in notifications)
             {
                 await emailService.SendEmailNotificationToShopAndUserAboutOrder("", "", notification.Order, notification.User, notification.Shop);
 
                 notification.Status = NotificationStatus.Sended;
-            }
+            }*/
 
             await notificationService.SaveChange();
         }

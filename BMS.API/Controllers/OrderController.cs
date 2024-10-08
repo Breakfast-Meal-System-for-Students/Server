@@ -2,6 +2,7 @@
 using BMS.BLL.Models;
 using BMS.BLL.Models.Requests.Admin;
 using BMS.BLL.Models.Requests.Category;
+using BMS.BLL.Models.Requests.Order;
 using BMS.BLL.Services;
 using BMS.BLL.Services.BaseServices;
 using BMS.BLL.Services.IServices;
@@ -90,10 +91,10 @@ namespace BMS.API.Controllers
 
         [HttpPost("CreateOrder")]
         //[Authorize(Roles = UserRoleConstants.ADMIN)]
-        public async Task<IActionResult> CreateOrder(Guid cartId, Guid voucherId)
+        public async Task<IActionResult> CreateOrder([FromBody] CreateOrderRequest request)
         {
             return await ExecuteServiceLogic(
-                async () => await _orderService.CreateOrder(cartId, voucherId).ConfigureAwait(false)
+                async () => await _orderService.CreateOrder(request).ConfigureAwait(false)
             ).ConfigureAwait(false);
         }
 

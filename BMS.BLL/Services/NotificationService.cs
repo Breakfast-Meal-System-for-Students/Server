@@ -37,10 +37,9 @@ namespace BMS.BLL.Services
                 throw new BusinessRuleException("Invalid userId");
             }
             notification.Status = NotificationStatus.Readed;
-            await _unitOfWork.NotificationRepository.UpdateAsync(notification);
             return new ServiceActionResult() 
             {
-                Data = notification.Id, 
+                Data = notification, 
                 Detail = "Notification is Readed"
             };
         }
@@ -59,6 +58,21 @@ namespace BMS.BLL.Services
             return new ServiceActionResult(true) { Data = notificationQuery.Count() };
         }
 
+        public async Task<ServiceActionResult> CreateNotification(Order order)
+        {
+            Notification notification = new Notification()
+            {
+                Object = "Đơn hàng sắp đến giờ được được giao",
+                Title = NotificationTitle.BOOKING_ORDER,
+                Status = NotificationStatus.UnRead,
+                UserId = order.CustomerId,
+                ShopId = order.ShopId,
+                OrderId = order.Id,
+            };
+            await _unitOfWork.NotificationRepository.AddAsync(notification);
+            return new ServiceActionResult() { Data = notification };
+        }
+
         public async Task<List<Notification>> GetAllNotificationsToSendMail(NotificationStatus status)
         {
             return (await _unitOfWork.NotificationRepository.GetAllAsyncAsQueryable())
@@ -66,6 +80,15 @@ namespace BMS.BLL.Services
                     .Include(b => b.Shop)
                     .Include(c => c.Order)
                     .Where(x => x.Status == status).ToList();
+        }
+
+        public async Task<List<Notification>> GetAllNotificationsToSendNoti(Order order)
+        {
+            return (await _unitOfWork.NotificationRepository.GetAllAsyncAsQueryable())
+                   .Include(a => a.User)
+                   .Include(b => b.Shop)
+                   .Include(c => c.Order)
+                   .Where(x => x.Order.Id == order.Id && x.Status == NotificationStatus.UnRead).ToList();
         }
 
         public async Task<ServiceActionResult> GetNotificationForShop(Guid shopId, GetNotificationRequest request)
