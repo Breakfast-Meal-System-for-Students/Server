@@ -63,7 +63,7 @@ namespace BMS.API.Controllers
         }
 
         [HttpGet("GetOrderForUser")]
-        [Authorize(Roles = UserRoleConstants.USER)]
+        [Authorize]
         public async Task<IActionResult> GetOrderForUser([FromQuery] SearchOrderRequest request)
         {
             return await ExecuteServiceLogic(

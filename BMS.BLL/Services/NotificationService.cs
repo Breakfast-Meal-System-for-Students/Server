@@ -12,6 +12,7 @@ using BMS.Core.Exceptions;
 using BMS.Core.Exceptions.IExceptions;
 using BMS.Core.Helpers;
 using BMS.DAL;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -23,9 +24,11 @@ namespace BMS.BLL.Services
 {
     public class NotificationService : BaseService, INotificationService
     {
-        public NotificationService(IUnitOfWork unitOfWork, IMapper mapper) : base(unitOfWork, mapper)
-        {
 
+        private readonly IHubContext<NotificationHub> _hubContext;
+        public NotificationService(IUnitOfWork unitOfWork, IMapper mapper, IHubContext<NotificationHub> hubContext) : base(unitOfWork, mapper)
+        {
+            _hubContext = hubContext;
         }
 
         public async Task<ServiceActionResult> ChangeStatusNotification(Guid userId, Guid notificationId)
@@ -62,14 +65,21 @@ namespace BMS.BLL.Services
         {
             Notification notification = new Notification()
             {
-                Object = "Đơn hàng sắp đến giờ được được giao",
+                Object = "Đơn hàng sắp đến giờ nhận món. Gôm các món ăn sau: Hãy sắp xếp thời gian.",
                 Title = NotificationTitle.BOOKING_ORDER,
                 Status = NotificationStatus.UnRead,
                 UserId = order.CustomerId,
                 ShopId = order.ShopId,
                 OrderId = order.Id,
             };
+            foreach(OrderItem orderItem in order.OrderItems) 
+            {
+                notification.Object += "\n";
+                notification.Object += $"{orderItem.Product.Name}";
+                notification.Object += orderItem.Product.PrepareTime != 0 ? $": {orderItem.Product.PrepareTime}" : "";
+            }
             await _unitOfWork.NotificationRepository.AddAsync(notification);
+            await _hubContext.Clients.User(notification.UserId.ToString()).SendAsync($"Create Notification Automatically", notification.Object);
             return new ServiceActionResult() { Data = notification };
         }
 

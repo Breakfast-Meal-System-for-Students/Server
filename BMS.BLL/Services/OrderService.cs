@@ -89,7 +89,7 @@ namespace BMS.BLL.Services
                 };
 
                 await _unitOfWork.NotificationRepository.AddAsync(notification);
-                await _hubContext.Clients.User(notification.UserId.ToString()).SendAsync($"Yhe Status Of Order is changed from {s} to {status}", notification.Object);
+                await _hubContext.Clients.User(notification.UserId.ToString()).SendAsync($"The Status Of Order is changed from {s} to {status}", notification.Object);
                 
                 return new ServiceActionResult() { Detail = $" Change Order Status from {s} to {status} sucessfully" };
             } else

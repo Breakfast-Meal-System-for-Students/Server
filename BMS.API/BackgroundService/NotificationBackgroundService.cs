@@ -26,7 +26,7 @@ public class NotificationBackgroundService : BackgroundService
             await ProcessNotifications();
 
             // Đợi x phút rồi tiếp tục
-            await Task.Delay(TimeSpan.FromMinutes(60), stoppingToken);
+            await Task.Delay(TimeSpan.FromMinutes(30), stoppingToken);
         }
     }
 
