@@ -23,9 +23,9 @@ namespace BMS.API.Controllers
         }
         [HttpGet]
         [Route("GetShop")]
-        public async Task<IActionResult> GetShop(string add1, string add2)
+        public async Task<IActionResult> GetShop(string add1, string add2, string search)
         {
-            var data = await _googleMapService.GetShopsByShortestTravelTime2(add1,add2);
+            var data = await _googleMapService.GetShopsByShortestTravelTime3(add1,add2,search);
             return Ok(data);
         }
     }

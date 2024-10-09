@@ -47,10 +47,10 @@ namespace BMS.BLL.Services
         {
             //  var shop = (await _unitOfWork.ShopRepository.FindAsync(shopId)) ?? throw new ArgumentNullException("Shop not found");
 
-            var feedbackQueryable = (await _unitOfWork.FeedbackRepository.GetAllAsyncAsQueryable());
+            var feedbackQueryable = (await _unitOfWork.FeedbackRepository.GetAllAsyncAsQueryable()).Include(a => a.User).Include(a => a.Shop).Where(a => a.ShopId==shopId);
                
 
-            var paginatedFeedback = PaginationHelper.BuildPaginatedResult<Feedback, FeedbackResponse>(_mapper, feedbackQueryable, request.PageSize, request.PageIndex);
+            var paginatedFeedback = PaginationHelper.BuildPaginatedResult<Feedback, FeedbackForStaffResponse>(_mapper, feedbackQueryable, request.PageSize, request.PageIndex);
 
             return new ServiceActionResult() { Data = paginatedFeedback };
         }
