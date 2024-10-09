@@ -93,29 +93,40 @@ namespace BMS.BLL.Services
             {
                 // Đọc nội dung phản hồi từ API
                 var jsonResponse = await response.Content.ReadAsStringAsync();
-
-                // Parse JSON thành object
+                // Deserialize the JSON string into your C# object model
                 var geocodeResponse = JsonSerializer.Deserialize<GeocodeResponse>(jsonResponse);
 
-                if (geocodeResponse != null && geocodeResponse.Results.Any())
+                // Check if the response is valid
+                if (geocodeResponse != null && geocodeResponse.Status == "OK")
                 {
-                    // Lấy kinh độ và vĩ độ từ kết quả đầu tiên
-                    var location = geocodeResponse.Results.First().Geometry.Location;
-
-                    return new Models.Responses.Map.Location()
+                    if (geocodeResponse.Results != null && geocodeResponse.Results.Any())
                     {
-                      
+                        var location = geocodeResponse.Results.First().Geometry.Location;
+
+                        return new Models.Responses.Map.Location()
+                        {
                             Lat = location.Lat,
                             Lng = location.Lng
-                        
-                    };
+                        };
+                    }
+                    else
+                    {
+                        Console.WriteLine("No results found.");
+                    }
                 }
+                else
+                {
+                    Console.WriteLine($"Error: {geocodeResponse?.Status}");
+                }
+
             }
 
+            // Return null or log an error if the request failed
             return null;
         }
 
-    
+
+
         public async Task<IQueryable<Shop>> GetShopWithGeo(double latA, double lngA, double latB, double lngB)
         {
             double minLat = Math.Min(latA, latB);      
@@ -215,6 +226,99 @@ namespace BMS.BLL.Services
 
             // Tạo chuỗi origins là hai điểm A và B
             var origins = add1 + "|" + add2; 
+
+            // Tạo URL cho request
+            var requestUrl = $"{url}?origins={origins}&destinations={destinations}&key={apiKey}";
+
+            // Gửi request đến Google Maps API
+            var response = await client.GetAsync(requestUrl);
+
+            if (response.IsSuccessStatusCode)
+            {
+                var jsonResponse = await response.Content.ReadAsStringAsync();
+                var options = new JsonSerializerOptions
+                {
+                    PropertyNameCaseInsensitive = true,
+                    DefaultIgnoreCondition = System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull
+                };
+
+                var distanceMatrixResponse = JsonSerializer.Deserialize<DistanceMatrixResponse>(jsonResponse, options);
+
+
+                // Tạo danh sách lưu thời gian di chuyển từ A -> Shop -> B
+                var shopTimes = new List<ShopTimeResult>();
+                int i = 0;
+                foreach (var o in shops)
+                {
+                    // Thời gian từ A -> Shop
+                    var timeFromAtoShop = distanceMatrixResponse.rows[0].elements[i].duration.value;
+                    // Thời gian từ Shop -> B
+                    var timeFromShoptoB = distanceMatrixResponse.rows[1].elements[i].duration.value;
+                    // Tổng thời gian
+                    var totalTime = timeFromAtoShop + timeFromShoptoB;
+
+                    // Khoảng cách từ A -> Shop
+                    var distanceFromAtoShop = distanceMatrixResponse.rows[0].elements[i].distance.value;
+                    // Khoảng cách từ Shop -> B
+                    var distanceFromShoptoB = distanceMatrixResponse.rows[1].elements[i].distance.value;
+                    // Tổng khoảng cách
+                    var totalDistance = distanceFromAtoShop + distanceFromShoptoB;
+
+                    // Thêm vào danh sách
+                    shopTimes.Add(new ShopTimeResult
+                    {
+                        Store = o,
+                        TotalTime = totalTime,
+                        TimeText = $"{TimeSpan.FromSeconds(totalTime)}",  // Chuyển đổi thời gian thành định dạng HH:mm:ss
+                        TotalDistance = totalDistance,
+                        DistanceText = $"{totalDistance / 1000} km"  // Chuyển đổi khoảng cách thành km
+                    });
+                    i++;
+                }
+
+
+                // Sắp xếp danh sách cửa hàng theo tổng thời gian tăng dần
+                var sortedShopTimes = shopTimes.OrderBy(s => s.TotalDistance).ToList();
+
+                return new ServiceActionResult()
+                {
+                    Data = sortedShopTimes
+                };
+            }
+            else
+            {
+                return new ServiceActionResult()
+                {
+                    Data = "Failed to fetch data from Google Maps API."
+                };
+            }
+        }
+
+        public async Task<ServiceActionResult> GetShopsByShortestTravelTime3(string add1, string add2,string search)
+        {
+            var apiKey = _configuration["GoogleMapSettings:ApiKey"];
+            var url = _configuration["GoogleMapSettings:distancematrix"];
+            var client = _httpClientFactory.CreateClient();
+            var local1 = await GetCoordinatesFromAddress(add1);
+            var local2 = await GetCoordinatesFromAddress(add2);
+            // Di chuyển 5km về phía Nam
+            double minLat = Math.Min(local1.Lat, local2.Lat) - 0.045;
+            double minLng = Math.Min(local1.Lng, local2.Lng) -0.045;
+            double maxLat = Math.Max(local1.Lat, local2.Lat) + 0.045;
+            double maxLng = Math.Max(local1.Lng, local2.Lng)+ 0.045;
+
+            IQueryable<Shop> shops = (await _unitOfWork.ShopRepository.GetAllAsyncAsQueryable()).Where(a=> (a.lat > minLat && a.lat < maxLat) && (a.lng > minLng && a.lng < maxLng));
+            if (!string.IsNullOrEmpty(search))
+            {
+                shops = shops.Where(a => a.Name.Contains(search));
+            }
+            // var shops = await GetShopWithGeo(local1.Lat, local1.Lng, local2.Lat, local2.Lng);
+
+            // Tạo chuỗi destinations từ tất cả các cửa hàng
+            var destinations = string.Join("|", shops.Select(s => $"{s.lat},{s.lng}"));
+
+            // Tạo chuỗi origins là hai điểm A và B
+            var origins = add1 + "|" + add2;
 
             // Tạo URL cho request
             var requestUrl = $"{url}?origins={origins}&destinations={destinations}&key={apiKey}";

@@ -13,5 +13,6 @@ namespace BMS.BLL.Services.IServices
         Task<ServiceActionResult> ComputeRoutes(RouteRequest request);
         Task<ServiceActionResult> GetShopsByShortestTravelTime(string add1, string add2);
         Task<ServiceActionResult> GetShopsByShortestTravelTime2(string add1, string add2);
+        Task<ServiceActionResult> GetShopsByShortestTravelTime3(string add1, string add2, string search);
     }
 }
