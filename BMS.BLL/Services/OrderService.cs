@@ -279,7 +279,7 @@ namespace BMS.BLL.Services
 
         public async Task<ServiceActionResult> GetOrderByUser(Guid id, SearchOrderRequest request)
         {
-            IQueryable<Order> orderQuery = (await _unitOfWork.OrderRepository.GetAllAsyncAsQueryable()).Include(a => a.OrderItems).Include(b => b.Customer).Include(c => c.Shop).Where(x => x.CustomerId == id);
+            IQueryable<Order> orderQuery = (await _unitOfWork.OrderRepository.GetAllAsyncAsQueryable()).Include(a => a.OrderItems).ThenInclude(d => d.Product).ThenInclude(e => e.Images).Include(b => b.Customer).Include(c => c.Shop).Where(x => x.CustomerId == id);
 
             //var canParsed = Enum.TryParse(request.Status, true, out OrderStatus status);
             if (request.Status != 0)

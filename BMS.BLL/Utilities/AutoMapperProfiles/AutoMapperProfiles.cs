@@ -73,7 +73,9 @@ namespace BMS.BLL.Utilities.AutoMapperProfiles
 
                 #endregion
                 #region order
-                CreateMap<OrderItem, OrderItemResponse>();
+                CreateMap<OrderItem, OrderItemResponse>()
+                    .ForMember(dest => dest.ProductName, opt => opt.MapFrom(src => src.Product.Name))
+                    .ForMember(dest => dest.ProductImages, opt => opt.MapFrom(src => src.Product.Images));
                 CreateMap<Order, OrderResponse>()
                     .ForMember(dest => dest.OrderItems, opt => opt.MapFrom(src => src.OrderItems))
                     .ForMember(dest => dest.QRCode, opt => opt.MapFrom(src => src.QRCode))
