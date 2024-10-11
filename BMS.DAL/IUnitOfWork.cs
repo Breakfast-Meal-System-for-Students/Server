@@ -27,6 +27,7 @@ namespace BMS.DAL
         public IPackageRepository PackageRepository { get; }
         public IPackageHistoryRepository PackageHistoryRepository { get; }
         public ICartGroupUserRepository CartGroupUserRepository { get; }
+        public IShopWeeklyReportRepository ShopWeeklyReportRepository { get; }
         void Commit();
         Task CommitAsync();
         void Rollback();

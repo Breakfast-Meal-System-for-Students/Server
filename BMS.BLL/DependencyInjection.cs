@@ -11,6 +11,7 @@ using System.Threading.Tasks;
 using FluentValidation.AspNetCore;
 using FluentValidation;
 using BMS.BLL.Validators;
+using BMS.DAL.Repositories.IRepositories;
 
 namespace BMS.BLL
 {
@@ -57,6 +58,7 @@ namespace BMS.BLL
             services.AddScoped<ICartGroupUserService, CartGroupUserService>();
             services.AddScoped<IShopService, ShopService>();
             services.AddScoped<IGoogleMapService, GoogleMapService>();
+            services.AddScoped<IShopWeeklyReportService, ShopWeeklyReportService>();
             #endregion
 
             #region Validation

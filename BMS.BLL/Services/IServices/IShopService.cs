@@ -6,6 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using BMS.BLL.Models.Requests.Package;
+using BMS.Core.Domains.Entities;
 
 namespace BMS.BLL.Services.IServices
 {
@@ -17,5 +18,6 @@ namespace BMS.BLL.Services.IServices
         Task<ServiceActionResult> DeleteShop(Guid id);
         Task<ServiceActionResult> GetShop(Guid id);
         Task<ServiceActionResult> GetAllShop(ShopRequest queryParameters);
+        Task<List<Shop>> GetAllShopToRevenue(DateTime startDate, DateTime endDate);
     }
 }

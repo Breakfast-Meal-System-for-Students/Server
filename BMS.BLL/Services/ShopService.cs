@@ -21,6 +21,7 @@ using System.Text;
 using System.Threading.Tasks;
 using BMS.BLL.Models.Requests.Shop;
 using BMS.BLL.Models.Responses.Shop;
+using Microsoft.EntityFrameworkCore;
 
 namespace BMS.BLL.Services
 {
@@ -90,5 +91,13 @@ namespace BMS.BLL.Services
             return new ServiceActionResult();
         }
 
+        public async Task<List<Shop>> GetAllShopToRevenue(DateTime startDate, DateTime endDate)
+        {
+            return (await _unitOfWork.ShopRepository.GetAllAsyncAsQueryable())
+                    .Include(s => s.Orders)
+                    .ThenInclude(o => o.Transactions)
+                    .Where(s => s.Orders.Any(o => o.CreateDate >= startDate && o.CreateDate <= endDate && o.Transactions.Any(t => t.Status == TransactionStatus.PAID && (t.Method == TransactionMethod.VnPay.ToString() || t.Method == TransactionMethod.PayOs.ToString()))))
+                    .ToList();
+        }
     }
 }

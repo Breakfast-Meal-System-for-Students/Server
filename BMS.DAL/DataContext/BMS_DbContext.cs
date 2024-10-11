@@ -40,6 +40,8 @@ namespace BMS.DAL.DataContext
         public DbSet<CartDetail> CartDetails { get; set; }
 
         public DbSet<OpeningHours> OpeningHours { get; set; }
+        public DbSet<CartGroupUser> CartGroupUsers { get; set; }
+        public DbSet<ShopWeeklyReport> ShopWeeklyReports { get; set; }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
@@ -228,6 +230,11 @@ namespace BMS.DAL.DataContext
             modelBuilder.Entity<OpeningHours>()
                 .HasOne(oh => oh.Shop)
                 .WithMany(s => s.OpeningHours)
+                .HasForeignKey(oh => oh.ShopId)
+                .OnDelete(DeleteBehavior.Cascade);
+            modelBuilder.Entity<ShopWeeklyReport>()
+                .HasOne(oh => oh.Shop)
+                .WithMany(s => s.ShopWeeklyReports)
                 .HasForeignKey(oh => oh.ShopId)
                 .OnDelete(DeleteBehavior.Cascade);
             // seed dât
