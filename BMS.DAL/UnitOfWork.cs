@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore.Storage;
 
 namespace BMS.DAL
 {
@@ -27,7 +28,7 @@ namespace BMS.DAL
         public IRegisterCategoryRepository RegisterCategoryRepository => new RegisterCategoryRepository(_dbContext);
         public IPackageRepository PackageRepository => new PackageRepository(_dbContext);
         public IPackageHistoryRepository PackageHistoryRepository => new PackageHistoryRepository(_dbContext);
-
+        public ICartGroupUserRepository CartGroupUserRepository => new CartGroupUserRepository(_dbContext);
         public DbContext _dbContext { get; }
         
         public UnitOfWork(DbContext dbContext)
@@ -66,6 +67,11 @@ namespace BMS.DAL
         {
             Console.WriteLine("Transaction rollback");
             await Task.CompletedTask;
+        }
+
+        public async Task<IDbContextTransaction> BeginTransaction()
+        {
+            return await _dbContext.Database.BeginTransactionAsync();
         }
     }
 }

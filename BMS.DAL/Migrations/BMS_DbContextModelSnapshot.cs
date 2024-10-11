@@ -34,7 +34,7 @@ namespace BMS.DAL.Migrations
                     b.Property<Guid>("CustomerId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<bool>("IsPurchase")
+                    b.Property<bool>("IsGroup")
                         .HasColumnType("bit");
 
                     b.Property<DateTime>("LastUpdateDate")
@@ -58,6 +58,9 @@ namespace BMS.DAL.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<Guid?>("CartGroupUserId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<Guid>("CartId")
                         .HasColumnType("uniqueidentifier");
 
@@ -66,6 +69,9 @@ namespace BMS.DAL.Migrations
 
                     b.Property<DateTime>("LastUpdateDate")
                         .HasColumnType("datetime2");
+
+                    b.Property<string>("Note")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<double>("Price")
                         .HasColumnType("float");
@@ -78,11 +84,40 @@ namespace BMS.DAL.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("CartGroupUserId");
+
                     b.HasIndex("CartId");
 
                     b.HasIndex("ProductId");
 
                     b.ToTable("CartDetails");
+                });
+
+            modelBuilder.Entity("BMS.Core.Domains.Entities.CartGroupUser", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("CartId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("CreateDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("LastUpdateDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CartId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("CartGroupUser");
                 });
 
             modelBuilder.Entity("BMS.Core.Domains.Entities.Category", b =>
@@ -121,20 +156,20 @@ namespace BMS.DAL.Migrations
                     b.HasData(
                         new
                         {
-                            Id = new Guid("a9f8cd9e-969f-4c43-acc1-9bbb58d74c4a"),
-                            CreateDate = new DateTime(2024, 9, 21, 21, 17, 40, 513, DateTimeKind.Local).AddTicks(3934),
+                            Id = new Guid("8dbf0d31-d0b7-497b-bf63-ee334cbbc5a0"),
+                            CreateDate = new DateTime(2024, 10, 8, 14, 55, 0, 738, DateTimeKind.Local).AddTicks(8313),
                             Description = "Rice",
                             IsDeleted = false,
-                            LastUpdateDate = new DateTime(2024, 9, 21, 21, 17, 40, 513, DateTimeKind.Local).AddTicks(3946),
+                            LastUpdateDate = new DateTime(2024, 10, 8, 14, 55, 0, 738, DateTimeKind.Local).AddTicks(8323),
                             Name = "Rice"
                         },
                         new
                         {
-                            Id = new Guid("6f148eac-b9fa-4e9b-bf80-386e00294a28"),
-                            CreateDate = new DateTime(2024, 9, 21, 21, 17, 40, 513, DateTimeKind.Local).AddTicks(3983),
+                            Id = new Guid("697d3a27-f1df-42f0-b6bf-a2df7b72a534"),
+                            CreateDate = new DateTime(2024, 10, 8, 14, 55, 0, 738, DateTimeKind.Local).AddTicks(8327),
                             Description = "SuShi",
                             IsDeleted = false,
-                            LastUpdateDate = new DateTime(2024, 9, 21, 21, 17, 40, 513, DateTimeKind.Local).AddTicks(3983),
+                            LastUpdateDate = new DateTime(2024, 10, 8, 14, 55, 0, 738, DateTimeKind.Local).AddTicks(8327),
                             Name = "SuShi"
                         });
                 });
@@ -181,6 +216,9 @@ namespace BMS.DAL.Migrations
 
                     b.Property<DateTime>("StartDate")
                         .HasColumnType("datetime2");
+
+                    b.Property<bool>("isPercentDiscount")
+                        .HasColumnType("bit");
 
                     b.HasKey("Id");
 
@@ -306,9 +344,11 @@ namespace BMS.DAL.Migrations
                     b.Property<Guid>("ShopId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<string>("Status")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("Title")
+                        .HasColumnType("int");
 
                     b.Property<Guid>("UserId")
                         .HasColumnType("uniqueidentifier");
@@ -376,6 +416,13 @@ namespace BMS.DAL.Migrations
                     b.Property<DateTime>("LastUpdateDate")
                         .HasColumnType("datetime2");
 
+                    b.Property<DateTime?>("OrderDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<byte[]>("QRCode")
+                        .IsRequired()
+                        .HasColumnType("varbinary(max)");
+
                     b.Property<Guid>("ShopId")
                         .HasColumnType("uniqueidentifier");
 
@@ -409,6 +456,9 @@ namespace BMS.DAL.Migrations
 
                     b.Property<Guid>("OrderId")
                         .HasColumnType("uniqueidentifier");
+
+                    b.Property<double>("Price")
+                        .HasColumnType("float");
 
                     b.Property<Guid>("ProductId")
                         .HasColumnType("uniqueidentifier");
@@ -505,6 +555,9 @@ namespace BMS.DAL.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<int?>("Inventory")
+                        .HasColumnType("int");
+
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");
 
@@ -514,6 +567,9 @@ namespace BMS.DAL.Migrations
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<double>("PrepareTime")
+                        .HasColumnType("float");
 
                     b.Property<double>("Price")
                         .HasColumnType("float");
@@ -586,25 +642,25 @@ namespace BMS.DAL.Migrations
                     b.HasData(
                         new
                         {
-                            Id = new Guid("35077bd5-1787-40ea-94cd-b25328ce8ad5"),
+                            Id = new Guid("14b6c865-c0bb-4eb1-a7ba-d7eaa1de1437"),
                             Name = "Admin",
                             NormalizedName = "Admin"
                         },
                         new
                         {
-                            Id = new Guid("1d2159f5-e412-4714-8fcc-15ee5a90681a"),
+                            Id = new Guid("916ba9d9-a77a-4ea2-9b4c-bbd923976c06"),
                             Name = "Staff",
                             NormalizedName = "Staff"
                         },
                         new
                         {
-                            Id = new Guid("f48cddb7-b377-4e30-a8ea-077651bc0642"),
+                            Id = new Guid("e7c7b516-7090-445a-af0c-cf843d8c84d3"),
                             Name = "User",
                             NormalizedName = "User"
                         },
                         new
                         {
-                            Id = new Guid("19cedbee-6b0e-4056-ae33-cdefb87d6eba"),
+                            Id = new Guid("77ae2c61-9efd-48e3-8d33-a5d20429893f"),
                             Name = "Shop",
                             NormalizedName = "Shop"
                         });
@@ -651,6 +707,12 @@ namespace BMS.DAL.Migrations
 
                     b.Property<Guid?>("UserId")
                         .HasColumnType("uniqueidentifier");
+
+                    b.Property<double?>("lat")
+                        .HasColumnType("float");
+
+                    b.Property<double?>("lng")
+                        .HasColumnType("float");
 
                     b.HasKey("Id");
 
@@ -910,6 +972,10 @@ namespace BMS.DAL.Migrations
 
             modelBuilder.Entity("BMS.Core.Domains.Entities.CartDetail", b =>
                 {
+                    b.HasOne("BMS.Core.Domains.Entities.CartGroupUser", "CartGroupUser")
+                        .WithMany("CartDetails")
+                        .HasForeignKey("CartGroupUserId");
+
                     b.HasOne("BMS.Core.Domains.Entities.Cart", "Cart")
                         .WithMany("CartDetails")
                         .HasForeignKey("CartId")
@@ -924,7 +990,28 @@ namespace BMS.DAL.Migrations
 
                     b.Navigation("Cart");
 
+                    b.Navigation("CartGroupUser");
+
                     b.Navigation("Product");
+                });
+
+            modelBuilder.Entity("BMS.Core.Domains.Entities.CartGroupUser", b =>
+                {
+                    b.HasOne("BMS.Core.Domains.Entities.Cart", "Cart")
+                        .WithMany("CartGroupUsers")
+                        .HasForeignKey("CartId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("BMS.Core.Domains.Entities.User", "User")
+                        .WithMany("CartGroupUsers")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Cart");
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("BMS.Core.Domains.Entities.Coupon", b =>
@@ -1199,6 +1286,13 @@ namespace BMS.DAL.Migrations
             modelBuilder.Entity("BMS.Core.Domains.Entities.Cart", b =>
                 {
                     b.Navigation("CartDetails");
+
+                    b.Navigation("CartGroupUsers");
+                });
+
+            modelBuilder.Entity("BMS.Core.Domains.Entities.CartGroupUser", b =>
+                {
+                    b.Navigation("CartDetails");
                 });
 
             modelBuilder.Entity("BMS.Core.Domains.Entities.Category", b =>
@@ -1264,6 +1358,8 @@ namespace BMS.DAL.Migrations
 
             modelBuilder.Entity("BMS.Core.Domains.Entities.User", b =>
                 {
+                    b.Navigation("CartGroupUsers");
+
                     b.Navigation("Carts");
 
                     b.Navigation("CouponUsages");

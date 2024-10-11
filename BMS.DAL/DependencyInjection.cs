@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -17,7 +18,13 @@ namespace BMS.DAL
             services.AddScoped<Microsoft.EntityFrameworkCore.DbContext, BMS_DbContext>();
             services.AddDbContext<BMS_DbContext>(options =>
             {
-                options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection"));
+                options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")
+                    , sqlOptions =>
+                    {
+                        sqlOptions.MaxBatchSize(100); // Default value is 100, use a higher value to optimize
+                        sqlOptions.CommandTimeout(120); // Still keep timeout to avoid timeouts on larger queries
+                        sqlOptions.EnableRetryOnFailure(5);
+                    }).EnableSensitiveDataLogging();
             });
             services.AddScoped<IUnitOfWork, UnitOfWork>();
             // services.AddScoped<IUserRepository, UserRepository>();

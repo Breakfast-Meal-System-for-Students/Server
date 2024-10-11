@@ -18,6 +18,7 @@ namespace BMS.BLL.Models.Responses.Users
         public DateTime CreateDate { get; set; } = DateTime.Now;
         public DateTime LastUpdateDate { get; set; } = DateTime.Now;
 
+        public Guid? ShopId { get; set; }
         public IList<string>? Role { get; set; } = null!;
         //  public ICollection<UserRole>? UserRoles { get; set; }
 

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using BMS.Core.Domains.Entities;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -129,6 +130,21 @@ namespace BMS.BLL.Helpers
                             If you encounter any issues, feel free to contact our support team.
 
                             Best regards,";
+        }
+
+        public static string GetNotificationMail(string link, string userName, string platformEmail, Order order)
+        {
+            return $@"Dear {userName},
+
+                        Thank you for booking order {order.Id} with our platform! We’re excited to have you join our community. To complete your account setup, please follow the steps below:<br>
+
+                        Verify Your Email Address: Click on the following link to verify your email address and activate your account: <a href='{link}'>here</a><br>
+            
+                        Explore Our Features: Once your account is activated, you can start exploring our platform. Discover exciting content, connect with other users, and enjoy our services.<br>  
+
+                        If you did not register for an account, please ignore this email. Your privacy and security are important to us, and we will never share your information with third parties.<br>
+
+                        If you encounter any issues or need assistance, feel free to reach out to our support team at {platformEmail}.";
         }
     }
 }

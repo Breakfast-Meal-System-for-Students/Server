@@ -10,5 +10,7 @@ namespace BMS.BLL.Services.IServices
     public interface ITokenService
     {
         Task<string> CreateToken(User user);
+        Task<string> GenerateTokenForShareLink(Guid cartId);
+        Task<string> CheckTokenForShareLink(string accessToken);
     }
 }

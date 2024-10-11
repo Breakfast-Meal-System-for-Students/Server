@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using BMS.BLL.Models.Responses.Admin;
 
 namespace BMS.BLL.Services.IServices
 {
@@ -20,5 +21,8 @@ namespace BMS.BLL.Services.IServices
         Task<ServiceActionResult> GetTopShopHaveHighTransaction(TopShopOrUserRequest request);
         Task<ServiceActionResult> ChangeTransactionStatus(Guid id, TransactionStatus status);
         Task<ServiceActionResult> GetTotalTransaction(TotalTRansactionRequest request);
+
+        Task<ServiceActionResult> AddTransaction(Guid orderId);
+        Task<ServiceActionResult> UpdateTransaction(Guid transactionId, TransactionMethod transactionMethod = 0, TransactionStatus transactionStatus = 0);
     }
 }

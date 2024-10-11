@@ -1,4 +1,5 @@
-﻿using BMS.BLL.Services.IServices;
+﻿using Azure.Core;
+using BMS.BLL.Services.IServices;
 using BMS.Core.Domains.Entities;
 using BMS.Core.Exceptions;
 using BMS.Core.Settings;
@@ -43,7 +44,7 @@ namespace BMS.BLL.Services
             var tokenDescriptor = new SecurityTokenDescriptor
             {
                 Subject = new ClaimsIdentity(claims),
-                Expires = DateTime.Now.AddDays(30),
+                Expires = DateTime.Now.AddDays(1),
                 SigningCredentials = creds
             };
 
@@ -54,11 +55,58 @@ namespace BMS.BLL.Services
             return tokenToReturn;
         }
 
+        public async Task<string> GenerateTokenForShareLink(Guid cartId)
+        {
+            var tokenHandler = new JwtSecurityTokenHandler();
+
+            var tokenDescriptor = new SecurityTokenDescriptor
+            {
+                Subject = new ClaimsIdentity(new Claim[]
+                {
+                    new Claim("CartID", cartId.ToString()),
+                    new Claim("Type", "SharedCartAccess")
+                }),
+                Expires = DateTime.UtcNow.AddHours(1),
+                SigningCredentials = new SigningCredentials(_key, SecurityAlgorithms.HmacSha512Signature)
+
+        };
+
+            var token = tokenHandler.CreateToken(tokenDescriptor);
+            var tokenString = tokenHandler.WriteToken(token);
+            return tokenString;
+        }
+
         private SymmetricSecurityKey GetSymmetricSecurityKey(IConfiguration configuration)
         {
             var jwtSettings = configuration.GetSection(nameof(JwtSettings)).Get<JwtSettings>() ?? throw new MissingJwtSettingsException();
             return new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSettings.SigningKey));
 
+        }
+
+        public async Task<string> CheckTokenForShareLink(string accessToken)
+        {
+            var tokenHandler = new JwtSecurityTokenHandler();
+
+            try
+            {
+                tokenHandler.ValidateToken(accessToken, new TokenValidationParameters
+                {
+                    ValidateIssuerSigningKey = true,
+                    IssuerSigningKey = _key,
+                    ValidateIssuer = false,
+                    ValidateAudience = false,
+                    ClockSkew = TimeSpan.Zero
+                }, out SecurityToken validatedToken);
+
+                var jwtToken = (JwtSecurityToken)validatedToken;
+                var cartIdFromToken = jwtToken.Claims.First(x => x.Type == "CartID").Value;
+                return cartIdFromToken;
+
+            }
+            catch (Exception)
+            {
+                return null;
+            }
         }
     }
 }

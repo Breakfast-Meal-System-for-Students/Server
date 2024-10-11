@@ -12,13 +12,15 @@ namespace BMS.BLL.Models.Responses.Admin
         public Guid Id { get; set; }
         public double TotalPrice { get; set; }
         public string Status { get; set; } = null!;
-
+        public DateTime? OrderDate { get; set; }
         public Guid CustomerId { get; set; }
-        public User Customer { get; set; } = null!;
-
+        public string? FirstName { get; set; } = null!;
+        public string? LastName { get; set; } = null!;
+        public string? Avatar { get; set; }
+        public byte[] QRCode { get; set; }
         public Guid ShopId { get; set; }
-        public Core.Domains.Entities.Shop Shop { get; set; } = null!;
-
-        public ICollection<OrderItem> OrderItems { get; set; } = new List<OrderItem>();
+        public string? ShopName { get; set; }
+        public string? ShopImage { get; set; } = null!;
+        public ICollection<OrderItemResponse> OrderItems { get; set; } = new List<OrderItemResponse>();
     }
 }

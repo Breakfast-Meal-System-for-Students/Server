@@ -28,7 +28,8 @@ namespace BMS.BLL
             services.AddScoped<IUserClaimsService, UserClaimsService>();
 
 
-
+            // Register HttpClient
+            services.AddHttpClient();
 
 
             #region Service
@@ -49,6 +50,13 @@ namespace BMS.BLL
             services.AddScoped<IRegisterCategoryService, RegisterCategoryService>();
             services.AddScoped<ICouponService, CouponService>();
             services.AddScoped<IPackageService, PackageService>();
+            services.AddScoped<INotificationService, NotificationService>();
+            services.AddScoped<IVnPayService, VnPayService>();
+            services.AddScoped<IPayOSService, PayOSService>();
+            services.AddScoped<IQRCodeService, QRCodeService>();
+            services.AddScoped<ICartGroupUserService, CartGroupUserService>();
+            services.AddScoped<IShopService, ShopService>();
+            services.AddScoped<IGoogleMapService, GoogleMapService>();
             #endregion
 
             #region Validation

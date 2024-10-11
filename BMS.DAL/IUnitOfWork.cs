@@ -1,4 +1,5 @@
 ﻿using BMS.DAL.Repositories.IRepositories;
+using Microsoft.EntityFrameworkCore.Storage;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -25,9 +26,12 @@ namespace BMS.DAL
         public IRegisterCategoryRepository RegisterCategoryRepository { get; }
         public IPackageRepository PackageRepository { get; }
         public IPackageHistoryRepository PackageHistoryRepository { get; }
+        public ICartGroupUserRepository CartGroupUserRepository { get; }
         void Commit();
         Task CommitAsync();
         void Rollback();
         Task RollbackAsync();
+
+        Task<IDbContextTransaction> BeginTransaction();
     }
 }

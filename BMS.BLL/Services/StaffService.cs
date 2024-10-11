@@ -93,8 +93,9 @@ namespace BMS.BLL.Services
 
         public async Task<ServiceActionResult> DeleteStaff(Guid id)
         {
-            var user = await _userManager.FindByIdAsync(id.ToString());
-            await _userManager.DeleteAsync(user);
+            /*var user = await _userManager.FindByIdAsync(id.ToString());
+            await _userManager.DeleteAsync(user);*/
+            await _unitOfWork.UserRepository.SoftDeleteByIdAsync(id);
             return new ServiceActionResult();
         }
 

@@ -1,6 +1,8 @@
 ﻿using BMS.API.Controllers.Base;
+using BMS.BLL.Models;
 using BMS.BLL.Models.Requests.Admin;
 using BMS.BLL.Models.Requests.Category;
+using BMS.BLL.Models.Requests.Order;
 using BMS.BLL.Services;
 using BMS.BLL.Services.BaseServices;
 using BMS.BLL.Services.IServices;
@@ -14,15 +16,19 @@ namespace BMS.API.Controllers
     public class OrderController : BaseApiController
     {
         private readonly IOrderService _orderService;
-        public OrderController(IOrderService orderService)
+        private readonly IUserClaimsService _userClaimsService;
+        private UserClaims _userClaims;
+        public OrderController(IOrderService orderService, IUserClaimsService userClaimsService)
         {
             _orderService = orderService;
             _baseService = (BaseService)orderService;
+            _userClaimsService = userClaimsService;
+            _userClaims = userClaimsService.GetUserClaims();
         }
 
-        [HttpPost("GetListOrders")]
+        [HttpGet("GetListOrders")]
         //[Authorize(Roles = UserRoleConstants.ADMIN)]
-        public async Task<IActionResult> GetListOrders(SearchOrderRequest request)
+        public async Task<IActionResult> GetListOrders([FromQuery]SearchOrderRequest request)
         {
             return await ExecuteServiceLogic(
                 async () => await _orderService.GetListOrders(request).ConfigureAwait(false)
@@ -31,7 +37,7 @@ namespace BMS.API.Controllers
 
         [HttpGet("GetOrderById{id}")]
         //[Authorize(Roles = UserRoleConstants.ADMIN)]
-        public async Task<IActionResult> GetOrderById([FromQuery]Guid id)
+        public async Task<IActionResult> GetOrderById(Guid id)
         {
             return await ExecuteServiceLogic(
                 async () => await _orderService.GetOrderByID(id).ConfigureAwait(false)
@@ -56,6 +62,15 @@ namespace BMS.API.Controllers
             ).ConfigureAwait(false);
         }
 
+        [HttpGet("GetOrderForUser")]
+        [Authorize]
+        public async Task<IActionResult> GetOrderForUser([FromQuery] SearchOrderRequest request)
+        {
+            return await ExecuteServiceLogic(
+                async () => await _orderService.GetOrderByUser(_userClaims.UserId, request).ConfigureAwait(false)
+            ).ConfigureAwait(false);
+        }
+
         [HttpGet("GetTotalOrder")]
         //[Authorize(Roles = UserRoleConstants.ADMIN)]
         public async Task<IActionResult> GetTotalOrder([FromQuery] TotalOrdersRequest request)
@@ -76,10 +91,10 @@ namespace BMS.API.Controllers
 
         [HttpPost("CreateOrder")]
         //[Authorize(Roles = UserRoleConstants.ADMIN)]
-        public async Task<IActionResult> CreateOrder(Guid cartId, Guid voucherId)
+        public async Task<IActionResult> CreateOrder([FromBody] CreateOrderRequest request)
         {
             return await ExecuteServiceLogic(
-                async () => await _orderService.CreateOrder(cartId, voucherId).ConfigureAwait(false)
+                async () => await _orderService.CreateOrder(request).ConfigureAwait(false)
             ).ConfigureAwait(false);
         }
 
@@ -98,6 +113,24 @@ namespace BMS.API.Controllers
             return await ExecuteServiceLogic(
                                async () => await _orderService.UpdateStatusOrder(Id, status).ConfigureAwait(false)
                                           ).ConfigureAwait(false);
+        }
+
+        [HttpGet("CheckOrderIsPayed{orderId}")]
+        //[Authorize(Roles = UserRoleConstants.ADMIN)]
+        public async Task<IActionResult> CheckOrderIsPayed(Guid orderId)
+        {
+            return await ExecuteServiceLogic(
+                async () => await _orderService.CheckOrderIsPayed(orderId).ConfigureAwait(false)
+            ).ConfigureAwait(false);
+        }
+
+        [HttpPost("CheckQRCodeOfUser")]
+        //[Authorize(Roles = UserRoleConstants.ADMIN)]
+        public async Task<IActionResult> CheckQRCodeOfUser([FromForm] byte[] QRcode)
+        {
+            return await ExecuteServiceLogic(
+                async () => await _orderService.CheckQRCodeOfUser(QRcode, _userClaims.UserId).ConfigureAwait(false)
+            ).ConfigureAwait(false);
         }
     }
 }

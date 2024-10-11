@@ -1,4 +1,5 @@
 ﻿using BMS.Core.Domains.Entities.BaseEntities;
+using BMS.Core.Domains.Enums;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,8 +11,8 @@ namespace BMS.Core.Domains.Entities
     public class Notification : EntityBase<Guid>
     {
         public string Object { get; set; } = null!;
-        public string Status { get; set; } = null!;
-
+        public NotificationStatus Status { get; set; } = NotificationStatus.UnRead;
+        public NotificationTitle? Title { get; set; }
         public Guid UserId { get; set; }
         public User User { get; set; } = null!;
 

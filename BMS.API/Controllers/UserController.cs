@@ -27,9 +27,9 @@ namespace BMS.API.Controllers
                 async () => await _userService.DeleteUser(id).ConfigureAwait(false)
             ).ConfigureAwait(false);
         }
-        [HttpPost("GetListUser")]
+        [HttpGet("GetListUser")]
         [Authorize(Roles = UserRoleConstants.ADMIN)]
-        public async Task<IActionResult> GetListUser([FromForm]SearchStaffRequest request)
+        public async Task<IActionResult> GetListUser([FromQuery]SearchStaffRequest request)
         {
             return await ExecuteServiceLogic(
                 async () => await _userService.GetListUser(request).ConfigureAwait(false)

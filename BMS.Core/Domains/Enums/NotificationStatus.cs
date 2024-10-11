@@ -10,6 +10,8 @@ namespace BMS.Core.Domains.Enums
     {
         Draft = 1,
         Sended = 2,
-        Errored = 3,
+        Readed = 3,
+        UnRead = 4,
+        Errored = 5,
     }
 }
