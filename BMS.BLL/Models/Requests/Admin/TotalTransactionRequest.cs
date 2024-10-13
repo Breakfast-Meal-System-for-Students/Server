@@ -10,11 +10,8 @@ namespace BMS.BLL.Models.Requests.Admin
 {
     public class TotalTRansactionRequest
     {
-        [Range(1, 31)]
         public int? Day { get; set; } = 0;
-        [Range(1, 12)]
         public int? Month { get; set; } = 0;
-        [Range(2000, 3000)]
         public int? Year { get; set; } = 0;
         public TransactionStatus? Status { get; set; } = 0;
     }

@@ -42,6 +42,13 @@ namespace BMS.DAL.Repositories
             if (saveChanges) await DbContext.SaveChangesAsync();
         }
 
+        public async Task UpdateRangeAsync(IEnumerable<T> entities, bool saveChanges = true)
+        {
+            var enumerable = entities as T[] ?? entities.ToArray();
+            if (enumerable.Any()) Entities.UpdateRange(enumerable);
+
+            if (saveChanges) await DbContext.SaveChangesAsync();
+        }
 
         public void AddRange(IEnumerable<T> entities)
         {

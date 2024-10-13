@@ -31,6 +31,8 @@ using System.Reflection;
 using BMS.BLL.Models.Responses.Image;
 using BMS.BLL.Models.Responses.Notification;
 using BMS.BLL.Models.Responses.ShopWeeklyReport;
+using BMS.BLL.Models.Responses.OpeningHour;
+using BMS.BLL.Models.Requests.OpeningHour;
 
 
 namespace BMS.BLL.Utilities.AutoMapperProfiles
@@ -165,6 +167,10 @@ namespace BMS.BLL.Utilities.AutoMapperProfiles
                     .ForMember(dest => dest.ShopImage, opt => opt.MapFrom(src => src.Shop.Image))
                     .ForMember(dest => dest.Report, opt => opt.MapFrom(src => src.ReportData))
                     .ForMember(dest => dest.DateReport, opt => opt.MapFrom(src => src.CreateDate));
+                #endregion
+                #region openinghours
+                CreateMap<OpeningHours, GetOpeningHoursForShopResonse>();
+                CreateMap<OpeningHoursRequest, OpeningHours>();
                 #endregion
             }
         }
