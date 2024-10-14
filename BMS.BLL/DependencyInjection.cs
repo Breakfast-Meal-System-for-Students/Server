@@ -59,6 +59,7 @@ namespace BMS.BLL
             services.AddScoped<IShopService, ShopService>();
             services.AddScoped<IGoogleMapService, GoogleMapService>();
             services.AddScoped<IShopWeeklyReportService, ShopWeeklyReportService>();
+            services.AddScoped<IOpeningHoursService, OpeningHoursService>();
             #endregion
 
             #region Validation

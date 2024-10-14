@@ -21,10 +21,8 @@ namespace BMS.BLL.Services
 {
     public class OpeningHoursService : BaseService, IOpeningHoursService
     {
-        private readonly IOpeningHoursService _openingHoursService;
-        public OpeningHoursService(IUnitOfWork unitOfWork, IMapper mapper, IOpeningHoursService openingHoursService) : base(unitOfWork, mapper)
+        public OpeningHoursService(IUnitOfWork unitOfWork, IMapper mapper) : base(unitOfWork, mapper)
         {
-            _openingHoursService = openingHoursService;
         }
 
         public async Task<ServiceActionResult> GetOpeningHoursForShop(Guid shopId)

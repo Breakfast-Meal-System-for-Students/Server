@@ -151,7 +151,7 @@ namespace BMS.BLL.Services
                     throw new AddRoleException(error);
                 }
                 List<OpeningHours> openingHours1 = OpeningHoursCreationHelper.GenerateOpeningHours(application.Id);
-                _unitOfWork.OpeningHoursRepository.AddRange(openingHours1);
+                _unitOfWork.OpeningHoursRepository.AddRange(openingHours1.AsEnumerable());
                 return new LoginUser() { Email = application.Email, Password = "Your currently password in my system" };
             }
 
@@ -191,7 +191,7 @@ namespace BMS.BLL.Services
             await _userManager.UpdateAsync(userEntity);
 
             List<OpeningHours> openingHours2 = OpeningHoursCreationHelper.GenerateOpeningHours(application.Id);
-            _unitOfWork.OpeningHoursRepository.AddRange(openingHours2);
+            _unitOfWork.OpeningHoursRepository.AddRange(openingHours2.AsEnumerable());
 
             return new LoginUser() { Email = application.Email, Password = password };
         }

@@ -13,9 +13,10 @@ namespace BMS.BLL.Utilities
         public static List<OpeningHours> GenerateOpeningHours(Guid shopId)
         {
             List<OpeningHours> list = new List<OpeningHours>();
-            OpeningHours openingHour = new OpeningHours();
-            for (var i = 1; i < 7; i++)
+            OpeningHours openingHour;
+            for (var i = 1; i <= 7; i++)
             {
+                openingHour = new OpeningHours();
                 switch (i)
                 {
                     case 1:
@@ -61,7 +62,7 @@ namespace BMS.BLL.Utilities
                         openingHour.to_minute = 0;
                         break;
                     case 7:
-                        openingHour.day = WeekDay.Friday;
+                        openingHour.day = WeekDay.Saturday;
                         openingHour.from_hour = 6;
                         openingHour.from_minute = 0;
                         openingHour.to_hour = 11;
