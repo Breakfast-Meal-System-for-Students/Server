@@ -275,7 +275,7 @@ namespace BMS.BLL.Services
                 order.TotalPrice -= discount;
             }
 
-            string qrContent = order.Id.ToString();
+            string qrContent = DateTime.UtcNow.Ticks.ToString();
             order.QRCode = _qrCodeService.GenerateQRCode(qrContent);
 
             while (await CheckQRCodeExist(order.QRCode))
