@@ -23,6 +23,7 @@ using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
 using System.Xml.XPath;
@@ -108,7 +109,7 @@ namespace BMS.BLL.Services
             };
         }
 
-        public async Task<ServiceActionResult> CreateOrder(CreateOrderRequest request)
+        /*public async Task<ServiceActionResult> CreateOrder(CreateOrderRequest request)
         {
             var carts = (await _unitOfWork.CartRepository.GetAllAsyncAsQueryable())
                         .Where(x => x.Id == request.CartId)
@@ -214,6 +215,114 @@ namespace BMS.BLL.Services
             await _hubContext.Clients.User(notification.UserId.ToString()).SendAsync("Create Order", notification.Object);
             return new ServiceActionResult() { Detail = "Order has been created successfully" };
 
+        }*/
+
+        public async Task<ServiceActionResult> CreateOrder(CreateOrderRequest request)
+        {
+            Expression<Func<Cart, bool>> filter = cart => (cart.Id == request.CartId);
+            var cart = (await _unitOfWork.CartRepository.FindAsyncAsQueryable(filter))
+                            .Include(y => y.CartDetails)
+                            .FirstOrDefault();
+
+            if (cart == null)
+            {
+                return new ServiceActionResult() { Detail = "Cart does not exist or is deleted" };
+            }
+
+            Order order = new Order
+            {
+                Status = OrderStatus.ORDERED.ToString(),
+                ShopId = cart.ShopId,
+                CustomerId = cart.CustomerId,
+                TotalPrice = cart.CartDetails.Sum(x => x.Quantity * x.Price),
+                OrderDate = request.OrderDate
+            };
+
+            double discount = 0;
+
+            if (request.VoucherId != Guid.Empty && request.VoucherId != null)
+            {
+                var coupon = await _unitOfWork.CouponRepository.FindAsync(request.VoucherId);
+                if (coupon == null || coupon.IsDeleted)
+                {
+                    return new ServiceActionResult() { Detail = "Coupon does not exist or is deleted" };
+                }
+
+                if (coupon.StartDate >= order.CreateDate)
+                {
+                    return new ServiceActionResult(false) { Detail = "The Date of Coupon is not yet start" };
+                }
+                else if (coupon.EndDate <= order.CreateDate)
+                {
+                    return new ServiceActionResult(false) { Detail = "The Date of Coupon is Finish" };
+                }
+                else if (order.TotalPrice < coupon.MinPrice)
+                {
+                    return new ServiceActionResult(false) { Detail = "Total Price of Order is not enough to use this voucher" };
+                }
+
+                discount = coupon.isPercentDiscount
+                    ? Math.Min(order.TotalPrice * coupon.PercentDiscount, coupon.MaxDiscount)
+                    : coupon.MinDiscount;
+            }
+
+            if (discount > 0)
+            {
+                if (order.TotalPrice - discount <= 0)
+                {
+                    return new ServiceActionResult(false) { Detail = "Total Price of Order is < 0" };
+                }
+                order.TotalPrice -= discount;
+            }
+
+            string qrContent = order.Id.ToString();
+            order.QRCode = _qrCodeService.GenerateQRCode(qrContent);
+
+            while (await CheckQRCodeExist(order.QRCode))
+            {
+                order.QRCode = _qrCodeService.GenerateQRCode(qrContent);
+            }
+
+            await _unitOfWork.OrderRepository.AddAsync(order);
+
+            var orderItems = cart.CartDetails.Select(item => new OrderItem
+            {
+                OrderId = order.Id,
+                ProductId = item.ProductId,
+                Quantity = item.Quantity,
+                Price = item.Price
+            }).ToList();
+
+            await _unitOfWork.OrderItemRepository.AddRangeAsync(orderItems);
+
+            if (request.VoucherId != Guid.Empty)
+            {
+                CouponUsage couponUsage = new CouponUsage
+                {
+                    CouponId = request.VoucherId,
+                    OrderId = order.Id,
+                    UserId = order.CustomerId
+                };
+                await _unitOfWork.CouponUsageRepository.AddAsync(couponUsage);
+            }
+
+            Notification notification = new Notification
+            {
+                UserId = order.CustomerId,
+                OrderId = order.Id,
+                ShopId = order.ShopId,
+                Object = "Create Order",
+                Status = NotificationStatus.UnRead,
+                Title = NotificationTitle.BOOKING_ORDER
+            };
+
+            await _unitOfWork.NotificationRepository.AddAsync(notification);
+
+            await _unitOfWork.CartRepository.DeleteAsync(cart.Id);
+
+            await _hubContext.Clients.User(notification.UserId.ToString()).SendAsync("Create Order", notification.Object);
+
+            return new ServiceActionResult() { Detail = "Order has been created successfully" };
         }
 
         public async Task<ServiceActionResult> GetListOrders(SearchOrderRequest request)
@@ -380,12 +489,13 @@ namespace BMS.BLL.Services
             return Convert.ToBase64String(QRcode);
         }
 
-        private async Task<bool> CheckQRCodeExist(byte[] QRcode)
+        private async Task<bool> CheckQRCodeExist(string qrCodeHash)
         {
-            return (await _unitOfWork.OrderRepository.GetAllAsyncAsQueryable()).Where(x => x.QRCode.Equals(QRcode)).Count() != 0;
+            return (await _unitOfWork.OrderRepository.GetAllAsyncAsQueryable())
+                .Any(x => x.QRCode == qrCodeHash);
         }
 
-        public async Task<ServiceActionResult> CheckQRCodeOfUser(byte[] QRcode, Guid userId)
+        public async Task<ServiceActionResult> CheckQRCodeOfUser(string QRcode, Guid userId)
         {
             var order = (await _unitOfWork.OrderRepository.GetAllAsyncAsQueryable()).Where(x => x.QRCode.Equals(QRcode) && x.CustomerId == userId).FirstOrDefault();
             if (order != null)

@@ -8,6 +8,6 @@ namespace BMS.BLL.Services.IServices
 {
     public interface IQRCodeService
     {
-        byte[] GenerateQRCode(string content);
+        string GenerateQRCode(string content);
     }
 }

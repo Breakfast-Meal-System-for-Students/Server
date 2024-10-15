@@ -1,4 +1,5 @@
 ﻿using BMS.API.Controllers.Base;
+using BMS.API.Hub;
 using BMS.BLL.Models;
 using BMS.BLL.Models.Requests.Admin;
 using BMS.BLL.Models.Requests.Category;
@@ -10,6 +11,7 @@ using BMS.Core.Domains.Constants;
 using BMS.Core.Domains.Enums;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.SignalR;
 
 namespace BMS.API.Controllers
 {
@@ -18,12 +20,14 @@ namespace BMS.API.Controllers
         private readonly IOrderService _orderService;
         private readonly IUserClaimsService _userClaimsService;
         private UserClaims _userClaims;
-        public OrderController(IOrderService orderService, IUserClaimsService userClaimsService)
+        private readonly IHubContext<OrderHub> _hubContext;
+        public OrderController(IOrderService orderService, IUserClaimsService userClaimsService, IHubContext<OrderHub> hubContext)
         {
             _orderService = orderService;
             _baseService = (BaseService)orderService;
             _userClaimsService = userClaimsService;
             _userClaims = userClaimsService.GetUserClaims();
+            _hubContext = hubContext;
         }
 
         [HttpGet("GetListOrders")]
@@ -81,21 +85,33 @@ namespace BMS.API.Controllers
         }
 
         [HttpPost("ChangeOrderStatus")]
-        //[Authorize(Roles = UserRoleConstants.ADMIN)]
+        [Authorize]
         public async Task<IActionResult> ChangeOrderStatus(Guid id, OrderStatus status)
         {
-            return await ExecuteServiceLogic(
-                async () => await _orderService.ChangeOrderStatus(id, status).ConfigureAwait(false)
-            ).ConfigureAwait(false);
+            var result = await _orderService.ChangeOrderStatus(id, status).ConfigureAwait(false);
+
+            if (result.IsSuccess)
+            {
+                await _hubContext.Clients.Group(_userClaims.UserId.ToString())
+                    .SendAsync("OrderUpdated", _userClaims.UserId);
+            }
+
+            return await ExecuteServiceLogic(() => Task.FromResult(result)).ConfigureAwait(false);
         }
 
         [HttpPost("CreateOrder")]
-        //[Authorize(Roles = UserRoleConstants.ADMIN)]
+        [Authorize]
         public async Task<IActionResult> CreateOrder([FromBody] CreateOrderRequest request)
         {
-            return await ExecuteServiceLogic(
-                async () => await _orderService.CreateOrder(request).ConfigureAwait(false)
-            ).ConfigureAwait(false);
+            var result = await _orderService.CreateOrder(request).ConfigureAwait(false);
+
+            if (result.IsSuccess)
+            {
+                await _hubContext.Clients.Group(_userClaims.UserId.ToString())
+                    .SendAsync("OrderCreate", _userClaims.UserId);
+            }
+
+            return await ExecuteServiceLogic(() => Task.FromResult(result)).ConfigureAwait(false);
         }
 
         [HttpGet("GetStatusOrder")]
@@ -126,7 +142,7 @@ namespace BMS.API.Controllers
 
         [HttpPost("CheckQRCodeOfUser")]
         //[Authorize(Roles = UserRoleConstants.ADMIN)]
-        public async Task<IActionResult> CheckQRCodeOfUser([FromForm] byte[] QRcode)
+        public async Task<IActionResult> CheckQRCodeOfUser([FromForm] string QRcode)
         {
             return await ExecuteServiceLogic(
                 async () => await _orderService.CheckQRCodeOfUser(QRcode, _userClaims.UserId).ConfigureAwait(false)

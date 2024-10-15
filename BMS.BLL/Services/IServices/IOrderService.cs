@@ -26,7 +26,7 @@ namespace BMS.BLL.Services.IServices
         Task<ServiceActionResult> UpdateStatusOrder(Guid id, string status);
         Task<ServiceActionResult> CheckOrderIsPayed(Guid orderId);
         Task<ServiceActionResult> GetOrderForUser(Guid userId, SearchOrderRequest request);
-        Task<ServiceActionResult> CheckQRCodeOfUser(byte[] QRcode, Guid userId);
+        Task<ServiceActionResult> CheckQRCodeOfUser(string QRcode, Guid userId);
         Task<List<Order>> GetOrdersForNotificaton();
     }
 }
