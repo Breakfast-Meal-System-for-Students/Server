@@ -134,14 +134,14 @@ namespace BMS.BLL.Services
                 };
             } else
             {
-                if (cart.IsGroup == false) 
-                { 
+                if (cart.IsGroup == false)
+                {
                     cart.IsGroup = true;
                     cart.LastUpdateDate = DateTime.Now;
                     await _unitOfWork.CartRepository.UpdateAsync(cart);
                 }
 
-                return new ServiceActionResult() 
+                return new ServiceActionResult()
                 {
                     Data = await GenerateShareLink(cart.Id)
                 };
@@ -262,7 +262,22 @@ namespace BMS.BLL.Services
             };
         }
 
-        private async Task<string> GenerateShareLink(Guid cartId)
+        public async Task<ServiceActionResult> CountCartItemInShop(Guid userId, Guid shopId)
+        {
+            var cartItem = (await _unitOfWork.CartDetailRepository.GetAllAsyncAsQueryable())
+                .Include(x => x.Cart).Where(y => y.Cart.CustomerId == userId && y.Cart.ShopId == shopId)
+                .Select(z => new
+                {
+                    Id = z.Id,
+                    Total = z.Quantity
+                });
+            return new ServiceActionResult()
+            {
+                Data = cartItem.Sum(x => x.Total)
+            };
+        }
+
+    private async Task<string> GenerateShareLink(Guid cartId)
         {
             var baseUrl = "https://bms-fs-api.azurewebsites.net/api/Cart/GetCartBySharing/";
             string tokenString = await _tokenService.GenerateTokenForShareLink(cartId);

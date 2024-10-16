@@ -195,5 +195,15 @@ namespace BMS.API.Controllers
                 async () => await _cartService.ChangeCartToGroup(_userClaims.UserId, shopId).ConfigureAwait(false)
             ).ConfigureAwait(false);
         }
+
+        [HttpGet("CountCartItemInShop")]
+        [Authorize]
+        //[Authorize(Roles = UserRoleConstants.USER)]
+        public async Task<IActionResult> CountCartItemInShop([FromQuery] Guid shopId)
+        {
+            return await ExecuteServiceLogic(
+                async () => await _cartService.CountCartItemInShop(_userClaims.UserId, shopId).ConfigureAwait(false)
+            ).ConfigureAwait(false);
+        }
     }
 }
