@@ -17,7 +17,7 @@ namespace BMS.BLL.Models.Responses.Admin
         public string? FirstName { get; set; } = null!;
         public string? LastName { get; set; } = null!;
         public string? Avatar { get; set; }
-        public byte[] QRCode { get; set; }
+        public string QRCode { get; set; }
         public Guid ShopId { get; set; }
         public string? ShopName { get; set; }
         public string? ShopImage { get; set; } = null!;
