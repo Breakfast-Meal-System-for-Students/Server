@@ -73,6 +73,7 @@ namespace BMS.BLL.Utilities.AutoMapperProfiles
 
                 CreateMap<Shop, ShopApplicationResponse>();
                 CreateMap<Shop, ShopRequest>();
+                CreateMap<Shop, ShopResponse>();
 
                 #endregion
                 #region order

@@ -264,7 +264,7 @@ namespace BMS.BLL.Services
 
         private async Task<string> GenerateShareLink(Guid cartId)
         {
-            var baseUrl = "https://localhost:7039/api/Cart/GetCartBySharing/";
+            var baseUrl = "https://bms-fs-api.azurewebsites.net/api/Cart/GetCartBySharing/";
             string tokenString = await _tokenService.GenerateTokenForShareLink(cartId);
             return $"{baseUrl}{cartId}" + $"?access_token={tokenString}";
         }
