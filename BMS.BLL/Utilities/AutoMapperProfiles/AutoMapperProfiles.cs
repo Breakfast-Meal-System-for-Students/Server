@@ -112,8 +112,12 @@ namespace BMS.BLL.Utilities.AutoMapperProfiles
                 CreateMap<Category, UpdateCategoryRequest>()
                  .ForMember(dest => dest.Image, opt => opt.Ignore());
                 CreateMap<CreateCategoryRequest, Category>()
-                .ForMember(dest => dest.Image, opt => opt.Ignore()); 
-
+                .ForMember(dest => dest.Image, opt => opt.Ignore());
+                CreateMap<RegisterCategory, CategoryResponse>()
+                 .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.CategoryId))
+                 .ForMember(dest => dest.Name, opt => opt.MapFrom(src => src.Category.Name))
+                 .ForMember(dest => dest.Description, opt => opt.MapFrom(src => src.Category.Description))
+                 .ForMember(dest => dest.Image, opt => opt.MapFrom(src => src.Category.Image));
                 CreateMap<Category, CategoryResponse>();
                 #endregion
                 #region product  
@@ -123,7 +127,8 @@ namespace BMS.BLL.Utilities.AutoMapperProfiles
                 CreateMap<CreateProductRequest, Product>()
                 .ForMember(dest => dest.Images, opt => opt.Ignore());
 
-                CreateMap<Product, ProductResponse>();
+                CreateMap<Product, ProductResponse>()
+                    .ForMember(dest => dest.Categorys, opt => opt.MapFrom(src => src.RegisterCategorys));
                 #endregion
                 #region cart
                 CreateMap<CartGroupUser, CartGroupUserResponse>();
