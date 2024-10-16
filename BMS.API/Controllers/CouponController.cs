@@ -41,11 +41,18 @@ namespace BMS.API.Controllers
                                async () => await _couponService.AddCoupon(Coupon).ConfigureAwait(false)
                                           ).ConfigureAwait(false);
         }
-        [HttpGet]
+        [HttpGet("get-all-coupon")]
         public async Task<IActionResult> GetAllCoupon([FromQuery] CouponRequest pagingRequest)
         {
             return await ExecuteServiceLogic(
                                async () => await _couponService.GetAllCoupon(pagingRequest).ConfigureAwait(false)
+                                          ).ConfigureAwait(false);
+        }
+        [HttpGet("get-all-coupon-for-shop")]
+        public async Task<IActionResult> GetAllCouponForShop(Guid shopId,[FromQuery] CouponRequest pagingRequest)
+        {
+            return await ExecuteServiceLogic(
+                               async () => await _couponService.GetAllCouponForShop(shopId,pagingRequest).ConfigureAwait(false)
                                           ).ConfigureAwait(false);
         }
         [HttpPut("{id}")]

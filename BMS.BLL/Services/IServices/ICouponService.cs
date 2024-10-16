@@ -18,6 +18,7 @@ namespace BMS.BLL.Services.IServices
         Task<ServiceActionResult> UpdateCoupon(Guid id, UpdateCouponRequest request);
         Task<ServiceActionResult> DeleteCoupon(Guid id);
         Task<ServiceActionResult> GetCoupon(Guid id);
+        Task<ServiceActionResult> GetAllCouponForShop(Guid Shopid, CouponRequest queryParameters);
 
     }
 }
