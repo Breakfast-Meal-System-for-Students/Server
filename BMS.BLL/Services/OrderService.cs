@@ -247,7 +247,10 @@ namespace BMS.BLL.Services
                 {
                     return new ServiceActionResult() { Detail = "Coupon does not exist or is deleted" };
                 }
-
+                if (coupon.ShopId != order.ShopId)
+                {
+                    return new ServiceActionResult() { Detail = "Coupon is not used in this shop" };
+                }
                 if (coupon.StartDate >= order.CreateDate)
                 {
                     return new ServiceActionResult(false) { Detail = "The Date of Coupon is not yet start" };

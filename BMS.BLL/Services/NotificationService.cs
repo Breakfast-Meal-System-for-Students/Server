@@ -103,7 +103,7 @@ namespace BMS.BLL.Services
 
         public async Task<ServiceActionResult> GetNotificationForShop(Guid shopId, GetNotificationRequest request)
         {
-            IQueryable<Notification> notificationQuery = (await _unitOfWork.NotificationRepository.GetAllAsyncAsQueryable()).Where(x => x.ShopId == shopId);
+            IQueryable<Notification> notificationQuery = (await _unitOfWork.NotificationRepository.GetAllAsyncAsQueryable()).Include(a => a.User).Where(x => x.ShopId == shopId);
 
             if (request.Status != 0)
             {
@@ -117,14 +117,14 @@ namespace BMS.BLL.Services
             notificationQuery = notificationQuery.OrderByDescending(a => a.CreateDate);
 
             var paginationResult = PaginationHelper
-            .BuildPaginatedResult<Notification, NotificationResponse>(_mapper, notificationQuery, request.PageSize, request.PageIndex);
+            .BuildPaginatedResult<Notification, NotificationResponseForShop>(_mapper, notificationQuery, request.PageSize, request.PageIndex);
 
             return new ServiceActionResult(true) { Data = paginationResult };
         }
 
         public async Task<ServiceActionResult> GetNotificationForUser(Guid userId, GetNotificationRequest request)
         {
-            IQueryable<Notification> notificationQuery = (await _unitOfWork.NotificationRepository.GetAllAsyncAsQueryable()).Where(x => x.UserId == userId);
+            IQueryable<Notification> notificationQuery = (await _unitOfWork.NotificationRepository.GetAllAsyncAsQueryable()).Include(a => a.Shop).Where(x => x.UserId == userId);
 
             if (request.Status != 0)
             {
@@ -138,7 +138,7 @@ namespace BMS.BLL.Services
             notificationQuery = notificationQuery.OrderByDescending(a => a.CreateDate);
 
             var paginationResult = PaginationHelper
-            .BuildPaginatedResult<Notification, NotificationResponse>(_mapper, notificationQuery, request.PageSize, request.PageIndex);
+            .BuildPaginatedResult<Notification, NotificationResponseForUser>(_mapper, notificationQuery, request.PageSize, request.PageIndex);
 
             return new ServiceActionResult(true) { Data = paginationResult };
         }

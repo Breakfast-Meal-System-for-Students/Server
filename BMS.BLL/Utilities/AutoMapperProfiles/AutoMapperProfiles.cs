@@ -164,7 +164,14 @@ namespace BMS.BLL.Utilities.AutoMapperProfiles
                 CreateMap<Image, ImageResponse>();
                 #endregion
                 #region notification
-                CreateMap<Notification, NotificationResponse>();
+                CreateMap<Notification, NotificationResponseForUser>()
+                    .ForMember(dest => dest.ShopName, opt => opt.MapFrom(src => src.Shop.Name))
+                    .ForMember(dest => dest.ShopImage, opt => opt.MapFrom(src => src.Shop.Image));
+
+                CreateMap<Notification, NotificationResponseForShop>()
+                    .ForMember(dest => dest.FirstName, opt => opt.MapFrom(src => src.User.FirstName))
+                    .ForMember(dest => dest.LastName, opt => opt.MapFrom(src => src.User.LastName))
+                    .ForMember(dest => dest.Avatar, opt => opt.MapFrom(src => src.User.Avatar));
                 #endregion
 
                 #region shopweeklyreport
