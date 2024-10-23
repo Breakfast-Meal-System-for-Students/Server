@@ -14,6 +14,7 @@ using System.Text;
 using System.Threading.Tasks;
 using BMS.Core.Domains.Enums;
 using BMS.BLL.Models.Responses.Shop;
+using Microsoft.AspNetCore.Identity;
 
 namespace BMS.BLL.Services
 {
@@ -23,11 +24,13 @@ namespace BMS.BLL.Services
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
         private readonly IFileStorageService _fileStorageService;
-        public CouponService(IUnitOfWork unitOfWork, IMapper mapper, IFileStorageService fileStorageService) : base(unitOfWork, mapper)
+        private readonly UserManager<User> _userManager;
+        public CouponService(IUnitOfWork unitOfWork, IMapper mapper, IFileStorageService fileStorageService, UserManager<User> userManager) : base(unitOfWork, mapper)
         {
             _unitOfWork = unitOfWork;
             _mapper = mapper;
             _fileStorageService = fileStorageService;
+            _userManager = userManager;
         }
 
         public async Task<ServiceActionResult> GetAllCoupon(CouponRequest queryParameters)
@@ -99,6 +102,47 @@ namespace BMS.BLL.Services
             await _unitOfWork.CouponRepository.SoftDeleteByIdAsync(id);
             return new ServiceActionResult();
         }
+        public async Task<ServiceActionResult> GetAllCouponForShop(Guid Shopid,CouponRequest queryParameters)
+        {
 
+            IQueryable<Coupon> CouponQueryable = (await _unitOfWork.CouponRepository.GetAllAsyncAsQueryable()).Where(a => a.IsDeleted == false && a.ShopId==Shopid);
+
+
+
+            if (!string.IsNullOrEmpty(queryParameters.Search))
+            {
+                CouponQueryable = CouponQueryable.Where(m => m.Name.Contains(queryParameters.Search));
+            }
+
+            CouponQueryable = queryParameters.IsDesc ? CouponQueryable.OrderByDescending(a => a.CreateDate) : CouponQueryable.OrderBy(a => a.CreateDate);
+
+            var paginationResult = PaginationHelper
+            .BuildPaginatedResult<Coupon, CouponResponse>(_mapper, CouponQueryable, queryParameters.PageSize, queryParameters.PageIndex);
+
+
+
+            return new ServiceActionResult() { Data = paginationResult };
+        }
+        public async Task<ServiceActionResult> GetAllCouponForUser(Guid UserId,Guid Shopid, CouponRequest queryParameters)
+        {
+
+            IQueryable<Coupon> CouponQueryable = (await _unitOfWork.CouponRepository.GetAllAsyncAsQueryable()).Where(a => a.IsDeleted == false && a.ShopId == Shopid);
+
+
+
+            if (!string.IsNullOrEmpty(queryParameters.Search))
+            {
+                CouponQueryable = CouponQueryable.Where(m => m.Name.Contains(queryParameters.Search));
+            }
+
+            CouponQueryable = queryParameters.IsDesc ? CouponQueryable.OrderByDescending(a => a.CreateDate) : CouponQueryable.OrderBy(a => a.CreateDate);
+
+            var paginationResult = PaginationHelper
+            .BuildPaginatedResult<Coupon, CouponResponse>(_mapper, CouponQueryable, queryParameters.PageSize, queryParameters.PageIndex);
+
+
+
+            return new ServiceActionResult() { Data = paginationResult };
+        }
     }
 }

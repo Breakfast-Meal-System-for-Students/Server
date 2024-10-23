@@ -13,11 +13,14 @@ namespace BMS.BLL.Services.IServices
     public interface INotificationService
     {
         Task<List<Notification>> GetAllNotificationsToSendMail(NotificationStatus status);
+        Task<List<Notification>> GetAllNotificationsToSendNoti(Order order);
         Task SaveChange();
         Task<ServiceActionResult> GetNotificationForShop(Guid shopId, GetNotificationRequest request);
         Task<ServiceActionResult> CountNotificationForShop(Guid shopId);
         Task<ServiceActionResult> CountNotificationForUser(Guid userId);
         Task<ServiceActionResult> GetNotificationForUser(Guid userId, GetNotificationRequest request);
         Task<ServiceActionResult> ChangeStatusNotification(Guid userId, Guid notificationId);
+
+        Task<ServiceActionResult> CreateNotification(Order order);
     }
 }

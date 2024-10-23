@@ -1,10 +1,12 @@
-﻿using BMS.API.Controllers.Base;
+﻿using Azure.Core;
+using BMS.API.Controllers.Base;
 using BMS.BLL.Models;
 using BMS.BLL.Models.Requests.Admin;
 using BMS.BLL.Models.Requests.Notification;
 using BMS.BLL.Services;
 using BMS.BLL.Services.BaseServices;
 using BMS.BLL.Services.IServices;
+using BMS.Core.Domains.Entities;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
@@ -58,6 +60,21 @@ namespace BMS.API.Controllers
             return await ExecuteServiceLogic(
                 async () => await _notificationService.CountNotificationForUser(_userClaims.UserId).ConfigureAwait(false)
             ).ConfigureAwait(false);
+        }
+
+        [HttpPut("ChangeStatusNotification")]
+        [Authorize]
+        public async Task<IActionResult> ChangeStatusNotification([FromForm] Guid notificationId)
+        {
+            var result = await _notificationService.ChangeStatusNotification(_userClaims.UserId, notificationId).ConfigureAwait(false);
+            
+            if (result.IsSuccess)
+            {
+                var notification = (Notification)result.Data;
+                await _hubContext.Clients.User(notification.UserId.ToString()).SendAsync("Change Status Notification", notification.Object);
+            }
+
+            return await ExecuteServiceLogic(() => Task.FromResult(result)).ConfigureAwait(false);
         }
     }
 }

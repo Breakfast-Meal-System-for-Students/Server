@@ -12,6 +12,7 @@ using BMS.Core.Exceptions;
 using BMS.Core.Exceptions.IExceptions;
 using BMS.Core.Helpers;
 using BMS.DAL;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -23,9 +24,11 @@ namespace BMS.BLL.Services
 {
     public class NotificationService : BaseService, INotificationService
     {
-        public NotificationService(IUnitOfWork unitOfWork, IMapper mapper) : base(unitOfWork, mapper)
-        {
 
+        private readonly IHubContext<NotificationHub> _hubContext;
+        public NotificationService(IUnitOfWork unitOfWork, IMapper mapper, IHubContext<NotificationHub> hubContext) : base(unitOfWork, mapper)
+        {
+            _hubContext = hubContext;
         }
 
         public async Task<ServiceActionResult> ChangeStatusNotification(Guid userId, Guid notificationId)
@@ -37,10 +40,9 @@ namespace BMS.BLL.Services
                 throw new BusinessRuleException("Invalid userId");
             }
             notification.Status = NotificationStatus.Readed;
-            await _unitOfWork.NotificationRepository.UpdateAsync(notification);
             return new ServiceActionResult() 
             {
-                Data = notification.Id, 
+                Data = notification, 
                 Detail = "Notification is Readed"
             };
         }
@@ -59,6 +61,28 @@ namespace BMS.BLL.Services
             return new ServiceActionResult(true) { Data = notificationQuery.Count() };
         }
 
+        public async Task<ServiceActionResult> CreateNotification(Order order)
+        {
+            Notification notification = new Notification()
+            {
+                Object = "Đơn hàng sắp đến giờ nhận món. Gôm các món ăn sau: Hãy sắp xếp thời gian.",
+                Title = NotificationTitle.BOOKING_ORDER,
+                Status = NotificationStatus.UnRead,
+                UserId = order.CustomerId,
+                ShopId = order.ShopId,
+                OrderId = order.Id,
+            };
+            foreach(OrderItem orderItem in order.OrderItems) 
+            {
+                notification.Object += "\n";
+                notification.Object += $"{orderItem.Product.Name}";
+                notification.Object += orderItem.Product.PrepareTime != 0 ? $": {orderItem.Product.PrepareTime}" : "";
+            }
+            await _unitOfWork.NotificationRepository.AddAsync(notification);
+            await _hubContext.Clients.User(notification.UserId.ToString()).SendAsync($"Create Notification Automatically", notification.Object);
+            return new ServiceActionResult() { Data = notification };
+        }
+
         public async Task<List<Notification>> GetAllNotificationsToSendMail(NotificationStatus status)
         {
             return (await _unitOfWork.NotificationRepository.GetAllAsyncAsQueryable())
@@ -68,9 +92,18 @@ namespace BMS.BLL.Services
                     .Where(x => x.Status == status).ToList();
         }
 
+        public async Task<List<Notification>> GetAllNotificationsToSendNoti(Order order)
+        {
+            return (await _unitOfWork.NotificationRepository.GetAllAsyncAsQueryable())
+                   .Include(a => a.User)
+                   .Include(b => b.Shop)
+                   .Include(c => c.Order)
+                   .Where(x => x.Order.Id == order.Id && x.Status == NotificationStatus.UnRead).ToList();
+        }
+
         public async Task<ServiceActionResult> GetNotificationForShop(Guid shopId, GetNotificationRequest request)
         {
-            IQueryable<Notification> notificationQuery = (await _unitOfWork.NotificationRepository.GetAllAsyncAsQueryable()).Where(x => x.ShopId == shopId);
+            IQueryable<Notification> notificationQuery = (await _unitOfWork.NotificationRepository.GetAllAsyncAsQueryable()).Include(a => a.User).Where(x => x.ShopId == shopId);
 
             if (request.Status != 0)
             {
@@ -84,14 +117,14 @@ namespace BMS.BLL.Services
             notificationQuery = notificationQuery.OrderByDescending(a => a.CreateDate);
 
             var paginationResult = PaginationHelper
-            .BuildPaginatedResult<Notification, NotificationResponse>(_mapper, notificationQuery, request.PageSize, request.PageIndex);
+            .BuildPaginatedResult<Notification, NotificationResponseForShop>(_mapper, notificationQuery, request.PageSize, request.PageIndex);
 
             return new ServiceActionResult(true) { Data = paginationResult };
         }
 
         public async Task<ServiceActionResult> GetNotificationForUser(Guid userId, GetNotificationRequest request)
         {
-            IQueryable<Notification> notificationQuery = (await _unitOfWork.NotificationRepository.GetAllAsyncAsQueryable()).Where(x => x.UserId == userId);
+            IQueryable<Notification> notificationQuery = (await _unitOfWork.NotificationRepository.GetAllAsyncAsQueryable()).Include(a => a.Shop).Where(x => x.UserId == userId);
 
             if (request.Status != 0)
             {
@@ -105,7 +138,7 @@ namespace BMS.BLL.Services
             notificationQuery = notificationQuery.OrderByDescending(a => a.CreateDate);
 
             var paginationResult = PaginationHelper
-            .BuildPaginatedResult<Notification, NotificationResponse>(_mapper, notificationQuery, request.PageSize, request.PageIndex);
+            .BuildPaginatedResult<Notification, NotificationResponseForUser>(_mapper, notificationQuery, request.PageSize, request.PageIndex);
 
             return new ServiceActionResult(true) { Data = paginationResult };
         }

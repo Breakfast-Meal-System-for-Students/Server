@@ -30,6 +30,7 @@ namespace BMS.DAL.Repositories.IRepositories
         Task AddAsync(T entity, CancellationToken cancellationToken = default);
 
         Task UpdateAsync(T entity, bool saveChanges = true);
+        Task UpdateRangeAsync(IEnumerable<T> entities, bool saveChanges = true);
         Task AddRangeAsync(IEnumerable<T> entities, CancellationToken cancellationToken = default);
 
 

@@ -28,6 +28,39 @@ namespace BMS.BLL.Services
 
         }
 
+        public async Task SendEmailAsync(string ToEmail, string Subject, string Body, bool IsBodyHtml = false, byte[] attachmentBytes = null, string attachmentFileName = "")
+        {
+            var MailServer = _configuration["EmailSettings:MailServer"];
+            var FromEmail = _configuration["EmailSettings:FromEmail"];
+            var Password = _configuration["EmailSettings:Password"];
+            var Port = int.Parse(_configuration["EmailSettings:MailPort"]);
+
+            var client = new SmtpClient(MailServer, Port)
+            {
+                Credentials = new NetworkCredential(FromEmail, Password),
+                EnableSsl = true
+            };
+
+            var mailMessage = new MailMessage(FromEmail, ToEmail, Subject, EmailHelper.CreateEmailBody(Body, Subject))
+            {
+                IsBodyHtml = IsBodyHtml
+            };
+            if (attachmentBytes != null && !string.IsNullOrEmpty(attachmentFileName))
+            {
+                using (var attachmentStream = new MemoryStream(attachmentBytes))
+                {
+                    var attachment = new Attachment(attachmentStream, attachmentFileName);
+                    mailMessage.Attachments.Add(attachment);
+
+                    await client.SendMailAsync(mailMessage);
+                }
+            }
+            else
+            {
+                await client.SendMailAsync(mailMessage);
+            }
+        }
+
         public async Task SendEmailAsync(string ToEmail, string Subject, string Body, bool IsBodyHtml = false)
         {
             var MailServer = _configuration["EmailSettings:MailServer"];
@@ -69,5 +102,9 @@ namespace BMS.BLL.Services
             await SendEmailAsync(user.Email, "Confirm Your Account Registration", EmailHelper.GetNotificationMail($"{url}&token={encodedToken}", user.UserName, "breakfastmealsystem@gmail.com", order), true);
         }
 
+        public async Task SendEmailWithAttachmentAsync(string toEmail, string subject, string message, byte[] attachment)
+        {
+            await SendEmailAsync(toEmail, subject, message, true, attachment, "WeeklyReport.pdf");
+        }
     }
 }

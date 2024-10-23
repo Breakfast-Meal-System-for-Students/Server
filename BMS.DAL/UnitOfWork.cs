@@ -29,6 +29,8 @@ namespace BMS.DAL
         public IPackageRepository PackageRepository => new PackageRepository(_dbContext);
         public IPackageHistoryRepository PackageHistoryRepository => new PackageHistoryRepository(_dbContext);
         public ICartGroupUserRepository CartGroupUserRepository => new CartGroupUserRepository(_dbContext);
+        public IShopWeeklyReportRepository ShopWeeklyReportRepository => new ShopWeeklyReportRepository(_dbContext);
+        public IOpeningHoursRepository OpeningHoursRepository => new OpeningHoursRepository(_dbContext);
         public DbContext _dbContext { get; }
         
         public UnitOfWork(DbContext dbContext)

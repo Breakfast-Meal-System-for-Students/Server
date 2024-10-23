@@ -33,7 +33,8 @@ namespace BMS.Core.Domains.Entities
         public ICollection<Notification>? Notifications { get; set; } = new List<Notification>();
         public ICollection<OpeningHours>? OpeningHours { get; set; } = new List<OpeningHours>();
 
-    //    public ICollection<RegisterCategory>? RegisterCategorys { get; set; } = new List<RegisterCategory>();
+        public ICollection<ShopWeeklyReport>? ShopWeeklyReports { get; set; } = new List<ShopWeeklyReport>();
+        //    public ICollection<RegisterCategory>? RegisterCategorys { get; set; } = new List<RegisterCategory>();
 
 
     }

@@ -31,15 +31,16 @@ namespace BMS.BLL.Services
         private readonly UserManager<User> _userManager;
         private readonly IEmailService _emailService;
         private readonly RoleManager<Role> _roleManager;
-
+        private readonly IOpeningHoursService _openingHoursService;
         public ShopApplicationService(IUnitOfWork unitOfWork,
-            IMapper mapper,  UserManager<User> userManager, IEmailService emailService, RoleManager<Role> roleManager) : base(unitOfWork, mapper)
+            IMapper mapper,  UserManager<User> userManager, IEmailService emailService, RoleManager<Role> roleManager, IOpeningHoursService openingHoursService) : base(unitOfWork, mapper)
         {
             _unitOfWork = unitOfWork;
             _mapper = mapper;
             _userManager = userManager;
             _emailService = emailService;
             _roleManager = roleManager;
+            _openingHoursService = openingHoursService;
         }
         public async Task<ServiceActionResult> CreateShopApplication(CreateShopApplicationRequest applicationRequest)
         {
@@ -149,6 +150,8 @@ namespace BMS.BLL.Services
                     var error = roleResultIn.Errors.First().Description;
                     throw new AddRoleException(error);
                 }
+                List<OpeningHours> openingHours1 = OpeningHoursCreationHelper.GenerateOpeningHours(application.Id);
+                _unitOfWork.OpeningHoursRepository.AddRange(openingHours1.AsEnumerable());
                 return new LoginUser() { Email = application.Email, Password = "Your currently password in my system" };
             }
 
@@ -186,6 +189,9 @@ namespace BMS.BLL.Services
 
             userEntity.EmailConfirmed = true;
             await _userManager.UpdateAsync(userEntity);
+
+            List<OpeningHours> openingHours2 = OpeningHoursCreationHelper.GenerateOpeningHours(application.Id);
+            _unitOfWork.OpeningHoursRepository.AddRange(openingHours2.AsEnumerable());
 
             return new LoginUser() { Email = application.Email, Password = password };
         }

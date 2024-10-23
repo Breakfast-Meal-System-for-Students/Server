@@ -24,5 +24,6 @@ namespace BMS.BLL.Services.IServices
         Task<ServiceActionResult> GetCartInShopForUser(Guid userId, Guid shopId);
         Task<ServiceActionResult> GetCartByID(Guid cartId);
         Task<ServiceActionResult> ChangeCartToGroup(Guid userId, Guid shopId);
+        Task<ServiceActionResult> CountCartItemInShop(Guid userId, Guid shopId);
     }
 }

@@ -16,9 +16,6 @@ namespace BMS.API.Controllers
         public ShopController(IShopService ShopService)
         {
             _packageService = ShopService;
-
-
-
             _baseService = (BaseService)_packageService;
         }
 

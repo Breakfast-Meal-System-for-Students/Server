@@ -139,7 +139,7 @@ namespace BMS.BLL.Services
         {
             var product = (await _unitOfWork.ProductRepository.GetAllAsyncAsQueryable())
                           .Where(a => a.IsDeleted == false && a.Id == id)
-                          .Include(a => a.Images)
+                          .Include(a => a.Images).Include(a=>a.RegisterCategorys)!.ThenInclude(ab=>ab.Category)
                           .FirstOrDefault()
                           ?? throw new ArgumentNullException("Product does not exist or has been deleted");
 

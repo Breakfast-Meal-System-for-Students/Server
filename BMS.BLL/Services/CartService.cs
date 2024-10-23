@@ -27,10 +27,12 @@ namespace BMS.BLL.Services
     {
         private readonly UserManager<User> _userManager;
         private readonly ITokenService _tokenService;
-        public CartService(IUnitOfWork unitOfWork, IMapper mapper, UserManager<User> userManager, ITokenService tokenService) : base(unitOfWork, mapper)
+        private readonly IShopService _shopService;
+        public CartService(IUnitOfWork unitOfWork, IMapper mapper, UserManager<User> userManager, ITokenService tokenService, IShopService shopService) : base(unitOfWork, mapper)
         {
             _userManager = userManager;
             _tokenService = tokenService;
+            _shopService = shopService;
         }
 
         public async Task<ServiceActionResult> AddCartDetail(Guid userId, Guid shopId, CartDetailRequest request)
@@ -112,6 +114,11 @@ namespace BMS.BLL.Services
 
         public async Task<ServiceActionResult> ChangeCartToGroup(Guid userId, Guid shopId)
         {
+            var shop = await _shopService.GetShop(shopId);
+            if (shop.Data == null)
+            {
+                throw new ArgumentNullException("Shop does not exist or has been deleted");
+            }
             Expression<Func<Cart, bool>> filter = cart => (cart.CustomerId == userId && cart.ShopId == shopId);
             var cart = (await _unitOfWork.CartRepository.FindAsyncAsQueryable(filter)).FirstOrDefault();
             if (cart == null)
@@ -127,14 +134,14 @@ namespace BMS.BLL.Services
                 };
             } else
             {
-                if (cart.IsGroup == false) 
-                { 
+                if (cart.IsGroup == false)
+                {
                     cart.IsGroup = true;
                     cart.LastUpdateDate = DateTime.Now;
                     await _unitOfWork.CartRepository.UpdateAsync(cart);
                 }
 
-                return new ServiceActionResult() 
+                return new ServiceActionResult()
                 {
                     Data = await GenerateShareLink(cart.Id)
                 };
@@ -255,9 +262,24 @@ namespace BMS.BLL.Services
             };
         }
 
-        private async Task<string> GenerateShareLink(Guid cartId)
+        public async Task<ServiceActionResult> CountCartItemInShop(Guid userId, Guid shopId)
         {
-            var baseUrl = "https://localhost:7039/api/Cart/GetCartBySharing/";
+            var cartItem = (await _unitOfWork.CartDetailRepository.GetAllAsyncAsQueryable())
+                .Include(x => x.Cart).Where(y => y.Cart.CustomerId == userId && y.Cart.ShopId == shopId)
+                .Select(z => new
+                {
+                    Id = z.Id,
+                    Total = z.Quantity
+                });
+            return new ServiceActionResult()
+            {
+                Data = cartItem.Sum(x => x.Total)
+            };
+        }
+
+    private async Task<string> GenerateShareLink(Guid cartId)
+        {
+            var baseUrl = "https://bms-fs-api.azurewebsites.net/api/Cart/GetCartBySharing/";
             string tokenString = await _tokenService.GenerateTokenForShareLink(cartId);
             return $"{baseUrl}{cartId}" + $"?access_token={tokenString}";
         }

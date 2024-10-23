@@ -30,6 +30,9 @@ using BMS.BLL.Models.Requests.Cart;
 using System.Reflection;
 using BMS.BLL.Models.Responses.Image;
 using BMS.BLL.Models.Responses.Notification;
+using BMS.BLL.Models.Responses.ShopWeeklyReport;
+using BMS.BLL.Models.Responses.OpeningHour;
+using BMS.BLL.Models.Requests.OpeningHour;
 
 
 namespace BMS.BLL.Utilities.AutoMapperProfiles
@@ -70,10 +73,13 @@ namespace BMS.BLL.Utilities.AutoMapperProfiles
 
                 CreateMap<Shop, ShopApplicationResponse>();
                 CreateMap<Shop, ShopRequest>();
+                CreateMap<Shop, ShopResponse>();
 
                 #endregion
                 #region order
-                CreateMap<OrderItem, OrderItemResponse>();
+                CreateMap<OrderItem, OrderItemResponse>()
+                    .ForMember(dest => dest.ProductName, opt => opt.MapFrom(src => src.Product.Name))
+                    .ForMember(dest => dest.ProductImages, opt => opt.MapFrom(src => src.Product.Images));
                 CreateMap<Order, OrderResponse>()
                     .ForMember(dest => dest.OrderItems, opt => opt.MapFrom(src => src.OrderItems))
                     .ForMember(dest => dest.QRCode, opt => opt.MapFrom(src => src.QRCode))
@@ -106,8 +112,12 @@ namespace BMS.BLL.Utilities.AutoMapperProfiles
                 CreateMap<Category, UpdateCategoryRequest>()
                  .ForMember(dest => dest.Image, opt => opt.Ignore());
                 CreateMap<CreateCategoryRequest, Category>()
-                .ForMember(dest => dest.Image, opt => opt.Ignore()); 
-
+                .ForMember(dest => dest.Image, opt => opt.Ignore());
+                CreateMap<RegisterCategory, CategoryResponse>()
+                 .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.CategoryId))
+                 .ForMember(dest => dest.Name, opt => opt.MapFrom(src => src.Category.Name))
+                 .ForMember(dest => dest.Description, opt => opt.MapFrom(src => src.Category.Description))
+                 .ForMember(dest => dest.Image, opt => opt.MapFrom(src => src.Category.Image));
                 CreateMap<Category, CategoryResponse>();
                 #endregion
                 #region product  
@@ -117,7 +127,8 @@ namespace BMS.BLL.Utilities.AutoMapperProfiles
                 CreateMap<CreateProductRequest, Product>()
                 .ForMember(dest => dest.Images, opt => opt.Ignore());
 
-                CreateMap<Product, ProductResponse>();
+                CreateMap<Product, ProductResponse>()
+                    .ForMember(dest => dest.Categorys, opt => opt.MapFrom(src => src.RegisterCategorys));
                 #endregion
                 #region cart
                 CreateMap<CartGroupUser, CartGroupUserResponse>();
@@ -153,7 +164,26 @@ namespace BMS.BLL.Utilities.AutoMapperProfiles
                 CreateMap<Image, ImageResponse>();
                 #endregion
                 #region notification
-                CreateMap<Notification, NotificationResponse>();
+                CreateMap<Notification, NotificationResponseForUser>()
+                    .ForMember(dest => dest.ShopName, opt => opt.MapFrom(src => src.Shop.Name))
+                    .ForMember(dest => dest.ShopImage, opt => opt.MapFrom(src => src.Shop.Image));
+
+                CreateMap<Notification, NotificationResponseForShop>()
+                    .ForMember(dest => dest.FirstName, opt => opt.MapFrom(src => src.User.FirstName))
+                    .ForMember(dest => dest.LastName, opt => opt.MapFrom(src => src.User.LastName))
+                    .ForMember(dest => dest.Avatar, opt => opt.MapFrom(src => src.User.Avatar));
+                #endregion
+
+                #region shopweeklyreport
+                CreateMap<ShopWeeklyReport, ShopWeeklyReportResponse>()
+                    .ForMember(dest => dest.ShopName, opt => opt.MapFrom(src => src.Shop.Name))
+                    .ForMember(dest => dest.ShopImage, opt => opt.MapFrom(src => src.Shop.Image))
+                    .ForMember(dest => dest.Report, opt => opt.MapFrom(src => src.ReportData))
+                    .ForMember(dest => dest.DateReport, opt => opt.MapFrom(src => src.CreateDate));
+                #endregion
+                #region openinghours
+                CreateMap<OpeningHours, GetOpeningHoursForShopResonse>();
+                CreateMap<OpeningHoursRequest, OpeningHours>();
                 #endregion
             }
         }
