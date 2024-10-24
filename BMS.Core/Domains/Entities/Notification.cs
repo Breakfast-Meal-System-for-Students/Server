@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace BMS.Core.Domains.Entities
 {
-    public class Notification : EntityBase<Guid>
+    public class Notification : EntityBase<Guid>, ISoftDelete
     {
         public string Object { get; set; } = null!;
         public NotificationStatus Status { get; set; } = NotificationStatus.UnRead;
@@ -21,6 +21,8 @@ namespace BMS.Core.Domains.Entities
 
         public Guid ShopId { get; set; }
         public Shop Shop { get; set; } = null!;
+        public bool IsDeleted { get; set; } = false;
+        public DateTime? DeletedDate { get; set; }
     }
 
 }

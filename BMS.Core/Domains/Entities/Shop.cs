@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace BMS.Core.Domains.Entities
 {
-    public class Shop : EntityBase<Guid>
+    public class Shop : EntityBase<Guid>, ISoftDelete
     {
         public string Email { get; set; } = null!;
         public string? PhoneNumber { get; set; } = null!;
@@ -36,7 +36,8 @@ namespace BMS.Core.Domains.Entities
         public ICollection<ShopWeeklyReport>? ShopWeeklyReports { get; set; } = new List<ShopWeeklyReport>();
         //    public ICollection<RegisterCategory>? RegisterCategorys { get; set; } = new List<RegisterCategory>();
 
-
+        public bool IsDeleted { get; set; } = false; // Default value here
+        public DateTime? DeletedDate { get; set; }
     }
 
 }

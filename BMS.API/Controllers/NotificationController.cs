@@ -76,5 +76,14 @@ namespace BMS.API.Controllers
 
             return await ExecuteServiceLogic(() => Task.FromResult(result)).ConfigureAwait(false);
         }
+
+        [HttpPut("ClearAllNotification")]
+        [Authorize]
+        public async Task<IActionResult> ClearAllNotification()
+        {
+            return await ExecuteServiceLogic(
+                async () => await _notificationService.ClearNotification(_userClaims.UserId).ConfigureAwait(false)
+            ).ConfigureAwait(false);
+        }
     }
 }
