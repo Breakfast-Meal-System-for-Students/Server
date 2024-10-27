@@ -52,7 +52,7 @@ namespace BMS.API.Controllers.Base
             {
                 var result = await serviceLogicFunc();
                 _baseService.Commit();
-                return result.IsSuccess ? BuildSuccessResult(result) : Problem(result.Detail);
+                return BuildSuccessResult(result);
 
             }
             catch (Exception ex)
