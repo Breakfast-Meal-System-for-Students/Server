@@ -17,7 +17,8 @@ namespace BMS.API.Controllers.Base
             var successResult = new ApiResponse(true)
             {
                 Data = result.Data,
-                StatusCode = StatusCodes.Status200OK
+                StatusCode = StatusCodes.Status200OK,
+                IsSuccess = result.IsSuccess,
             };
 
             var detail = result.Detail ?? ApiMessageConstants.SUCCESS;
