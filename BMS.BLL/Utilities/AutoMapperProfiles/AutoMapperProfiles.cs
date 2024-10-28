@@ -57,7 +57,10 @@ namespace BMS.BLL.Utilities.AutoMapperProfiles
                 CreateMap<User, UserResponse>();
                 CreateMap<User, LoginUser>();
 
-
+                CreateMap<User, GetOrdersAndFeedbackOfUserResponse>()
+                    .ForMember(dest => dest.CouponUsages, opt => opt.MapFrom(src => src.CouponUsages))
+                    .ForMember(dest => dest.Orders, opt => opt.MapFrom(src => src.Orders))
+                    .ForMember(dest => dest.Feedbacks, opt => opt.MapFrom(src => src.Feedbacks));
                 CreateMap<User, UserLoginResponse>();
                 CreateMap<UserRegisterRequest, User>();
                 CreateMap<CreateStaffRequest, User>();

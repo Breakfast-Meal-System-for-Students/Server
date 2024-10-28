@@ -17,6 +17,7 @@ namespace BMS.BLL.Services.IServices
         Task<ServiceActionResult> GetListUser(SearchStaffRequest request);
 
         Task<ServiceActionResult> DeleteUser(Guid id);
+        Task<ServiceActionResult> GetAllOrderAndFeedbackOfUser(Guid userID);
         /*Task<ServiceActionResult> ChangePassword(ChangePWForm userDto);
         Task<ServiceActionResult> UpdateUserProfile(Account user);
         Task<ServiceActionResult> ResetPassWord(ResetPassWordRequest request);

@@ -34,6 +34,13 @@ namespace BMS.BLL.Services
             return new ServiceActionResult(true, "Delete Successfully");
         }
 
+        public async Task<ServiceActionResult> GetAllOrderAndFeedbackOfUser(Guid userID)
+        {
+            var user = (await _unitOfWork.UserRepository.GetAllAsyncAsQueryable()).Include(a => a.Orders).Include(b => b.Feedbacks).Include(c => c.CouponUsages).Where(x => x.Id == userID).FirstOrDefault();
+            var returnUser = _mapper.Map<UserLoginResponse>(user);
+            return new ServiceActionResult(true) { Data = returnUser };
+        }
+
         public async Task<ServiceActionResult> GetListUser(SearchStaffRequest request)
         {
             IQueryable<User> userQuery = (await _unitOfWork.UserRepository.GetAllAsyncAsQueryable()).Include(a => a.UserRoles).ThenInclude(b => b.Role).Where(x => x.UserRoles.Any(a => a.Role.Name.Contains(UserRoleConstants.USER)));

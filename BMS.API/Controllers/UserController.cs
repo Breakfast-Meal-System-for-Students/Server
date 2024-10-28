@@ -29,6 +29,7 @@ namespace BMS.API.Controllers
         }
         [HttpGet("GetListUser")]
         [Authorize(Roles = UserRoleConstants.ADMIN)]
+        [Authorize(Roles = UserRoleConstants.STAFF)]
         public async Task<IActionResult> GetListUser([FromQuery]SearchStaffRequest request)
         {
             return await ExecuteServiceLogic(
@@ -37,6 +38,8 @@ namespace BMS.API.Controllers
         }
 
         [HttpGet("GetUserById{id}")]
+        [Authorize(Roles = UserRoleConstants.ADMIN)]
+        [Authorize(Roles = UserRoleConstants.STAFF)]
         public async Task<IActionResult> GetUserById(Guid id)
         {
             return await ExecuteServiceLogic(
@@ -44,7 +47,19 @@ namespace BMS.API.Controllers
             ).ConfigureAwait(false);
         }
 
+        [HttpGet("GetAllOrderAndFeedbackOfUser{id}")]
+        [Authorize(Roles = UserRoleConstants.ADMIN)]
+        [Authorize(Roles = UserRoleConstants.STAFF)]
+        public async Task<IActionResult> GetAllOrderAndFeedbackOfUser(Guid id)
+        {
+            return await ExecuteServiceLogic(
+                async () => await _userService.GetAllOrderAndFeedbackOfUser(id).ConfigureAwait(false)
+            ).ConfigureAwait(false);
+        }
+
         [HttpGet("GetUserByEmail{email}")]
+        [Authorize(Roles = UserRoleConstants.ADMIN)]
+        [Authorize(Roles = UserRoleConstants.STAFF)]
         public async Task<IActionResult> GetUserByEmail(string email)
         {
             return await ExecuteServiceLogic(
@@ -54,6 +69,7 @@ namespace BMS.API.Controllers
 
         [HttpGet("GetTotalUser")]
         [Authorize(Roles = UserRoleConstants.ADMIN)]
+        [Authorize(Roles = UserRoleConstants.STAFF)]
         public async Task<IActionResult> GetTotalUser()
         {
             return await ExecuteServiceLogic(
