@@ -30,7 +30,7 @@ namespace BMS.DAL.DataContext
 
         public DbSet<RegisterCategory> RegisterCategorys { get; set; }
         public DbSet<Package> Packages { get; set; }
-        public DbSet<PackageHistory> PackageHistories { get; set; }
+        public DbSet<Package_Shop> Package_Shops { get; set; }
         public DbSet<OrderItem> OrderItems { get; set; }
         public DbSet<Coupon> Coupons { get; set; }
         public DbSet<CouponUsage> CouponUsages { get; set; }
@@ -145,16 +145,16 @@ namespace BMS.DAL.DataContext
                 .OnDelete(DeleteBehavior.Restrict);
 
             // One-to-Many relationship between Package and PackageHistory
-            modelBuilder.Entity<PackageHistory>()
+            modelBuilder.Entity<Package_Shop>()
                 .HasOne(ph => ph.Package)
-                .WithMany(p => p.PackageHistories)
+                .WithMany(p => p.Package_Shop)
                 .HasForeignKey(ph => ph.PackageId)
                 .OnDelete(DeleteBehavior.Cascade);
 
             // One-to-Many relationship between Shop and PackageHistory
-            modelBuilder.Entity<PackageHistory>()
+            modelBuilder.Entity<Package_Shop>()
                 .HasOne(ph => ph.Shop)
-                .WithMany(s => s.PackageHistories)
+                .WithMany(s => s.Package_Shop)
                 .HasForeignKey(ph => ph.ShopId)
                 .OnDelete(DeleteBehavior.Cascade);
 

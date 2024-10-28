@@ -15,5 +15,7 @@ namespace BMS.Core.Domains.Enums
         TAKENOVER_ORDER = 5,
         CANCEL_ORDER = 6,
         COMPLETE_ORDER = 7,
+        FEEDBACK_ORDER = 8,
+        PAYMENT_ORDER = 9,
     }
 }

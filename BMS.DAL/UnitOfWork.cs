@@ -27,7 +27,7 @@ namespace BMS.DAL
         public ICouponRepository CouponRepository => new CouponRepository(_dbContext);
         public IRegisterCategoryRepository RegisterCategoryRepository => new RegisterCategoryRepository(_dbContext);
         public IPackageRepository PackageRepository => new PackageRepository(_dbContext);
-        public IPackageHistoryRepository PackageHistoryRepository => new PackageHistoryRepository(_dbContext);
+        public IPackage_ShopRepository Package_ShopRepository => new Package_Shop(_dbContext);
         public ICartGroupUserRepository CartGroupUserRepository => new CartGroupUserRepository(_dbContext);
         public IShopWeeklyReportRepository ShopWeeklyReportRepository => new ShopWeeklyReportRepository(_dbContext);
         public IOpeningHoursRepository OpeningHoursRepository => new OpeningHoursRepository(_dbContext);

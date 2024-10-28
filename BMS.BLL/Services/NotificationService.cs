@@ -47,10 +47,22 @@ namespace BMS.BLL.Services
             };
         }
 
-        public async Task<ServiceActionResult> ClearNotification(Guid userId)
+        public async Task<ServiceActionResult> ClearNotificationForShop(ClearNotificationRequest request)
         {
             var notifications = (await _unitOfWork.NotificationRepository.GetAllAsyncAsQueryable())
-                    .Where(x => x.Status == NotificationStatus.Readed && x.UserId == userId).ToList();
+                    .Where(x => x.ShopId == request.Id && request.Status == 0 ? true : x.Status == request.Status && x.Destination == NotificationDestination.FORSHOP).ToList();
+            foreach (var notification in notifications)
+            {
+                notification.IsDeleted = true;
+                notification.DeletedDate = DateTime.UtcNow;
+            }
+            return new ServiceActionResult() { Detail = "Clear Readed Notification successfully" };
+        }
+
+        public async Task<ServiceActionResult> ClearNotificationForUser(ClearNotificationRequest request)
+        {
+            var notifications = (await _unitOfWork.NotificationRepository.GetAllAsyncAsQueryable())
+                    .Where(x => x.UserId == request.Id && request.Status == 0 ? true : x.Status == request.Status && x.Destination == NotificationDestination.FORUSER).ToList();
             foreach(var notification in notifications)
             {
                 notification.IsDeleted = true;
@@ -61,14 +73,14 @@ namespace BMS.BLL.Services
 
         public async Task<ServiceActionResult> CountNotificationForShop(Guid shopId)
         {
-            IQueryable<Notification> notificationQuery = (await _unitOfWork.NotificationRepository.GetAllAsyncAsQueryable()).Where(x => x.ShopId == shopId && x.Status == NotificationStatus.UnRead && x.IsDeleted == false);
+            IQueryable<Notification> notificationQuery = (await _unitOfWork.NotificationRepository.GetAllAsyncAsQueryable()).Where(x => x.ShopId == shopId && x.Status == NotificationStatus.UnRead && x.IsDeleted == false && x.Destination == NotificationDestination.FORSHOP);
 
             return new ServiceActionResult(true) { Data = notificationQuery.Count() };
         }
 
         public async Task<ServiceActionResult> CountNotificationForUser(Guid userId)
         {
-            IQueryable<Notification> notificationQuery = (await _unitOfWork.NotificationRepository.GetAllAsyncAsQueryable()).Where(x => x.UserId == userId && x.Status == NotificationStatus.UnRead && x.IsDeleted == false);
+            IQueryable<Notification> notificationQuery = (await _unitOfWork.NotificationRepository.GetAllAsyncAsQueryable()).Where(x => x.UserId == userId && x.Status == NotificationStatus.UnRead && x.IsDeleted == false && x.Destination == NotificationDestination.FORUSER);
 
             return new ServiceActionResult(true) { Data = notificationQuery.Count() };
         }
@@ -83,6 +95,7 @@ namespace BMS.BLL.Services
                 UserId = order.CustomerId,
                 ShopId = order.ShopId,
                 OrderId = order.Id,
+                Destination = NotificationDestination.FORSHOP
             };
             foreach(OrderItem orderItem in order.OrderItems) 
             {
@@ -115,7 +128,7 @@ namespace BMS.BLL.Services
 
         public async Task<ServiceActionResult> GetNotificationForShop(Guid shopId, GetNotificationRequest request)
         {
-            IQueryable<Notification> notificationQuery = (await _unitOfWork.NotificationRepository.GetAllAsyncAsQueryable()).Include(a => a.User).Where(x => x.ShopId == shopId && x.IsDeleted == false);
+            IQueryable<Notification> notificationQuery = (await _unitOfWork.NotificationRepository.GetAllAsyncAsQueryable()).Include(a => a.User).Where(x => x.ShopId == shopId && x.IsDeleted == false && x.Destination == NotificationDestination.FORSHOP);
 
             if (request.Status != 0)
             {
@@ -136,7 +149,7 @@ namespace BMS.BLL.Services
 
         public async Task<ServiceActionResult> GetNotificationForUser(Guid userId, GetNotificationRequest request)
         {
-            IQueryable<Notification> notificationQuery = (await _unitOfWork.NotificationRepository.GetAllAsyncAsQueryable()).Include(a => a.Shop).Where(x => x.UserId == userId && x.IsDeleted == false);
+            IQueryable<Notification> notificationQuery = (await _unitOfWork.NotificationRepository.GetAllAsyncAsQueryable()).Include(a => a.Shop).Where(x => x.UserId == userId && x.IsDeleted == false && x.Destination == NotificationDestination.FORUSER);
 
             if (request.Status != 0)
             {
@@ -151,6 +164,27 @@ namespace BMS.BLL.Services
 
             var paginationResult = PaginationHelper
             .BuildPaginatedResult<Notification, NotificationResponseForUser>(_mapper, notificationQuery, request.PageSize, request.PageIndex);
+
+            return new ServiceActionResult(true) { Data = paginationResult };
+        }
+
+        public async Task<ServiceActionResult> GetNotificationForStaff(GetNotificationRequest request)
+        {
+            IQueryable<Notification> notificationQuery = (await _unitOfWork.NotificationRepository.GetAllAsyncAsQueryable()).Include(a => a.Shop).Include(b => b.User).Where(x => x.IsDeleted == false && x.Destination == NotificationDestination.FORSTAFF);
+
+            if (request.Status != 0)
+            {
+                notificationQuery = notificationQuery.Where(m => m.Status == request.Status);
+            }
+
+            if (request.Title != 0)
+            {
+                notificationQuery = notificationQuery.Where(m => m.Title == request.Title);
+            }
+            notificationQuery = notificationQuery.OrderByDescending(a => a.CreateDate);
+
+            var paginationResult = PaginationHelper
+            .BuildPaginatedResult<Notification, NotificationResponseForStaff>(_mapper, notificationQuery, request.PageSize, request.PageIndex);
 
             return new ServiceActionResult(true) { Data = paginationResult };
         }

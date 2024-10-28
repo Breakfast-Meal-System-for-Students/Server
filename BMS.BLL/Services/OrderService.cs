@@ -86,10 +86,18 @@ namespace BMS.BLL.Services
                     ShopId = order.ShopId,
                     Object = $"Change Status Order From {s} to {status} sucessfully",
                     Status = NotificationStatus.UnRead,
-                    Title = GetTitleNotification(status)                                                     
+                    Title = GetTitleNotification(status),
+                    Destination = NotificationDestination.FORUSER
                 };
 
                 await _unitOfWork.NotificationRepository.AddAsync(notification);
+                notification.Destination = NotificationDestination.FORSHOP;
+                await _unitOfWork.NotificationRepository.AddAsync(notification);
+                if (status.Equals(OrderStatus.COMPLETE))
+                {
+                    notification.Destination = NotificationDestination.FORSTAFF;
+                    await _unitOfWork.NotificationRepository.AddAsync(notification);
+                }
                 await _hubContext.Clients.User(notification.UserId.ToString()).SendAsync($"The Status Of Order is changed from {s} to {status}", notification.Object);
                 
                 return new ServiceActionResult() { Detail = $" Change Order Status from {s} to {status} sucessfully" };
@@ -316,9 +324,16 @@ namespace BMS.BLL.Services
                 ShopId = order.ShopId,
                 Object = "Create Order",
                 Status = NotificationStatus.UnRead,
-                Title = NotificationTitle.BOOKING_ORDER
+                Title = NotificationTitle.BOOKING_ORDER,
+                Destination = NotificationDestination.FORUSER
             };
 
+            await _unitOfWork.NotificationRepository.AddAsync(notification);
+
+            notification.Destination = NotificationDestination.FORSHOP;
+            await _unitOfWork.NotificationRepository.AddAsync(notification);
+
+            notification.Destination = NotificationDestination.FORSTAFF;
             await _unitOfWork.NotificationRepository.AddAsync(notification);
 
             await _unitOfWork.CartRepository.DeleteAsync(cart.Id);

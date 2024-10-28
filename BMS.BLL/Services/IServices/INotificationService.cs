@@ -22,6 +22,8 @@ namespace BMS.BLL.Services.IServices
         Task<ServiceActionResult> ChangeStatusNotification(Guid userId, Guid notificationId);
 
         Task<ServiceActionResult> CreateNotification(Order order);
-        Task<ServiceActionResult> ClearNotification(Guid userId);
+        Task<ServiceActionResult> ClearNotificationForUser(ClearNotificationRequest request);
+        Task<ServiceActionResult> ClearNotificationForShop(ClearNotificationRequest request);
+        Task<ServiceActionResult> GetNotificationForStaff(GetNotificationRequest request);
     }
 }

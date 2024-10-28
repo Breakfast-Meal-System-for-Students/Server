@@ -172,6 +172,12 @@ namespace BMS.BLL.Utilities.AutoMapperProfiles
                     .ForMember(dest => dest.FirstName, opt => opt.MapFrom(src => src.User.FirstName))
                     .ForMember(dest => dest.LastName, opt => opt.MapFrom(src => src.User.LastName))
                     .ForMember(dest => dest.Avatar, opt => opt.MapFrom(src => src.User.Avatar));
+                CreateMap<Notification, NotificationResponseForStaff>()
+                    .ForMember(dest => dest.ShopName, opt => opt.MapFrom(src => src.Shop.Name))
+                    .ForMember(dest => dest.ShopImage, opt => opt.MapFrom(src => src.Shop.Image))
+                    .ForMember(dest => dest.FirstName, opt => opt.MapFrom(src => src.User.FirstName))
+                    .ForMember(dest => dest.LastName, opt => opt.MapFrom(src => src.User.LastName))
+                    .ForMember(dest => dest.Avatar, opt => opt.MapFrom(src => src.User.Avatar));
                 #endregion
 
                 #region shopweeklyreport

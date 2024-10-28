@@ -11,9 +11,9 @@ namespace BMS.DAL.Repositories
 {
 
 
-    public class PackageHistoryRepository : GenericRepository<PackageHistory>, IPackageHistoryRepository
+    public class Package_Shop : GenericRepository<Core.Domains.Entities.Package_Shop>, IPackage_ShopRepository
     {
-        public PackageHistoryRepository(DbContext dbContext) : base(dbContext)
+        public Package_Shop(DbContext dbContext) : base(dbContext)
         {
         }
     }

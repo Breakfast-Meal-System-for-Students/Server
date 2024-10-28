@@ -13,6 +13,7 @@ namespace BMS.Core.Domains.Entities
         public string Object { get; set; } = null!;
         public NotificationStatus Status { get; set; } = NotificationStatus.UnRead;
         public NotificationTitle? Title { get; set; }
+        public NotificationDestination? Destination { get; set; }
         public Guid UserId { get; set; }
         public User User { get; set; } = null!;
 

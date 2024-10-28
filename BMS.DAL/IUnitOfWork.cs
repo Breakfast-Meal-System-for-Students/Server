@@ -25,7 +25,7 @@ namespace BMS.DAL
         public IProductRepository ProductRepository { get; }
         public IRegisterCategoryRepository RegisterCategoryRepository { get; }
         public IPackageRepository PackageRepository { get; }
-        public IPackageHistoryRepository PackageHistoryRepository { get; }
+        public IPackage_ShopRepository Package_ShopRepository { get; }
         public ICartGroupUserRepository CartGroupUserRepository { get; }
         public IShopWeeklyReportRepository ShopWeeklyReportRepository { get; }
         public IOpeningHoursRepository OpeningHoursRepository { get; }

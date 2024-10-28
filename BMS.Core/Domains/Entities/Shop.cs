@@ -28,7 +28,7 @@ namespace BMS.Core.Domains.Entities
         public ICollection<Coupon>? Coupons { get; set; } = new List<Coupon>();
         public ICollection<Order>? Orders { get; set; } = new List<Order>();
         public ICollection<Cart>? Carts { get; set; } = new List<Cart>();
-        public ICollection<PackageHistory>? PackageHistories { get; set; } = new List<PackageHistory>();
+        public ICollection<Package_Shop>? Package_Shop { get; set; } = new List<Package_Shop>();
         public ICollection<Feedback>? Feedbacks { get; set; } = new List<Feedback>();
         public ICollection<Notification>? Notifications { get; set; } = new List<Notification>();
         public ICollection<OpeningHours>? OpeningHours { get; set; } = new List<OpeningHours>();
