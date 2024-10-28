@@ -1,5 +1,6 @@
 ﻿using BMS.API.Controllers.Base;
 using BMS.BLL.Models.Requests.Admin;
+using BMS.BLL.Models.Requests.Users;
 using BMS.BLL.Services;
 using BMS.BLL.Services.BaseServices;
 using BMS.BLL.Services.IServices;
@@ -74,6 +75,14 @@ namespace BMS.API.Controllers
         {
             return await ExecuteServiceLogic(
                 async () => await _userService.GetTotalUser().ConfigureAwait(false)
+            ).ConfigureAwait(false);
+        }
+        [HttpGet("CountNewUser")]
+        //[Authorize(Roles = UserRoleConstants.ADMIN)]
+        public async Task<IActionResult> CountNewUser([FromQuery] TotalUserRequest request)
+        {
+            return await ExecuteServiceLogic(
+                async () => await _userService.CountNewUser(request).ConfigureAwait(false)
             ).ConfigureAwait(false);
         }
     }

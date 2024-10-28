@@ -64,6 +64,33 @@ namespace BMS.BLL.Services
             return new ServiceActionResult(true) { Data = paginationResult };
         }
 
+        public async Task<ServiceActionResult> CountNewUser(TotalUserRequest request)
+        {
+            var users = (await _unitOfWork.UserRepository.GetAllAsyncAsQueryable());
+            if (request.Year != 0)
+            {
+                if (request.Month != 0)
+                {
+                    if (request.Day != 0)
+                    {
+                        users = users.Where(x => x.CreateDate.Year == request.Year && x.CreateDate.Month == request.Month && x.CreateDate.Day == request.Day);
+                    }
+                    else
+                    {
+                        users = users.Where(x => x.CreateDate.Year == request.Year && x.CreateDate.Month == request.Month);
+                    }
+                }
+                else
+                {
+                    users = users.Where(x => x.CreateDate.Year == request.Year);
+                }
+            }
+            return new ServiceActionResult()
+            {
+                Data = users.Count()
+            };
+        }
+
         public async Task<ServiceActionResult> GetTotalUser()
         {
             return new ServiceActionResult()
