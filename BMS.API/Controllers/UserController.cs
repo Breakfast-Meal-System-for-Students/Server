@@ -29,8 +29,7 @@ namespace BMS.API.Controllers
             ).ConfigureAwait(false);
         }
         [HttpGet("GetListUser")]
-        [Authorize(Roles = UserRoleConstants.ADMIN)]
-        [Authorize(Roles = UserRoleConstants.STAFF)]
+        [Authorize(Roles = UserRoleConstants.ADMIN + "," + UserRoleConstants.STAFF)]
         public async Task<IActionResult> GetListUser([FromQuery]SearchStaffRequest request)
         {
             return await ExecuteServiceLogic(
@@ -39,8 +38,7 @@ namespace BMS.API.Controllers
         }
 
         [HttpGet("GetUserById{id}")]
-        [Authorize(Roles = UserRoleConstants.ADMIN)]
-        [Authorize(Roles = UserRoleConstants.STAFF)]
+        [Authorize(Roles = UserRoleConstants.ADMIN + "," + UserRoleConstants.STAFF)]
         public async Task<IActionResult> GetUserById(Guid id)
         {
             return await ExecuteServiceLogic(
@@ -49,8 +47,7 @@ namespace BMS.API.Controllers
         }
 
         [HttpGet("GetAllOrderAndFeedbackOfUser{id}")]
-        [Authorize(Roles = UserRoleConstants.ADMIN)]
-        [Authorize(Roles = UserRoleConstants.STAFF)]
+        [Authorize(Roles = UserRoleConstants.ADMIN + "," + UserRoleConstants.STAFF)]
         public async Task<IActionResult> GetAllOrderAndFeedbackOfUser(Guid id)
         {
             return await ExecuteServiceLogic(
@@ -59,8 +56,7 @@ namespace BMS.API.Controllers
         }
 
         [HttpGet("GetUserByEmail{email}")]
-        [Authorize(Roles = UserRoleConstants.ADMIN)]
-        [Authorize(Roles = UserRoleConstants.STAFF)]
+        [Authorize(Roles = UserRoleConstants.ADMIN + "," + UserRoleConstants.STAFF)]
         public async Task<IActionResult> GetUserByEmail(string email)
         {
             return await ExecuteServiceLogic(
@@ -69,8 +65,7 @@ namespace BMS.API.Controllers
         }
 
         [HttpGet("GetTotalUser")]
-        [Authorize(Roles = UserRoleConstants.ADMIN)]
-        [Authorize(Roles = UserRoleConstants.STAFF)]
+        [Authorize(Roles = UserRoleConstants.ADMIN + "," + UserRoleConstants.STAFF)]
         public async Task<IActionResult> GetTotalUser()
         {
             return await ExecuteServiceLogic(
@@ -78,8 +73,7 @@ namespace BMS.API.Controllers
             ).ConfigureAwait(false);
         }
         [HttpGet("CountNewUser")]
-        [Authorize(Roles = UserRoleConstants.ADMIN)]
-        [Authorize(Roles = UserRoleConstants.STAFF)]
+        [Authorize(Roles = UserRoleConstants.ADMIN + "," + UserRoleConstants.STAFF)]
         public async Task<IActionResult> CountNewUser([FromQuery] TotalUserRequest request)
         {
             return await ExecuteServiceLogic(
