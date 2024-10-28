@@ -78,7 +78,8 @@ namespace BMS.API.Controllers
             ).ConfigureAwait(false);
         }
         [HttpGet("CountNewUser")]
-        //[Authorize(Roles = UserRoleConstants.ADMIN)]
+        [Authorize(Roles = UserRoleConstants.ADMIN)]
+        [Authorize(Roles = UserRoleConstants.STAFF)]
         public async Task<IActionResult> CountNewUser([FromQuery] TotalUserRequest request)
         {
             return await ExecuteServiceLogic(

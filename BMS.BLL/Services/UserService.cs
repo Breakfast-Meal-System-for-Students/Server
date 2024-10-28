@@ -37,7 +37,7 @@ namespace BMS.BLL.Services
         public async Task<ServiceActionResult> GetAllOrderAndFeedbackOfUser(Guid userID)
         {
             var user = (await _unitOfWork.UserRepository.GetAllAsyncAsQueryable()).Include(a => a.Orders).Include(b => b.Feedbacks).Include(c => c.CouponUsages).Where(x => x.Id == userID).FirstOrDefault();
-            var returnUser = _mapper.Map<UserLoginResponse>(user);
+            var returnUser = _mapper.Map<GetOrdersAndFeedbackOfUserResponse>(user);
             return new ServiceActionResult(true) { Data = returnUser };
         }
 
