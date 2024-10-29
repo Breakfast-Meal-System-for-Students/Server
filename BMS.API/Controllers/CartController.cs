@@ -93,9 +93,9 @@ namespace BMS.API.Controllers
         [HttpPost("AddCartDetail")]
         [Authorize]
         //[Authorize(Roles = UserRoleConstants.USER)]
-        public async Task<IActionResult> AddCartDetail(Guid shopId, [FromBody]CartDetailRequest request)
+        public async Task<IActionResult> AddCartDetail([FromBody]CartDetailRequest request)
         {
-            var result = await _cartService.AddCartDetail(_userClaims.UserId, shopId, request).ConfigureAwait(false);
+            var result = await _cartService.AddCartDetail(_userClaims.UserId, request.ShopId, request).ConfigureAwait(false);
 
             if (result.IsSuccess)
             {
@@ -109,9 +109,9 @@ namespace BMS.API.Controllers
         [HttpPost("AddCartDetailForGroup")]
         [Authorize]
         //[Authorize(Roles = UserRoleConstants.USER)]
-        public async Task<IActionResult> AddCartDetailForGroup(Guid cartId, [FromBody] CartDetailRequest request)
+        public async Task<IActionResult> AddCartDetailForGroup([FromBody] CartDetailRequest request)
         {
-            var result = await _cartService.AddCartDetailForGroup(_userClaims.UserId, cartId, request).ConfigureAwait(false);
+            var result = await _cartService.AddCartDetailForGroup(_userClaims.UserId, request.CartId, request).ConfigureAwait(false);
 
             if (result.IsSuccess)
             {
@@ -125,10 +125,10 @@ namespace BMS.API.Controllers
         [HttpPost("UpdateCartDetail")]
         [Authorize]
         //[Authorize(Roles = UserRoleConstants.USER)]
-        public async Task<IActionResult> UpdateCartDetail(Guid shopId, [FromBody]CartDetailRequest request)
+        public async Task<IActionResult> UpdateCartDetail([FromBody]CartDetailRequest request)
         {
 
-            var result = await _cartService.UpdateCartDetail(_userClaims.UserId, shopId, request).ConfigureAwait(false);
+            var result = await _cartService.UpdateCartDetail(_userClaims.UserId, request.ShopId, request).ConfigureAwait(false);
 
             if (result.IsSuccess)
             {
