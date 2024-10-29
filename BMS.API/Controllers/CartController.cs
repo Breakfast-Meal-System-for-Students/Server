@@ -109,7 +109,7 @@ namespace BMS.API.Controllers
         [HttpPost("AddCartDetailForGroup")]
         [Authorize]
         //[Authorize(Roles = UserRoleConstants.USER)]
-        public async Task<IActionResult> AddCartDetailForGroup([FromBody] CartDetailRequest request)
+        public async Task<IActionResult> AddCartDetailForGroup([FromBody] CartGroupDetailRequest request)
         {
             var result = await _cartService.AddCartDetailForGroup(_userClaims.UserId, request.CartId, request).ConfigureAwait(false);
 
