@@ -32,7 +32,7 @@ namespace BMS.API.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> CreateProduct([FromQuery] CreateProductRequest Product)
+        public async Task<IActionResult> CreateProduct([FromBody] CreateProductRequest Product)
         {
             return await ExecuteServiceLogic(
                                async () => await _productService.AddProduct(Product).ConfigureAwait(false)
@@ -46,10 +46,10 @@ namespace BMS.API.Controllers
                                           ).ConfigureAwait(false);
         }
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateProduct(Guid Id, [FromQuery] UpdateProductRequest Product)
+        public async Task<IActionResult> UpdateProduct([FromBody] UpdateProductRequest Product)
         {
             return await ExecuteServiceLogic(
-                               async () => await _productService.UpdateProduct(Id, Product).ConfigureAwait(false)
+                               async () => await _productService.UpdateProduct(Product.Id, Product).ConfigureAwait(false)
                                           ).ConfigureAwait(false);
         }
         [HttpGet("{id}")]

@@ -32,7 +32,7 @@ namespace BMS.API.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> CreateRegisterCategory([FromQuery] CreateRegisterCategoryRequest category)
+        public async Task<IActionResult> CreateRegisterCategory([FromBody] CreateRegisterCategoryRequest category)
         {
             return await ExecuteServiceLogic(
                                async () => await _registerCategoryService.AddReCategory(category).ConfigureAwait(false)

@@ -35,7 +35,7 @@ namespace BMS.API.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> CreateCoupon([FromQuery] CreateCouponRequest Coupon)
+        public async Task<IActionResult> CreateCoupon([FromBody] CreateCouponRequest Coupon)
         {
             return await ExecuteServiceLogic(
                                async () => await _couponService.AddCoupon(Coupon).ConfigureAwait(false)
@@ -55,16 +55,14 @@ namespace BMS.API.Controllers
                                async () => await _couponService.GetAllCouponForShop(shopId,pagingRequest).ConfigureAwait(false)
                                           ).ConfigureAwait(false);
         }
-        [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateCoupon(Guid Id, [FromQuery] UpdateCouponRequest Coupon)
+        [HttpPut]
+        public async Task<IActionResult> UpdateCoupon([FromBody] UpdateCouponRequest Coupon)
         {
             return await ExecuteServiceLogic(
-                               async () => await _couponService.UpdateCoupon(Id, Coupon).ConfigureAwait(false)
+                               async () => await _couponService.UpdateCoupon(Coupon.Id, Coupon).ConfigureAwait(false)
                                           ).ConfigureAwait(false);
         }
         [HttpGet("{id}")]
-
-
         public async Task<IActionResult> GetCoupon(Guid id)
         {
             return await ExecuteServiceLogic(

@@ -89,7 +89,7 @@ namespace BMS.API.Controllers
 
         [HttpPut("ClearNotificationForUser")]
         [Authorize]
-        public async Task<IActionResult> ClearNotificationForUser(NotificationStatus status)
+        public async Task<IActionResult> ClearNotificationForUser([FromForm]NotificationStatus status)
         {
             ClearNotificationRequest request = new ClearNotificationRequest()
             {

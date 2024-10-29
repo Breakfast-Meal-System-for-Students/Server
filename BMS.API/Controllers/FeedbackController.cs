@@ -51,10 +51,10 @@ namespace BMS.API.Controllers
                                           ).ConfigureAwait(false);
         }
         [HttpPut("{Id}")]
-        public async Task<IActionResult> ReviewFeedback(Guid Id, string status)
+        public async Task<IActionResult> ReviewFeedback([FromBody] ReviewFeedbackRequest request)
         {
             return await ExecuteServiceLogic(
-                               async () => await _feedbackService.ReviewFeedback(Id, status).ConfigureAwait(false)
+                               async () => await _feedbackService.ReviewFeedback(request.Id, request.Status).ConfigureAwait(false)
                                           ).ConfigureAwait(false);
         }
     }

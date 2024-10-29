@@ -86,9 +86,9 @@ namespace BMS.API.Controllers
 
         [HttpPost("ChangeOrderStatus")]
         [Authorize]
-        public async Task<IActionResult> ChangeOrderStatus(Guid id, OrderStatus status)
+        public async Task<IActionResult> ChangeOrderStatus([FromForm]ChangeOrderStatusRequest request)
         {
-            var result = await _orderService.ChangeOrderStatus(id, status).ConfigureAwait(false);
+            var result = await _orderService.ChangeOrderStatus(request.Id, request.Status).ConfigureAwait(false);
 
             if (result.IsSuccess)
             {
