@@ -101,7 +101,7 @@ namespace BMS.BLL.Services
             product.Name = request.Name;
             product.LastUpdateDate = DateTime.UtcNow;
 
-            if(request.Images == null || request.Images.Any())
+            if(request.Images == null || !request.Images.Any())
             {
                 return new ServiceActionResult(false) { Detail = "Request Not Have Image" };
             }
