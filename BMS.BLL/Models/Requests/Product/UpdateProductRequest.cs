@@ -16,6 +16,6 @@ namespace BMS.BLL.Models.Requests.Product
 
         
 
-        public List<IFormFile> Images { get; set; } = new List<IFormFile>();
+        public IFormFileCollection Images { get; set; } = null!;
     }
 }
