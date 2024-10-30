@@ -46,10 +46,10 @@ namespace BMS.API.Controllers
                                           ).ConfigureAwait(false);
         }
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateProduct([FromForm] UpdateProductRequest Product)
+        public async Task<IActionResult> UpdateProduct(Guid Id,[FromForm] UpdateProductRequest Product)
         {
             return await ExecuteServiceLogic(
-                               async () => await _productService.UpdateProduct(Product.Id, Product).ConfigureAwait(false)
+                               async () => await _productService.UpdateProduct(Id, Product).ConfigureAwait(false)
                                           ).ConfigureAwait(false);
         }
         [HttpGet("{id}")]
