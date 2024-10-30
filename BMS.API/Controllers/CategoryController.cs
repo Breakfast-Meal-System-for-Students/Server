@@ -36,7 +36,7 @@ namespace BMS.API.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> CreateCategory([FromBody] CreateCategoryRequest category)
+        public async Task<IActionResult> CreateCategory([FromForm] CreateCategoryRequest category)
         {
             return await ExecuteServiceLogic(
                                async () => await _categoryService.AddCategory(category).ConfigureAwait(false)
@@ -50,7 +50,7 @@ namespace BMS.API.Controllers
                                           ).ConfigureAwait(false);
         }
         [HttpPut]
-        public async Task<IActionResult> UpdateCategory([FromBody] UpdateCategoryRequest category)
+        public async Task<IActionResult> UpdateCategory([FromForm] UpdateCategoryRequest category)
         {
             return await ExecuteServiceLogic(
                                async () => await _categoryService.UpdateCategory(category.Id, category).ConfigureAwait(false)
