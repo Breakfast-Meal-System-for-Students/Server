@@ -69,14 +69,15 @@ namespace BMS.BLL.Services
                     var imageEntity = new Image
                     {
                         Url = imageUrl,
-                        Product = productEntity // Associate the image with the product
+                        Id = productEntity.Id // Associate the image with the product
                     };
 
                     // Add the image entity to the Product's Images collection
                     productEntity.Images.Add(imageEntity);
                 }
+                await _unitOfWork.ImageRepository.AddRangeAsync(productEntity.Images);
             }
-
+            
             // Add the Product to the repository
             await _unitOfWork.ProductRepository.AddAsync(productEntity);
 
@@ -95,6 +96,7 @@ namespace BMS.BLL.Services
                 ?? throw new ArgumentNullException("Product does not exist");
 
             // Update product details
+            product.Price = request.Price;
             product.Description = request.Description;
             product.Name = request.Name;
             product.LastUpdateDate = DateTime.UtcNow;
@@ -104,7 +106,12 @@ namespace BMS.BLL.Services
             {
                 // Clear existing images if necessary (optional, based on your use case)
                 product.Images.Clear();
-
+                var images = (await _unitOfWork.ImageRepository.GetAllAsyncAsQueryable()).Where(x => x.ProductId == product.Id).AsNoTracking().ToList();
+                if (images != null && images.Any())
+                {
+                    await _unitOfWork.ImageRepository.DeleteRangeAsync(images);
+                    await _unitOfWork.CommitAsync();
+                }
                 // Upload new images and associate them with the product
                 foreach (var imageFile in request.Images)
                 {
@@ -113,11 +120,15 @@ namespace BMS.BLL.Services
                     var imageEntity = new Image
                     {
                         Url = imageUrl,
-                        Product = product // Associate image with the product
+                        Id = product.Id // Associate image with the product
                     };
 
                     // Add the new image to the product's Images collection
                     product.Images.Add(imageEntity);
+                }
+                if (product.Images != null && product.Images.Any())
+                {
+                    await _unitOfWork.ImageRepository.AddRangeAsync(product.Images);
                 }
             }
 

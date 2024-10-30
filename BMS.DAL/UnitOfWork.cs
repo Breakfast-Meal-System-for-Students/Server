@@ -31,6 +31,7 @@ namespace BMS.DAL
         public ICartGroupUserRepository CartGroupUserRepository => new CartGroupUserRepository(_dbContext);
         public IShopWeeklyReportRepository ShopWeeklyReportRepository => new ShopWeeklyReportRepository(_dbContext);
         public IOpeningHoursRepository OpeningHoursRepository => new OpeningHoursRepository(_dbContext);
+        public IImageRepository ImageRepository => new ImageRepository(_dbContext);
         public DbContext _dbContext { get; }
         
         public UnitOfWork(DbContext dbContext)
