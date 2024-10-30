@@ -16,7 +16,7 @@ namespace BMS.BLL.Models.Requests.Product
 
         public Guid ShopId { get; set; }
 
-        public IFormFileCollection Images { get; set; } = null!;
+        public List<IFormFile> Images { get; set; } = new List<IFormFile>();
 
     }
 }
