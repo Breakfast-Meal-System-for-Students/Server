@@ -9,6 +9,7 @@ namespace BMS.BLL.Models.Responses.Notification
 {
     public class NotificationResponseForStaff
     {
+        public Guid Id { get; set; }
         public string Object { get; set; } = null!;
         public NotificationStatus Status { get; set; } = NotificationStatus.UnRead;
         public NotificationTitle? Title { get; set; }
