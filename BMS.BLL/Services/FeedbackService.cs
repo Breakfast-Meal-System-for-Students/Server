@@ -72,6 +72,11 @@ namespace BMS.BLL.Services
                 feedbackQueryable = feedbackQueryable.Where(m => m.Description.Contains(queryParameters.Search));
             }
 
+            if (queryParameters.Rate != 0)
+            {
+                feedbackQueryable = feedbackQueryable.Where(m => m.Rate == queryParameters.Rate);
+            }
+
             feedbackQueryable = queryParameters.IsDesc ? feedbackQueryable.OrderByDescending(a => a.CreateDate) : feedbackQueryable.OrderBy(a => a.CreateDate);
 
             var paginationResult = PaginationHelper

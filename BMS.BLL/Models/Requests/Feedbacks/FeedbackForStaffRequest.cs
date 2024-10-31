@@ -9,6 +9,7 @@ namespace BMS.BLL.Models.Requests.Feedbacks
 {
     public class FeedbackForStaffRequest : PagingRequest
     {
+        public int? Rate { get; set; } = 0;
         public string Status { get; set; } = string.Empty;
         public string? Search { get; set; }
         public bool IsDesc { get; set; } = false;
