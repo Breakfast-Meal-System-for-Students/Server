@@ -43,12 +43,16 @@ namespace BMS.BLL.Services
             return new ServiceActionResult();
         }
 
-        public async Task<ServiceActionResult> GetAllFeedbacksOfAShop(Guid shopId, PagingRequest request)
+        public async Task<ServiceActionResult> GetAllFeedbacksOfAShop(Guid shopId, GetFeedbackInShop request)
         {
             //  var shop = (await _unitOfWork.ShopRepository.FindAsync(shopId)) ?? throw new ArgumentNullException("Shop not found");
 
             var feedbackQueryable = (await _unitOfWork.FeedbackRepository.GetAllAsyncAsQueryable()).Include(a => a.User).Include(a => a.Shop).Where(a => a.ShopId==shopId);
-               
+
+            if (request.Rating != 0)
+            {
+                feedbackQueryable = feedbackQueryable.Where(m => m.Rate == request.Rating);
+            }
 
             var paginatedFeedback = PaginationHelper.BuildPaginatedResult<Feedback, FeedbackForStaffResponse>(_mapper, feedbackQueryable, request.PageSize, request.PageIndex);
 

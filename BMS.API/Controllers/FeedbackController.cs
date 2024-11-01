@@ -37,10 +37,10 @@ namespace BMS.API.Controllers
         }
 
         [HttpGet("{shopId}")]
-        public async Task<IActionResult> GetFeedbacksOfAMentor(Guid shopId, [FromQuery] PagingRequest pagingRequest)
+        public async Task<IActionResult> GetFeedbacksOfAMentor(Guid shopId, [FromQuery] GetFeedbackInShop request)
         {
             return await ExecuteServiceLogic(
-                               async () => await _feedbackService.GetAllFeedbacksOfAShop(shopId, pagingRequest).ConfigureAwait(false)
+                               async () => await _feedbackService.GetAllFeedbacksOfAShop(shopId, request).ConfigureAwait(false)
                                           ).ConfigureAwait(false);
         }
         [HttpGet]

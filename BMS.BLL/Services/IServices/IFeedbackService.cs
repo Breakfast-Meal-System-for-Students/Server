@@ -15,8 +15,8 @@ namespace BMS.BLL.Services.IServices
 {
     public interface IFeedbackService
     {
-        Task<ServiceActionResult> GetAllFeedbacksOfAShop(Guid shopId, PagingRequest request);
         Task<ServiceActionResult> AddFeedback(FeedbackRequest  request, Guid userId);
+        Task<ServiceActionResult> GetAllFeedbacksOfAShop(Guid shopId, GetFeedbackInShop request);
 
         Task<ServiceActionResult> GetAllFeedbacksForStaff(FeedbackForStaffRequest queryParameters);
         Task<ServiceActionResult> ReviewFeedback(Guid id, string status);
