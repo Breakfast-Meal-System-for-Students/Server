@@ -6,6 +6,7 @@ using BMS.API.Extensions;
 using Microsoft.OpenApi.Models;
 using Microsoft.AspNetCore.SignalR;
 using BMS.API.Hub;
+using Microsoft.Extensions.FileProviders;
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
@@ -67,7 +68,16 @@ app.UseSwaggerUI(c =>
 });
 app.UseHttpsRedirection();
 app.UseCors("AllowReactApp");
+app.UseStaticFiles(new StaticFileOptions
+{
+    FileProvider = new PhysicalFileProvider(
+        Path.Combine(Directory.GetCurrentDirectory(), ".well-known")),
+    RequestPath = "/.well-known",
+    ServeUnknownFileTypes = true,
+    DefaultContentType = "application/json"
+});
 app.UseRouting();
+// Serve static files from .well-known with JSON content type
 
 app.MapHub<CartHub>("/cartHub");
 app.MapHub<MyHub>("/myhub");
@@ -83,7 +93,7 @@ app.UseAuthorization();   // Enable authorization middleware
 //});
 
 app.MapControllers();
-
+app.UseStaticFiles();
 app.Run();
 void EnsureMigrate(WebApplication webApp)
 {
