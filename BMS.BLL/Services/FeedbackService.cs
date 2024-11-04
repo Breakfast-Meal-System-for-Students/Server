@@ -31,15 +31,11 @@ namespace BMS.BLL.Services
             _mapper = mapper;
         }
 
-        public async Task<ServiceActionResult> AddFeedback(FeedbackRequest request, Guid userId)
+        public async Task<ServiceActionResult> AddFeedback(FeedbackRequest request)
         {
-       
-
             var feedbackEntity = _mapper.Map<Feedback>(request);
-
-            // do something add feedback
-            await _unitOfWork.CommitAsync();
-
+            feedbackEntity.Status = FeedbackStatus.APPROVED;
+            await _unitOfWork.FeedbackRepository.AddAsync(feedbackEntity);
             return new ServiceActionResult();
         }
 
@@ -99,5 +95,31 @@ namespace BMS.BLL.Services
             return new ServiceActionResult();
         }
 
+        public async Task<ServiceActionResult> CheckOrderIsFeedbacked(Guid orderId)
+        {
+            var order = await _unitOfWork.OrderRepository.FindAsync(orderId);
+            if (order.Status != OrderStatus.COMPLETE.ToString())
+            {
+                return new ServiceActionResult(false) 
+                {
+                    Data = false,
+                    Detail = "Order is not Complete"
+                };
+            }
+            var feedback = (await _unitOfWork.FeedbackRepository.GetAllAsyncAsQueryable()).Where(x => x.OrderId == orderId).Count();
+            if (feedback > 0)
+            {
+                return new ServiceActionResult(true)
+                {
+                    Data = true,
+                };
+            } else
+            {
+                return new ServiceActionResult(true)
+                {
+                    Data = false,
+                };
+            }
+        }
     }
 }

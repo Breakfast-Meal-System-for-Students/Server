@@ -32,8 +32,9 @@ namespace BMS.DAL
         public IShopWeeklyReportRepository ShopWeeklyReportRepository => new ShopWeeklyReportRepository(_dbContext);
         public IOpeningHoursRepository OpeningHoursRepository => new OpeningHoursRepository(_dbContext);
         public IImageRepository ImageRepository => new ImageRepository(_dbContext);
+        public IFavouriteRepository FavoriteRepository => new FavouriteRepository(_dbContext);
         public DbContext _dbContext { get; }
-        
+
         public UnitOfWork(DbContext dbContext)
         {
             _dbContext = dbContext;

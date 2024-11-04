@@ -24,15 +24,12 @@ namespace BMS.API.Controllers
             _baseService = (BaseService)_feedbackService;
         }
 
-    
+
         [HttpPost("send-feedback")]
-        
         public async Task<IActionResult> CreateFeedback(FeedbackRequest request)
         {
-            Guid guid = Guid.NewGuid();
-            //demo thoi nhoe
             return await ExecuteServiceLogic(
-                               async () => await _feedbackService.AddFeedback(request, guid).ConfigureAwait(false)
+                               async () => await _feedbackService.AddFeedback(request).ConfigureAwait(false)
                                           ).ConfigureAwait(false);
         }
 
@@ -55,6 +52,14 @@ namespace BMS.API.Controllers
         {
             return await ExecuteServiceLogic(
                                async () => await _feedbackService.ReviewFeedback(request.Id, request.Status).ConfigureAwait(false)
+                                          ).ConfigureAwait(false);
+        }
+
+        [HttpGet("CheckOrderIsFeedbacked")]
+        public async Task<IActionResult> CheckOrderIsFeedbacked(Guid orderId)
+        {
+            return await ExecuteServiceLogic(
+                               async () => await _feedbackService.CheckOrderIsFeedbacked(orderId).ConfigureAwait(false)
                                           ).ConfigureAwait(false);
         }
     }

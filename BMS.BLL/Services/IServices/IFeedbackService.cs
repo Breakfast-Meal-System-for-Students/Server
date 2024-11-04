@@ -15,11 +15,11 @@ namespace BMS.BLL.Services.IServices
 {
     public interface IFeedbackService
     {
-        Task<ServiceActionResult> AddFeedback(FeedbackRequest  request, Guid userId);
         Task<ServiceActionResult> GetAllFeedbacksOfAShop(Guid shopId, GetFeedbackInShop request);
+        Task<ServiceActionResult> AddFeedback(FeedbackRequest  request);
 
         Task<ServiceActionResult> GetAllFeedbacksForStaff(FeedbackForStaffRequest queryParameters);
         Task<ServiceActionResult> ReviewFeedback(Guid id, string status);
-     
+        Task<ServiceActionResult> CheckOrderIsFeedbacked(Guid orderId);
     }
 }

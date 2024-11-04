@@ -30,6 +30,7 @@ namespace BMS.DAL
         public IShopWeeklyReportRepository ShopWeeklyReportRepository { get; }
         public IOpeningHoursRepository OpeningHoursRepository { get; }
         public IImageRepository ImageRepository { get; }
+        public IFavouriteRepository FavoriteRepository { get; }
         void Commit();
         Task CommitAsync();
         void Rollback();
