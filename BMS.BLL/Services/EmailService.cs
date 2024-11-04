@@ -106,5 +106,10 @@ namespace BMS.BLL.Services
         {
             await SendEmailAsync(toEmail, subject, message, true, attachment, "WeeklyReport.pdf");
         }
+
+        public async Task SendEmailOTP(string toEmail, string otp)
+        {
+            await SendEmailAsync(toEmail, "The OTP to Reset Password", otp, true);
+        }
     }
 }
