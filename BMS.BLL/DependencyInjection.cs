@@ -12,6 +12,7 @@ using FluentValidation.AspNetCore;
 using FluentValidation;
 using BMS.BLL.Validators;
 using BMS.DAL.Repositories.IRepositories;
+using BMS.BLL.AI;
 
 namespace BMS.BLL
 {
@@ -60,6 +61,11 @@ namespace BMS.BLL
             services.AddScoped<IGoogleMapService, GoogleMapService>();
             services.AddScoped<IShopWeeklyReportService, ShopWeeklyReportService>();
             services.AddScoped<IOpeningHoursService, OpeningHoursService>();
+            services.AddScoped<IRecommendationService, RecommendationService>();
+            #endregion
+
+            #region
+            services.AddSingleton<RecommendationEngine>();
             #endregion
 
             #region Validation
