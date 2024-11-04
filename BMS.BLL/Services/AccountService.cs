@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Azure.Core;
 using BMS.BLL.Models;
 using BMS.BLL.Models.Requests.Users;
 using BMS.BLL.Models.Responses.Roles;
@@ -25,17 +26,19 @@ namespace BMS.BLL.Services
         private readonly IFileStorageService _fileStorageService;
         private readonly UserManager<User> _userManager;
         private readonly RoleManager<Role> _roleManager;
+        private readonly ITokenService _tokenService;
 
         public AccountService(IUnitOfWork unitOfWork, IMapper mapper,
             IFileStorageService fileStorageService,
             UserManager<User> userManager,
-            RoleManager<Role> roleManager) : base(unitOfWork, mapper)
+            RoleManager<Role> roleManager, ITokenService tokenService) : base(unitOfWork, mapper)
         {
             _unitOfWork = unitOfWork;
             _mapper = mapper;
             _fileStorageService = fileStorageService;
             _userManager = userManager;
             _roleManager = roleManager;
+            _tokenService = tokenService;
         }
 
        
@@ -98,6 +101,28 @@ namespace BMS.BLL.Services
             }
 
             return new ServiceActionResult();
+        }
+
+        public async Task<ServiceActionResult> ResetPassword(Guid userId, string newPassword)
+        {
+            var user = await _userManager.FindByIdAsync(userId.ToString());
+            if (user == null)
+            {
+                return new ServiceActionResult(false, "User not found");
+            }
+            var token = await _userManager.GeneratePasswordResetTokenAsync(user);
+            var result = await _userManager.ResetPasswordAsync(user, token, newPassword);
+
+            if (!result.Succeeded)
+            {
+                var error = result.Errors.First();
+                return new ServiceActionResult(false, error.Description);
+            }
+
+            return new ServiceActionResult(true)
+            {
+                Detail = "Reset Password Successfully"
+            };
         }
     }
 }

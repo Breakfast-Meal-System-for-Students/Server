@@ -121,5 +121,28 @@ namespace BMS.BLL.Services
         }
 
 
+        public async Task<ServiceActionResult> SendOTP(string email)
+        {
+            string otp = GenerateOTP(6);
+            await _emailService.SendEmailOTP(email, otp);
+            return new ServiceActionResult(true)
+            {
+                Data = otp
+            };
+        }
+
+        private string GenerateOTP(int length)
+        {
+            string numbers = "1234567890";
+            Random random = new Random();
+            string otp = string.Empty;
+
+            for (int i = 0; i < length; i++)
+            {
+                otp += numbers[random.Next(numbers.Length)];
+            }
+
+            return otp;
+        }
     }
 }
