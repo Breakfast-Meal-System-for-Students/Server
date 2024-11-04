@@ -42,6 +42,7 @@ namespace BMS.DAL.DataContext
         public DbSet<OpeningHours> OpeningHours { get; set; }
         public DbSet<CartGroupUser> CartGroupUsers { get; set; }
         public DbSet<ShopWeeklyReport> ShopWeeklyReports { get; set; }
+        public DbSet<Favourite> Favourites { get; set; }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
@@ -128,6 +129,11 @@ namespace BMS.DAL.DataContext
                 .HasOne(f => f.Shop)
                 .WithMany(s => s.Feedbacks)
                 .HasForeignKey(f => f.ShopId)
+                .OnDelete(DeleteBehavior.Restrict);
+            modelBuilder.Entity<Feedback>()
+                .HasOne(f => f.Order)
+                .WithOne(s => s.Feedback)
+                .HasForeignKey<Order>(f => f.FeedbackId)
                 .OnDelete(DeleteBehavior.Restrict);
 
             // One-to-Many relationship between Product and Image
@@ -237,6 +243,16 @@ namespace BMS.DAL.DataContext
                 .WithMany(s => s.ShopWeeklyReports)
                 .HasForeignKey(oh => oh.ShopId)
                 .OnDelete(DeleteBehavior.Cascade);
+            modelBuilder.Entity<Favourite>()
+                .HasOne(oh => oh.Shop)
+                .WithMany(s => s.Favourites)
+                .HasForeignKey(oh => oh.ShopId)
+                .OnDelete(DeleteBehavior.Restrict);
+            modelBuilder.Entity<Favourite>()
+                .HasOne(oh => oh.User)
+                .WithMany(s => s.Favourites)
+                .HasForeignKey(oh => oh.UserId)
+                .OnDelete(DeleteBehavior.Restrict);
             // seed dât
             modelBuilder.Entity<Role>().HasData(
           new Role { Id = Guid.NewGuid(), Name = "Admin", NormalizedName="Admin"},

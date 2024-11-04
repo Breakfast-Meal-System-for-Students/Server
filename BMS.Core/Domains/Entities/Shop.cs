@@ -35,7 +35,7 @@ namespace BMS.Core.Domains.Entities
 
         public ICollection<ShopWeeklyReport>? ShopWeeklyReports { get; set; } = new List<ShopWeeklyReport>();
         //    public ICollection<RegisterCategory>? RegisterCategorys { get; set; } = new List<RegisterCategory>();
-
+        public ICollection<Favourite> Favourites { get; set; } = new List<Favourite>();
         public bool IsDeleted { get; set; } = false; // Default value here
         public DateTime? DeletedDate { get; set; }
     }

@@ -60,6 +60,7 @@ namespace BMS.BLL
             services.AddScoped<IGoogleMapService, GoogleMapService>();
             services.AddScoped<IShopWeeklyReportService, ShopWeeklyReportService>();
             services.AddScoped<IOpeningHoursService, OpeningHoursService>();
+            services.AddScoped<IFavouriteService, FavouriteService>();
             #endregion
 
             #region Validation

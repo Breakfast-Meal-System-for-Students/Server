@@ -33,6 +33,7 @@ using BMS.BLL.Models.Responses.Notification;
 using BMS.BLL.Models.Responses.ShopWeeklyReport;
 using BMS.BLL.Models.Responses.OpeningHour;
 using BMS.BLL.Models.Requests.OpeningHour;
+using BMS.BLL.Models.Responses.Favourite;
 
 
 namespace BMS.BLL.Utilities.AutoMapperProfiles
@@ -193,6 +194,11 @@ namespace BMS.BLL.Utilities.AutoMapperProfiles
                 #region openinghours
                 CreateMap<OpeningHours, GetOpeningHoursForShopResonse>();
                 CreateMap<OpeningHoursRequest, OpeningHours>();
+                #endregion
+                #region
+                CreateMap<Favourite, FavouriteResponse>()
+                    .ForMember(dest => dest.ShopName, opt => opt.MapFrom(src => src.Shop.Name))
+                    .ForMember(dest => dest.ShopImage, opt => opt.MapFrom(src => src.Shop.Image));
                 #endregion
             }
         }

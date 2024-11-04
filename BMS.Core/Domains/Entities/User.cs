@@ -32,6 +32,7 @@ namespace BMS.Core.Domains.Entities
         public ICollection<Feedback>? Feedbacks { get; set; } = new List<Feedback>();
         public ICollection<CouponUsage>? CouponUsages { get; set; } = new List<CouponUsage>();
         public ICollection<CartGroupUser> CartGroupUsers { get; set; } = new List<CartGroupUser>();
+        public ICollection<Favourite> Favourites { get; set; } = new List<Favourite>();
         // Implement ISoftDelete properties
         public bool IsDeleted { get; set; } = false; // Default value here
         public DateTime? DeletedDate { get; set; }
