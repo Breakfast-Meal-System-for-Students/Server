@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using Azure;
 using Azure.Core;
+using BMS.BLL.AI;
 using BMS.BLL.Models;
 using BMS.BLL.Models.Requests.Admin;
 using BMS.BLL.Models.Requests.Category;
@@ -20,6 +21,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.ML;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -34,10 +36,12 @@ namespace BMS.BLL.Services
     {
         private readonly IQRCodeService _qrCodeService;
         private readonly IHubContext<NotificationHub> _hubContext;
-        public OrderService(IUnitOfWork unitOfWork, IMapper mapper, IQRCodeService qrCodeService, IHubContext<NotificationHub> hubContext) : base(unitOfWork, mapper)
+        private readonly RecommendationEngine _recommendationEngine;
+        public OrderService(IUnitOfWork unitOfWork, IMapper mapper, IQRCodeService qrCodeService, IHubContext<NotificationHub> hubContext, RecommendationEngine recommendationEngine) : base(unitOfWork, mapper)
         {
             _qrCodeService = qrCodeService;
             _hubContext = hubContext;
+            _recommendationEngine = recommendationEngine;
         }
 
         public async Task<ServiceActionResult> ChangeOrderStatus(Guid id, OrderStatus status)
@@ -558,6 +562,21 @@ namespace BMS.BLL.Services
         {
             var orders = (await _unitOfWork.OrderRepository.GetAllAsyncAsQueryable()).Where(x => x.OrderDate < DateTime.Now.AddMinutes(30) && x.OrderDate > DateTime.Now.AddMinutes(-30) && x.Status.Equals(OrderStatus.CHECKING.ToString())).ToList();
             return orders;
+        }
+
+        public async Task TrainModelFromOrderHistory()
+        {
+            var orderItems = (await _unitOfWork.OrderItemRepository.GetAllAsyncAsQueryable()).Include(oi => oi.Order).ToList();
+
+            var data = orderItems.Select(oi => new ProductEntry
+            {
+                UserId = (float)oi.Order.CustomerId.GetHashCode(),  // Convert Guid to Float
+                ProductId = (float)oi.ProductId.GetHashCode(),  // Convert Guid to Float
+                Label = 1 // Indicating purchase
+            }).ToList();
+
+            
+            _recommendationEngine.TrainModel(data);
         }
     }
 }

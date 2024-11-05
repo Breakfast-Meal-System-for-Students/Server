@@ -28,5 +28,7 @@ namespace BMS.BLL.Services.IServices
         Task<ServiceActionResult> GetOrderForUser(Guid userId, SearchOrderRequest request);
         Task<ServiceActionResult> CheckQRCodeOfUser(string QRcode, Guid userId);
         Task<List<Order>> GetOrdersForNotificaton();
+
+        Task TrainModelFromOrderHistory();
     }
 }
