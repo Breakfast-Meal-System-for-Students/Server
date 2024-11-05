@@ -9,7 +9,7 @@ namespace BMS.BLL.Models.Requests.Users
 {
     public class ResetPasswordRequest
     {
-        public Guid UserId { get; set; }
+        public string Email { get; set; }
         [Required]
         [DataType(DataType.Password)]
         [Display(Name = "New Password")]
