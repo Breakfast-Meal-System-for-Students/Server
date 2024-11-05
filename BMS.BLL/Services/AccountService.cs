@@ -103,9 +103,9 @@ namespace BMS.BLL.Services
             return new ServiceActionResult();
         }
 
-        public async Task<ServiceActionResult> ResetPassword(Guid userId, string newPassword)
+        public async Task<ServiceActionResult> ResetPassword(string email, string newPassword)
         {
-            var user = await _userManager.FindByIdAsync(userId.ToString());
+            var user = await _userManager.FindByEmailAsync(email);
             if (user == null)
             {
                 return new ServiceActionResult(false, "User not found");
