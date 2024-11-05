@@ -56,21 +56,115 @@ namespace BMS.BLL.Services
         }
         public async Task<ServiceActionResult> AddCoupon(CreateCouponRequest request)
         {
+            if(request.StartDate < DateTime.Now) request.StartDate = DateTime.Now;
+            if(request.EndDate < DateTime.Now) request.EndDate = DateTime.Now;
+            if(request.StartDate > request.EndDate)
+            {
+                return new ServiceActionResult(false)
+                {
+                    Detail = "The EndDate must be later than the StartDate"
+                };
+            }
+            if(request.MinPrice < 0)
+            {
+                return new ServiceActionResult(false)
+                {
+                    Detail = "The MinPrice must be >= 0"
+                };
+            }
 
+            if (request.MaxDiscount <= 0)
+            {
+                return new ServiceActionResult(false)
+                {
+                    Detail = "The MaxDiscount must be > 0"
+                };
+            }
+
+            if (request.isPercentDiscount)
+            {
+                if (request.PercentDiscount <= 0)
+                {
+                    return new ServiceActionResult(false)
+                    {
+                        Detail = "The PercentDiscount must be > 0"
+                    };
+                }
+            }
+            else
+            {
+                if (request.MinDiscount <= 0)
+                {
+                    return new ServiceActionResult(false)
+                    {
+                        Detail = "The MinDiscount must be > 0"
+                    };
+                }
+            }
+
+            var shop = await _unitOfWork.ShopRepository.FindAsync(request.ShopId);
+            if (shop == null) 
+            {
+                return new ServiceActionResult(false)
+                {
+                    Detail = "The ShopId is invalid"
+                };
+            }
 
             var CouponEntity = _mapper.Map<Coupon>(request);
       
             await _unitOfWork.CouponRepository.AddAsync(CouponEntity);
-            // do something add feedback
-            await _unitOfWork.CommitAsync();
 
             return new ServiceActionResult(true) { Data = CouponEntity };
         }
 
         public async Task<ServiceActionResult> UpdateCoupon(Guid id, UpdateCouponRequest request)
         {
+            if (request.StartDate < DateTime.Now) request.StartDate = DateTime.Now;
+            if (request.EndDate < DateTime.Now) request.EndDate = DateTime.Now;
+            if (request.StartDate > request.EndDate)
+            {
+                return new ServiceActionResult(false)
+                {
+                    Detail = "The EndDate must be later than the StartDate"
+                };
+            }
+            if (request.MinPrice < 0)
+            {
+                return new ServiceActionResult(false)
+                {
+                    Detail = "The MinPrice must be >= 0"
+                };
+            }
 
+            if (request.MaxDiscount <= 0)
+            {
+                return new ServiceActionResult(false)
+                {
+                    Detail = "The MaxDiscount must be > 0"
+                };
+            }
 
+            if (request.isPercentDiscount)
+            {
+                if (request.PercentDiscount <= 0)
+                {
+                    return new ServiceActionResult(false)
+                    {
+                        Detail = "The MaxDiscount must be > 0"
+                    };
+                }
+            }
+            else
+            {
+                if (request.MinDiscount <= 0)
+                {
+                    return new ServiceActionResult(false)
+                    {
+                        Detail = "The MinDiscount must be > 0"
+                    };
+                }
+            }
             var Coupon = await _unitOfWork.CouponRepository.FindAsync(id) ?? throw new ArgumentNullException("Coupon is not exist");
      
 
@@ -82,9 +176,10 @@ namespace BMS.BLL.Services
             Coupon.PercentDiscount = request.PercentDiscount;
             Coupon.MinDiscount = request.MinDiscount;
             Coupon.MinPrice = request.MinPrice;
+            Coupon.isPercentDiscount = request.isPercentDiscount;
             await _unitOfWork.CommitAsync();
 
-            return new ServiceActionResult(true) { Data = Coupon };
+            return new ServiceActionResult(true) { Data = Coupon, Detail = "Update Coupon succeesfully" };
         }
 
 

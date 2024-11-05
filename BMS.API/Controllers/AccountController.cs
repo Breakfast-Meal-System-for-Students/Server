@@ -70,7 +70,7 @@ namespace BMS.API.Controllers
         public async Task<IActionResult> ResetPassword([FromForm]ResetPasswordRequest request)
         {
             return await ExecuteServiceLogic(
-            async () => await _accountService.ResetPassword(request.UserId, request.NewPassword).ConfigureAwait(false)
+            async () => await _accountService.ResetPassword(request.Email, request.NewPassword).ConfigureAwait(false)
            ).ConfigureAwait(false);
         }
     }
