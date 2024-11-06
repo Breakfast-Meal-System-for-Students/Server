@@ -17,9 +17,10 @@ namespace BMS.BLL.Models.Responses.Coupon
         public double MaxDiscount { get; set; }
         public double MinPrice { get; set; }
         public double MinDiscount { get; set; }
+        public bool isPercentDiscount { get; set; }
 
         public Guid ShopId { get; set; }
-     
+        
 
         // Implement ISoftDelete properties
         public bool IsDeleted { get; set; } = false; // Default value here

@@ -48,7 +48,7 @@ namespace BMS.API.Controllers
             ).ConfigureAwait(false);
         }
 
-        [HttpPut("{id}")]
+        [HttpPut]
         // [Authorize(Roles = $"{UserRoleConstants.STAFF} , {UserRoleConstants.ADMIN}")]
         public async Task<IActionResult> ReviewedApplication([FromForm] ReviewShopApplicationRequest request)
         {
