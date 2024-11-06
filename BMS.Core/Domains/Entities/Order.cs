@@ -28,6 +28,7 @@ namespace BMS.Core.Domains.Entities
         public ICollection<Transaction> Transactions { get; set; } = new List<Transaction>();
         public Guid? FeedbackId { get; set; }
         public Feedback? Feedback { get; set; }
+        public bool IsGroup { get; set; }
     }
 
 }

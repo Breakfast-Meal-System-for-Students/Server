@@ -22,5 +22,6 @@ namespace BMS.BLL.Models.Responses.Admin
         public string? ShopName { get; set; }
         public string? ShopImage { get; set; } = null!;
         public ICollection<OrderItemResponse> OrderItems { get; set; } = new List<OrderItemResponse>();
+        public bool IsGroup { get; set; }
     }
 }
