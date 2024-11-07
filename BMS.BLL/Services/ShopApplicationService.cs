@@ -129,6 +129,10 @@ namespace BMS.BLL.Services
                 await _unitOfWork.CommitAsync();
                 await _emailService.SendEmailAsync(application.Email, "YOU HAVE NEW INFORMATION FROM BMS", EmailHelper.GetRejectedEmailBody(application.Name, "BMS"), true);
             }
+            else
+            {
+                return new ServiceActionResult(false) { Detail = $"The status must be In (ACCEPTED, DENIED)" };
+            }
 
             return new ServiceActionResult();
         }
