@@ -134,7 +134,10 @@ namespace BMS.BLL.Services
                 return new ServiceActionResult(false) { Detail = $"The status must be In (ACCEPTED, DENIED)" };
             }
 
-            return new ServiceActionResult();
+            return new ServiceActionResult(true)
+            {
+                Detail = "Register Successfully, Please check Your Email"
+            };
         }
 
         private async Task<LoginUser> RegisterShopAsync(Shop application)

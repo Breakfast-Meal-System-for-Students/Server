@@ -30,10 +30,12 @@ namespace BMS.BLL.Services
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
-        public ShopService(IUnitOfWork unitOfWork, IMapper mapper) : base(unitOfWork, mapper)
+        private readonly IFileStorageService _fileStorageService;
+        public ShopService(IUnitOfWork unitOfWork, IMapper mapper, IFileStorageService fileStorageService) : base(unitOfWork, mapper)
         {
             _unitOfWork = unitOfWork;
             _mapper = mapper;
+            _fileStorageService = fileStorageService;
         }
 
         public async Task<ServiceActionResult> GetAllShop(ShopRequest queryParameters)
@@ -70,7 +72,12 @@ namespace BMS.BLL.Services
             Shop.Name = request.Name;
             Shop.Description = request.Description;
             Shop.Address = request.Address;
-            await _unitOfWork.CommitAsync();
+            Shop.PhoneNumber = request.Phone;
+            if (request.Image != null)
+            {
+                var imageUrl = await _fileStorageService.UploadFileBlobAsync((Microsoft.AspNetCore.Http.IFormFile)request.Image);
+                Shop.Image = imageUrl;
+            }
 
             return new ServiceActionResult(true) { Data = Shop };
         }
