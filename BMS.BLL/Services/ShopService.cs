@@ -31,11 +31,13 @@ namespace BMS.BLL.Services
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
         private readonly IFileStorageService _fileStorageService;
-        public ShopService(IUnitOfWork unitOfWork, IMapper mapper, IFileStorageService fileStorageService) : base(unitOfWork, mapper)
+        private readonly IGoogleMapService _googleMapService;
+        public ShopService(IUnitOfWork unitOfWork, IMapper mapper, IFileStorageService fileStorageService, IGoogleMapService googleMapService) : base(unitOfWork, mapper)
         {
             _unitOfWork = unitOfWork;
             _mapper = mapper;
             _fileStorageService = fileStorageService;
+            _googleMapService = googleMapService;
         }
 
         public async Task<ServiceActionResult> GetAllShop(ShopRequest queryParameters)
@@ -78,7 +80,14 @@ namespace BMS.BLL.Services
                 var imageUrl = await _fileStorageService.UploadFileBlobAsync((Microsoft.AspNetCore.Http.IFormFile)request.Image);
                 Shop.Image = imageUrl;
             }
-
+             
+                Models.Responses.Map.Location location = await _googleMapService.GetCoordinatesFromAddress(request.Address);
+                if ( location==null)
+                {
+                    throw new BusinessRuleException($"Address invalid");
+                }
+            Shop.lat = location.Lat;
+            Shop.lng = location.Lng;
             return new ServiceActionResult(true) { Data = Shop };
         }
 

@@ -32,8 +32,9 @@ namespace BMS.BLL.Services
         private readonly IEmailService _emailService;
         private readonly RoleManager<Role> _roleManager;
         private readonly IOpeningHoursService _openingHoursService;
+        private readonly IGoogleMapService _googleMapService;
         public ShopApplicationService(IUnitOfWork unitOfWork,
-            IMapper mapper,  UserManager<User> userManager, IEmailService emailService, RoleManager<Role> roleManager, IOpeningHoursService openingHoursService) : base(unitOfWork, mapper)
+            IMapper mapper,  UserManager<User> userManager, IEmailService emailService, RoleManager<Role> roleManager, IOpeningHoursService openingHoursService, IGoogleMapService googleMapService) : base(unitOfWork, mapper)
         {
             _unitOfWork = unitOfWork;
             _mapper = mapper;
@@ -41,6 +42,7 @@ namespace BMS.BLL.Services
             _emailService = emailService;
             _roleManager = roleManager;
             _openingHoursService = openingHoursService;
+            _googleMapService = googleMapService;
         }
         public async Task<ServiceActionResult> CreateShopApplication(CreateShopApplicationRequest applicationRequest)
         {
@@ -55,10 +57,17 @@ namespace BMS.BLL.Services
                 }
             }
             var shopApplication = _mapper.Map<Shop>(applicationRequest);
-             
-            try
+            // Analys lat and lng
+             try
             {
-               
+                
+                Models.Responses.Map.Location location = await _googleMapService.GetCoordinatesFromAddress(shopApplication.Address);
+                if ( location==null)
+                {
+                    throw new BusinessRuleException($"Address invalid");
+                }
+                shopApplication.lat = location.Lat;
+                shopApplication.lng = location.Lng;
                 await _unitOfWork.ShopRepository.AddAsync(shopApplication);
                 await _unitOfWork.CommitAsync();
                 return new ServiceActionResult();
