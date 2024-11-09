@@ -13,6 +13,7 @@ namespace BMS.BLL.Services.IServices
         Task<ServiceActionResult> LoginAsync(LoginUser userToLoginDTO);
         Task<ServiceActionResult> RegisterAsync(RegisterUser userToRegisterDTO, int role = 3);
         Task<ServiceActionResult> ConfirmEmail(string userId, string token);
-        
+
+        Task<ServiceActionResult> SendOTP(string email);
     }
 }

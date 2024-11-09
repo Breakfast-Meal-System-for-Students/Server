@@ -9,6 +9,7 @@ namespace BMS.BLL.Models.Requests.Cart
 {
     public class CartDetailRequest
     {
+        public Guid ShopId { get; set; }
         public Guid? CartId { get; set; }
 
         public Guid ProductId { get; set; }

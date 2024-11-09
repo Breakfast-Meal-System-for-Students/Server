@@ -34,7 +34,7 @@ namespace BMS.API.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> CreatePackage([FromQuery] CreatePackageRequest Package)
+        public async Task<IActionResult> CreatePackage([FromBody] CreatePackageRequest Package)
         {
             return await ExecuteServiceLogic(
                                async () => await _packageService.AddPackage(Package).ConfigureAwait(false)
@@ -48,10 +48,10 @@ namespace BMS.API.Controllers
                                           ).ConfigureAwait(false);
         }
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdatePackage(Guid Id, [FromQuery] UpdatePackageRequest Package)
+        public async Task<IActionResult> UpdatePackage([FromBody] UpdatePackageRequest Package)
         {
             return await ExecuteServiceLogic(
-                               async () => await _packageService.UpdatePackage(Id, Package).ConfigureAwait(false)
+                               async () => await _packageService.UpdatePackage(Package.Id, Package).ConfigureAwait(false)
                                           ).ConfigureAwait(false);
         }
         [HttpGet("{id}")]

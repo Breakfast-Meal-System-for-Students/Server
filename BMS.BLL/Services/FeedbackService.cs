@@ -31,24 +31,24 @@ namespace BMS.BLL.Services
             _mapper = mapper;
         }
 
-        public async Task<ServiceActionResult> AddFeedback(FeedbackRequest request, Guid userId)
+        public async Task<ServiceActionResult> AddFeedback(FeedbackRequest request)
         {
-       
-
             var feedbackEntity = _mapper.Map<Feedback>(request);
-
-            // do something add feedback
-            await _unitOfWork.CommitAsync();
-
+            feedbackEntity.Status = FeedbackStatus.APPROVED;
+            await _unitOfWork.FeedbackRepository.AddAsync(feedbackEntity);
             return new ServiceActionResult();
         }
 
-        public async Task<ServiceActionResult> GetAllFeedbacksOfAShop(Guid shopId, PagingRequest request)
+        public async Task<ServiceActionResult> GetAllFeedbacksOfAShop(Guid shopId, GetFeedbackInShop request)
         {
             //  var shop = (await _unitOfWork.ShopRepository.FindAsync(shopId)) ?? throw new ArgumentNullException("Shop not found");
 
             var feedbackQueryable = (await _unitOfWork.FeedbackRepository.GetAllAsyncAsQueryable()).Include(a => a.User).Include(a => a.Shop).Where(a => a.ShopId==shopId);
-               
+
+            if (request.Rating != 0)
+            {
+                feedbackQueryable = feedbackQueryable.Where(m => m.Rate == request.Rating);
+            }
 
             var paginatedFeedback = PaginationHelper.BuildPaginatedResult<Feedback, FeedbackForStaffResponse>(_mapper, feedbackQueryable, request.PageSize, request.PageIndex);
 
@@ -72,6 +72,11 @@ namespace BMS.BLL.Services
                 feedbackQueryable = feedbackQueryable.Where(m => m.Description.Contains(queryParameters.Search));
             }
 
+            if (queryParameters.Rate != 0)
+            {
+                feedbackQueryable = feedbackQueryable.Where(m => m.Rate == queryParameters.Rate);
+            }
+
             feedbackQueryable = queryParameters.IsDesc ? feedbackQueryable.OrderByDescending(a => a.CreateDate) : feedbackQueryable.OrderBy(a => a.CreateDate);
 
             var paginationResult = PaginationHelper
@@ -90,5 +95,31 @@ namespace BMS.BLL.Services
             return new ServiceActionResult();
         }
 
+        public async Task<ServiceActionResult> CheckOrderIsFeedbacked(Guid orderId)
+        {
+            var order = await _unitOfWork.OrderRepository.FindAsync(orderId);
+            if (order.Status != OrderStatus.COMPLETE.ToString())
+            {
+                return new ServiceActionResult(false) 
+                {
+                    Data = false,
+                    Detail = "Order is not Complete"
+                };
+            }
+            var feedback = (await _unitOfWork.FeedbackRepository.GetAllAsyncAsQueryable()).Where(x => x.OrderId == orderId).Count();
+            if (feedback > 0)
+            {
+                return new ServiceActionResult(true)
+                {
+                    Data = true,
+                };
+            } else
+            {
+                return new ServiceActionResult(true)
+                {
+                    Data = false,
+                };
+            }
+        }
     }
 }

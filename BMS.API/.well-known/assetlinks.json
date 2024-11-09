@@ -1,0 +1,12 @@
+[
+  {
+    "relation": [ "delegate_permission/common.handle_all_urls" ],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "com.xuanthu.StickerSmash",
+      "sha256_cert_fingerprints": [
+        "2B:CD:CE:E3:C6:2A:60:D1:D1:0D:53:36:17:BC:07:83:B9:00:40:3B:CB:ED:E2:3E:CC:CE:36:C9:A0:5C:68:A4"
+      ]
+    }
+  }
+]

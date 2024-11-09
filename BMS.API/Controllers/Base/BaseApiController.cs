@@ -17,7 +17,8 @@ namespace BMS.API.Controllers.Base
             var successResult = new ApiResponse(true)
             {
                 Data = result.Data,
-                StatusCode = StatusCodes.Status200OK
+                StatusCode = StatusCodes.Status200OK,
+                IsSuccess = result.IsSuccess,
             };
 
             var detail = result.Detail ?? ApiMessageConstants.SUCCESS;
@@ -52,7 +53,7 @@ namespace BMS.API.Controllers.Base
             {
                 var result = await serviceLogicFunc();
                 _baseService.Commit();
-                return result.IsSuccess ? BuildSuccessResult(result) : Problem(result.Detail);
+                return BuildSuccessResult(result);
 
             }
             catch (Exception ex)

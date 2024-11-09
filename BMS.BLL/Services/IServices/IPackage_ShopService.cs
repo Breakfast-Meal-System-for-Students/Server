@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace BMS.BLL.Services
+namespace BMS.BLL.Services.IServices
 {
-    public class PackageHistoryService
+    internal class IPackage_ShopService
     {
     }
 }

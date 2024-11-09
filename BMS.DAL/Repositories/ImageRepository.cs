@@ -9,11 +9,9 @@ using System.Threading.Tasks;
 
 namespace BMS.DAL.Repositories
 {
-
-
-    public class PackageHistoryRepository : GenericRepository<PackageHistory>, IPackageHistoryRepository
+    public class ImageRepository : GenericRepository<Image>, IImageRepository
     {
-        public PackageHistoryRepository(DbContext dbContext) : base(dbContext)
+        public ImageRepository(DbContext dbContext) : base(dbContext)
         {
         }
     }

@@ -20,6 +20,9 @@ namespace BMS.Core.Domains.Entities
 
         public Guid ShopId { get; set; }
         public Shop Shop { get; set; } = null!;
+
+        public Guid OrderId { get; set; }
+        public Order Order { get; set; } = null!;
     }
 
 }

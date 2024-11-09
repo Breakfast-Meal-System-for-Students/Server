@@ -15,7 +15,7 @@ namespace BMS.BLL.Services.IServices
     {
         Task<ServiceActionResult> GetAllCartForUser(Guid userId, PagingRequest request);
         Task<ServiceActionResult> GetAllCartItemInCart(Guid cartId, PagingRequest request);
-        Task<ServiceActionResult> AddCartDetailForGroup(Guid userId, Guid cartId, CartDetailRequest request);
+        Task<ServiceActionResult> AddCartDetailForGroup(Guid userId, Guid cartId, CartGroupDetailRequest request);
         Task<ServiceActionResult> AddCartDetail(Guid userId, Guid shopId, CartDetailRequest request);
         Task<ServiceActionResult> UpdateCartDetail(Guid userId, Guid shopId, CartDetailRequest request);
         Task<ServiceActionResult> GetCartDetail(Guid cartDetailId);

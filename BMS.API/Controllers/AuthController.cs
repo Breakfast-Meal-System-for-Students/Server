@@ -6,6 +6,8 @@ using BMS.BLL.Services.IServices;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity.Data;
 using Microsoft.AspNetCore.Mvc;
+using BMS.Core.Domains.Entities;
+using Newtonsoft.Json.Linq;
 
 namespace BMS.API.Controllers
 {
@@ -53,6 +55,12 @@ namespace BMS.API.Controllers
             return Ok();
         }
 
-  
+        [HttpPost("sendOTP")]
+        public async Task<IActionResult> sendOTP([FromForm]string email)
+        {
+            return await ExecuteServiceLogic(
+            async () => await _authService.SendOTP(email).ConfigureAwait(false)
+           ).ConfigureAwait(false);
+        }
     }
 }

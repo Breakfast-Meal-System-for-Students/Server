@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace BMS.BLL.Models.Responses.PackageHistory
 {
-    public class PackageHistoryResponse
+    public class Package_ShopResponse
     {
     }
 }

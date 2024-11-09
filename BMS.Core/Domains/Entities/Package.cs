@@ -14,7 +14,7 @@ namespace BMS.Core.Domains.Entities
         public string Description { get; set; } = null!;
         public int Duration { get; set; }
 
-        public ICollection<PackageHistory> PackageHistories { get; set; } = new List<PackageHistory>();
+        public ICollection<Package_Shop> Package_Shop { get; set; } = new List<Package_Shop>();
         // Implement ISoftDelete properties
         public bool IsDeleted { get; set; } = false; // Default value here
         public DateTime? DeletedDate { get; set; }

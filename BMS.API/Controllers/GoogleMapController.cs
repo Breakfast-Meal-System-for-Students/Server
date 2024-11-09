@@ -16,7 +16,7 @@ namespace BMS.API.Controllers
 
         [HttpPost]
         [Route("computeRoutes")]
-        public async Task<IActionResult> Route(RouteRequest request)
+        public async Task<IActionResult> Route([FromBody] RouteRequest request)
         {
             var data = await _googleMapService.ComputeRoutes(request);
             return Ok(data);

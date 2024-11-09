@@ -26,6 +26,8 @@ namespace BMS.Core.Domains.Entities
         public ICollection<Notification> Notifications { get; set; } = new List<Notification>();
 
         public ICollection<Transaction> Transactions { get; set; } = new List<Transaction>();
+        public Guid? FeedbackId { get; set; }
+        public Feedback? Feedback { get; set; }
     }
 
 }

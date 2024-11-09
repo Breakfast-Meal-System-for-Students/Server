@@ -73,7 +73,7 @@ namespace BMS.BLL.Services
             };
         }
 
-        public async Task<ServiceActionResult> AddCartDetailForGroup(Guid userId, Guid cartId, CartDetailRequest request)
+        public async Task<ServiceActionResult> AddCartDetailForGroup(Guid userId, Guid cartId, CartGroupDetailRequest request)
         {
             var cart = (await _unitOfWork.CartRepository.GetAllAsyncAsQueryable()).Where(x => x.Id == cartId).FirstOrDefault();
             if (cart == null)

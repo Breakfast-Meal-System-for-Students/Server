@@ -30,7 +30,7 @@ namespace BMS.DAL.DataContext
 
         public DbSet<RegisterCategory> RegisterCategorys { get; set; }
         public DbSet<Package> Packages { get; set; }
-        public DbSet<PackageHistory> PackageHistories { get; set; }
+        public DbSet<Package_Shop> Package_Shops { get; set; }
         public DbSet<OrderItem> OrderItems { get; set; }
         public DbSet<Coupon> Coupons { get; set; }
         public DbSet<CouponUsage> CouponUsages { get; set; }
@@ -42,6 +42,7 @@ namespace BMS.DAL.DataContext
         public DbSet<OpeningHours> OpeningHours { get; set; }
         public DbSet<CartGroupUser> CartGroupUsers { get; set; }
         public DbSet<ShopWeeklyReport> ShopWeeklyReports { get; set; }
+        public DbSet<Favourite> Favourites { get; set; }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
@@ -129,6 +130,11 @@ namespace BMS.DAL.DataContext
                 .WithMany(s => s.Feedbacks)
                 .HasForeignKey(f => f.ShopId)
                 .OnDelete(DeleteBehavior.Restrict);
+            modelBuilder.Entity<Feedback>()
+                .HasOne(f => f.Order)
+                .WithOne(s => s.Feedback)
+                .HasForeignKey<Order>(f => f.FeedbackId)
+                .OnDelete(DeleteBehavior.Restrict);
 
             // One-to-Many relationship between Product and Image
             modelBuilder.Entity<Image>()
@@ -145,16 +151,16 @@ namespace BMS.DAL.DataContext
                 .OnDelete(DeleteBehavior.Restrict);
 
             // One-to-Many relationship between Package and PackageHistory
-            modelBuilder.Entity<PackageHistory>()
+            modelBuilder.Entity<Package_Shop>()
                 .HasOne(ph => ph.Package)
-                .WithMany(p => p.PackageHistories)
+                .WithMany(p => p.Package_Shop)
                 .HasForeignKey(ph => ph.PackageId)
                 .OnDelete(DeleteBehavior.Cascade);
 
             // One-to-Many relationship between Shop and PackageHistory
-            modelBuilder.Entity<PackageHistory>()
+            modelBuilder.Entity<Package_Shop>()
                 .HasOne(ph => ph.Shop)
-                .WithMany(s => s.PackageHistories)
+                .WithMany(s => s.Package_Shop)
                 .HasForeignKey(ph => ph.ShopId)
                 .OnDelete(DeleteBehavior.Cascade);
 
@@ -237,6 +243,16 @@ namespace BMS.DAL.DataContext
                 .WithMany(s => s.ShopWeeklyReports)
                 .HasForeignKey(oh => oh.ShopId)
                 .OnDelete(DeleteBehavior.Cascade);
+            modelBuilder.Entity<Favourite>()
+                .HasOne(oh => oh.Shop)
+                .WithMany(s => s.Favourites)
+                .HasForeignKey(oh => oh.ShopId)
+                .OnDelete(DeleteBehavior.Restrict);
+            modelBuilder.Entity<Favourite>()
+                .HasOne(oh => oh.User)
+                .WithMany(s => s.Favourites)
+                .HasForeignKey(oh => oh.UserId)
+                .OnDelete(DeleteBehavior.Restrict);
             // seed dât
             modelBuilder.Entity<Role>().HasData(
           new Role { Id = Guid.NewGuid(), Name = "Admin", NormalizedName="Admin"},

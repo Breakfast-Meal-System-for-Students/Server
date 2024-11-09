@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace BMS.Core.Domains.Entities
 {
-  public class PackageHistory : EntityBase<Guid>
+  public class Package_Shop : EntityBase<Guid>
     {
 
     public Guid ShopId { get; set; }

@@ -7,6 +7,7 @@ using BMS.BLL.Services;
 using BMS.BLL.Services.BaseServices;
 using BMS.BLL.Services.IServices;
 using BMS.Core.Domains.Entities;
+using BMS.Core.Domains.Enums;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
@@ -24,6 +25,15 @@ namespace BMS.API.Controllers
             _baseService = (BaseService)notificationService;
             _userClaims = userClaimsService.GetUserClaims();
             _hubContext = hubContext;
+        }
+
+        [HttpGet("GetNotificationForStaff")]
+        [Authorize]
+        public async Task<IActionResult> GetNotificationForStaff([FromQuery] GetNotificationRequest request)
+        {
+            return await ExecuteServiceLogic(
+                async () => await _notificationService.GetNotificationForStaff(request).ConfigureAwait(false)
+            ).ConfigureAwait(false);
         }
 
         [HttpGet("GetNotificationForShop")]
@@ -75,6 +85,29 @@ namespace BMS.API.Controllers
             }
 
             return await ExecuteServiceLogic(() => Task.FromResult(result)).ConfigureAwait(false);
+        }
+
+        [HttpPut("ClearNotificationForUser")]
+        [Authorize]
+        public async Task<IActionResult> ClearNotificationForUser([FromForm]NotificationStatus status)
+        {
+            ClearNotificationRequest request = new ClearNotificationRequest()
+            {
+                Id = _userClaims.UserId,
+                Status = status
+            };
+            return await ExecuteServiceLogic(
+                async () => await _notificationService.ClearNotificationForUser(request).ConfigureAwait(false)
+            ).ConfigureAwait(false);
+        }
+
+        [HttpPut("ClearNotificationForShop")]
+        [Authorize]
+        public async Task<IActionResult> ClearNotificationForShop(ClearNotificationRequest request)
+        {
+            return await ExecuteServiceLogic(
+                async () => await _notificationService.ClearNotificationForShop(request).ConfigureAwait(false)
+            ).ConfigureAwait(false);
         }
     }
 }

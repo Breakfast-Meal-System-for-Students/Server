@@ -39,7 +39,7 @@ namespace BMS.API.Controllers
                                           ).ConfigureAwait(false);
         }
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateShop(Guid Id, [FromQuery] UpdateShopRequest Shop)
+        public async Task<IActionResult> UpdateShop(Guid Id, [FromForm] UpdateShopRequest Shop)
         {
             return await ExecuteServiceLogic(
                                async () => await _packageService.UpdateShop(Id, Shop).ConfigureAwait(false)

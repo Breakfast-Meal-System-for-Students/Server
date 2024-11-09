@@ -16,6 +16,6 @@ namespace BMS.BLL.Services.IServices
         Task<ServiceActionResult> UpdateDetails(UpdateUserRequest request, Guid userId);
         Task<ServiceActionResult> UpdateAvatar(IFormFile newAvatar, Guid userId);
         Task<ServiceActionResult> UpdatePassword(UpdatePasswordRequest request, Guid userId);
-      
-         }
+        Task<ServiceActionResult> ResetPassword(string email, string newPassword);
+    }
 }

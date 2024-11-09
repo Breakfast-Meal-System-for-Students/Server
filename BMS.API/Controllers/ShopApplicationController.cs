@@ -48,12 +48,12 @@ namespace BMS.API.Controllers
             ).ConfigureAwait(false);
         }
 
-        [HttpPut("{id}")]
+        [HttpPut]
         // [Authorize(Roles = $"{UserRoleConstants.STAFF} , {UserRoleConstants.ADMIN}")]
-        public async Task<IActionResult> ReviewedApplication(Guid id, string status)
+        public async Task<IActionResult> ReviewedApplication([FromForm] ReviewShopApplicationRequest request)
         {
             return await ExecuteServiceLogic(
-                async () => await _shopApplicationService.ReviewApplication(id, status).ConfigureAwait(false)
+                async () => await _shopApplicationService.ReviewApplication(request.Id, request.Status).ConfigureAwait(false)
             ).ConfigureAwait(false);
         }
     }

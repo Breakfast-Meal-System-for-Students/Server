@@ -7,8 +7,7 @@ using System.Threading.Tasks;
 
 namespace BMS.DAL.Repositories.IRepositories
 {
-  
-    public interface IPackageHistoryRepository : IGenericRepository<PackageHistory>
+    public interface IFavouriteRepository : IGenericRepository<Favourite>
     {
     }
 }

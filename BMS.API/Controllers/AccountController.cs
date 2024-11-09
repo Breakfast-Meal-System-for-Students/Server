@@ -65,5 +65,13 @@ namespace BMS.API.Controllers
             async () => await _accountService.UpdateAvatar(request, _userClaims.UserId).ConfigureAwait(false)
            ).ConfigureAwait(false);
         }
+
+        [HttpPut("ResetPassword")]
+        public async Task<IActionResult> ResetPassword([FromForm]ResetPasswordRequest request)
+        {
+            return await ExecuteServiceLogic(
+            async () => await _accountService.ResetPassword(request.Email, request.NewPassword).ConfigureAwait(false)
+           ).ConfigureAwait(false);
+        }
     }
 }

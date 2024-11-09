@@ -34,6 +34,13 @@ namespace BMS.BLL.Services
             return new ServiceActionResult(true, "Delete Successfully");
         }
 
+        public async Task<ServiceActionResult> GetAllOrderAndFeedbackOfUser(Guid userID)
+        {
+            var user = (await _unitOfWork.UserRepository.GetAllAsyncAsQueryable()).Include(a => a.Orders).Include(b => b.Feedbacks).Include(c => c.CouponUsages).Where(x => x.Id == userID).FirstOrDefault();
+            var returnUser = _mapper.Map<GetOrdersAndFeedbackOfUserResponse>(user);
+            return new ServiceActionResult(true) { Data = returnUser };
+        }
+
         public async Task<ServiceActionResult> GetListUser(SearchStaffRequest request)
         {
             IQueryable<User> userQuery = (await _unitOfWork.UserRepository.GetAllAsyncAsQueryable()).Include(a => a.UserRoles).ThenInclude(b => b.Role).Where(x => x.UserRoles.Any(a => a.Role.Name.Contains(UserRoleConstants.USER)));
@@ -55,6 +62,33 @@ namespace BMS.BLL.Services
             .BuildPaginatedResult<User, UserLoginResponse>(_mapper, userQuery, request.PageSize, request.PageIndex);
 
             return new ServiceActionResult(true) { Data = paginationResult };
+        }
+
+        public async Task<ServiceActionResult> CountNewUser(TotalUserRequest request)
+        {
+            var users = (await _unitOfWork.UserRepository.GetAllAsyncAsQueryable());
+            if (request.Year != 0)
+            {
+                if (request.Month != 0)
+                {
+                    if (request.Day != 0)
+                    {
+                        users = users.Where(x => x.CreateDate.Year == request.Year && x.CreateDate.Month == request.Month && x.CreateDate.Day == request.Day);
+                    }
+                    else
+                    {
+                        users = users.Where(x => x.CreateDate.Year == request.Year && x.CreateDate.Month == request.Month);
+                    }
+                }
+                else
+                {
+                    users = users.Where(x => x.CreateDate.Year == request.Year);
+                }
+            }
+            return new ServiceActionResult()
+            {
+                Data = users.Count()
+            };
         }
 
         public async Task<ServiceActionResult> GetTotalUser()

@@ -33,6 +33,7 @@ using BMS.BLL.Models.Responses.Notification;
 using BMS.BLL.Models.Responses.ShopWeeklyReport;
 using BMS.BLL.Models.Responses.OpeningHour;
 using BMS.BLL.Models.Requests.OpeningHour;
+using BMS.BLL.Models.Responses.Favourite;
 
 
 namespace BMS.BLL.Utilities.AutoMapperProfiles
@@ -57,7 +58,10 @@ namespace BMS.BLL.Utilities.AutoMapperProfiles
                 CreateMap<User, UserResponse>();
                 CreateMap<User, LoginUser>();
 
-
+                CreateMap<User, GetOrdersAndFeedbackOfUserResponse>()
+                    .ForMember(dest => dest.CouponUsages, opt => opt.MapFrom(src => src.CouponUsages))
+                    .ForMember(dest => dest.Orders, opt => opt.MapFrom(src => src.Orders))
+                    .ForMember(dest => dest.Feedbacks, opt => opt.MapFrom(src => src.Feedbacks));
                 CreateMap<User, UserLoginResponse>();
                 CreateMap<UserRegisterRequest, User>();
                 CreateMap<CreateStaffRequest, User>();
@@ -172,6 +176,12 @@ namespace BMS.BLL.Utilities.AutoMapperProfiles
                     .ForMember(dest => dest.FirstName, opt => opt.MapFrom(src => src.User.FirstName))
                     .ForMember(dest => dest.LastName, opt => opt.MapFrom(src => src.User.LastName))
                     .ForMember(dest => dest.Avatar, opt => opt.MapFrom(src => src.User.Avatar));
+                CreateMap<Notification, NotificationResponseForStaff>()
+                    .ForMember(dest => dest.ShopName, opt => opt.MapFrom(src => src.Shop.Name))
+                    .ForMember(dest => dest.ShopImage, opt => opt.MapFrom(src => src.Shop.Image))
+                    .ForMember(dest => dest.FirstName, opt => opt.MapFrom(src => src.User.FirstName))
+                    .ForMember(dest => dest.LastName, opt => opt.MapFrom(src => src.User.LastName))
+                    .ForMember(dest => dest.Avatar, opt => opt.MapFrom(src => src.User.Avatar));
                 #endregion
 
                 #region shopweeklyreport
@@ -184,6 +194,11 @@ namespace BMS.BLL.Utilities.AutoMapperProfiles
                 #region openinghours
                 CreateMap<OpeningHours, GetOpeningHoursForShopResonse>();
                 CreateMap<OpeningHoursRequest, OpeningHours>();
+                #endregion
+                #region
+                CreateMap<Favourite, FavouriteResponse>()
+                    .ForMember(dest => dest.ShopName, opt => opt.MapFrom(src => src.Shop.Name))
+                    .ForMember(dest => dest.ShopImage, opt => opt.MapFrom(src => src.Shop.Image));
                 #endregion
             }
         }

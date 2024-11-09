@@ -108,7 +108,23 @@ namespace BMS.BLL.Services
                 };
 
                 await _unitOfWork.TransactionRepository.AddAsync(transaction);
-                //
+
+                Notification notification = new Notification
+                {
+                    UserId = order.CustomerId,
+                    OrderId = order.Id,
+                    ShopId = order.ShopId,
+                    Object = $"Pay Order ID ${order.Id} sucessfully",
+                    Status = NotificationStatus.UnRead,
+                    Title = NotificationTitle.PAYMENT_ORDER,
+                    Destination = NotificationDestination.FORUSER
+                };
+
+                await _unitOfWork.NotificationRepository.AddAsync(notification);
+                notification.Destination = NotificationDestination.FORSHOP;
+                await _unitOfWork.NotificationRepository.AddAsync(notification);
+                notification.Destination = NotificationDestination.FORSTAFF;
+                await _unitOfWork.NotificationRepository.AddAsync(notification);
 
                 await _unitOfWork.CommitAsync();
 

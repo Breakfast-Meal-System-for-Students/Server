@@ -1,5 +1,6 @@
 ﻿using BMS.API.Controllers.Base;
 using BMS.BLL.Models.Requests.Admin;
+using BMS.BLL.Models.Requests.Transaction;
 using BMS.BLL.Services;
 using BMS.BLL.Services.BaseServices;
 using BMS.BLL.Services.IServices;
@@ -73,10 +74,10 @@ namespace BMS.API.Controllers
 
         [HttpPost("ChangeTransactionStatus")]
         //[Authorize(Roles = UserRoleConstants.ADMIN)]
-        public async Task<IActionResult> ChangeTransactionStatus(Guid id, TransactionStatus status)
+        public async Task<IActionResult> c([FromForm] ChangeTransactionStatus request)
         {
             return await ExecuteServiceLogic(
-                async () => await _transactionService.ChangeTransactionStatus(id, status).ConfigureAwait(false)
+                async () => await _transactionService.ChangeTransactionStatus(request.Id, request.Status).ConfigureAwait(false)
             ).ConfigureAwait(false);
         }
 

@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace BMS.Core.Domains.Entities
 {
-    public class Shop : EntityBase<Guid>
+    public class Shop : EntityBase<Guid>, ISoftDelete
     {
         public string Email { get; set; } = null!;
         public string? PhoneNumber { get; set; } = null!;
@@ -28,15 +28,16 @@ namespace BMS.Core.Domains.Entities
         public ICollection<Coupon>? Coupons { get; set; } = new List<Coupon>();
         public ICollection<Order>? Orders { get; set; } = new List<Order>();
         public ICollection<Cart>? Carts { get; set; } = new List<Cart>();
-        public ICollection<PackageHistory>? PackageHistories { get; set; } = new List<PackageHistory>();
+        public ICollection<Package_Shop>? Package_Shop { get; set; } = new List<Package_Shop>();
         public ICollection<Feedback>? Feedbacks { get; set; } = new List<Feedback>();
         public ICollection<Notification>? Notifications { get; set; } = new List<Notification>();
         public ICollection<OpeningHours>? OpeningHours { get; set; } = new List<OpeningHours>();
 
         public ICollection<ShopWeeklyReport>? ShopWeeklyReports { get; set; } = new List<ShopWeeklyReport>();
         //    public ICollection<RegisterCategory>? RegisterCategorys { get; set; } = new List<RegisterCategory>();
-
-
+        public ICollection<Favourite> Favourites { get; set; } = new List<Favourite>();
+        public bool IsDeleted { get; set; } = false; // Default value here
+        public DateTime? DeletedDate { get; set; }
     }
 
 }

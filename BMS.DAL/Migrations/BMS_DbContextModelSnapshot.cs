@@ -156,20 +156,20 @@ namespace BMS.DAL.Migrations
                     b.HasData(
                         new
                         {
-                            Id = new Guid("61a42337-0955-4d40-aa6a-533e6ab3ae34"),
-                            CreateDate = new DateTime(2024, 10, 15, 10, 48, 19, 508, DateTimeKind.Local).AddTicks(9031),
+                            Id = new Guid("da6a39b9-c5e1-45ee-89e7-e44fb50d4c81"),
+                            CreateDate = new DateTime(2024, 11, 1, 11, 54, 1, 492, DateTimeKind.Local).AddTicks(8018),
                             Description = "Rice",
                             IsDeleted = false,
-                            LastUpdateDate = new DateTime(2024, 10, 15, 10, 48, 19, 508, DateTimeKind.Local).AddTicks(9042),
+                            LastUpdateDate = new DateTime(2024, 11, 1, 11, 54, 1, 492, DateTimeKind.Local).AddTicks(8028),
                             Name = "Rice"
                         },
                         new
                         {
-                            Id = new Guid("3b6e6e51-2075-48df-b7d8-337df3fe6891"),
-                            CreateDate = new DateTime(2024, 10, 15, 10, 48, 19, 508, DateTimeKind.Local).AddTicks(9049),
+                            Id = new Guid("b29de934-4fa8-4482-a56a-1b06e49ac022"),
+                            CreateDate = new DateTime(2024, 11, 1, 11, 54, 1, 492, DateTimeKind.Local).AddTicks(8032),
                             Description = "SuShi",
                             IsDeleted = false,
-                            LastUpdateDate = new DateTime(2024, 10, 15, 10, 48, 19, 508, DateTimeKind.Local).AddTicks(9050),
+                            LastUpdateDate = new DateTime(2024, 11, 1, 11, 54, 1, 492, DateTimeKind.Local).AddTicks(8033),
                             Name = "SuShi"
                         });
                 });
@@ -259,6 +259,33 @@ namespace BMS.DAL.Migrations
                     b.ToTable("CouponUsages");
                 });
 
+            modelBuilder.Entity("BMS.Core.Domains.Entities.Favourite", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("CreateDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("LastUpdateDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid>("ShopId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ShopId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("Favourites");
+                });
+
             modelBuilder.Entity("BMS.Core.Domains.Entities.Feedback", b =>
                 {
                     b.Property<Guid>("Id")
@@ -274,6 +301,9 @@ namespace BMS.DAL.Migrations
 
                     b.Property<DateTime>("LastUpdateDate")
                         .HasColumnType("datetime2");
+
+                    b.Property<Guid>("OrderId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<int>("Rate")
                         .HasColumnType("int");
@@ -330,6 +360,15 @@ namespace BMS.DAL.Migrations
 
                     b.Property<DateTime>("CreateDate")
                         .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("DeletedDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int?>("Destination")
+                        .HasColumnType("int");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
 
                     b.Property<DateTime>("LastUpdateDate")
                         .HasColumnType("datetime2");
@@ -413,6 +452,9 @@ namespace BMS.DAL.Migrations
                     b.Property<Guid>("CustomerId")
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<Guid?>("FeedbackId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<DateTime>("LastUpdateDate")
                         .HasColumnType("datetime2");
 
@@ -436,6 +478,10 @@ namespace BMS.DAL.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("CustomerId");
+
+                    b.HasIndex("FeedbackId")
+                        .IsUnique()
+                        .HasFilter("[FeedbackId] IS NOT NULL");
 
                     b.HasIndex("ShopId");
 
@@ -512,7 +558,7 @@ namespace BMS.DAL.Migrations
                     b.ToTable("Packages");
                 });
 
-            modelBuilder.Entity("BMS.Core.Domains.Entities.PackageHistory", b =>
+            modelBuilder.Entity("BMS.Core.Domains.Entities.Package_Shop", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -536,7 +582,7 @@ namespace BMS.DAL.Migrations
 
                     b.HasIndex("ShopId");
 
-                    b.ToTable("PackageHistories");
+                    b.ToTable("Package_Shops");
                 });
 
             modelBuilder.Entity("BMS.Core.Domains.Entities.Product", b =>
@@ -642,25 +688,25 @@ namespace BMS.DAL.Migrations
                     b.HasData(
                         new
                         {
-                            Id = new Guid("25e96c02-f1f9-424e-835b-e2b69de69188"),
+                            Id = new Guid("dbd49c95-ae62-4b9d-acf6-f11b7577cc82"),
                             Name = "Admin",
                             NormalizedName = "Admin"
                         },
                         new
                         {
-                            Id = new Guid("b1bf0e23-05d5-43bb-9812-cc78568b2538"),
+                            Id = new Guid("02b4919f-9fcb-4cb9-9d8a-764d3d2792d2"),
                             Name = "Staff",
                             NormalizedName = "Staff"
                         },
                         new
                         {
-                            Id = new Guid("20f0dacb-4a29-4819-82ab-1e011bd7b3e7"),
+                            Id = new Guid("72309cc9-ec01-49c6-a0ba-bf514e783bef"),
                             Name = "User",
                             NormalizedName = "User"
                         },
                         new
                         {
-                            Id = new Guid("a02e0b2b-a82b-4b80-940e-26d37b175cef"),
+                            Id = new Guid("157292c2-f1c2-4694-a0fa-3f8b42811b44"),
                             Name = "Shop",
                             NormalizedName = "Shop"
                         });
@@ -679,6 +725,9 @@ namespace BMS.DAL.Migrations
                     b.Property<DateTime>("CreateDate")
                         .HasColumnType("datetime2");
 
+                    b.Property<DateTime?>("DeletedDate")
+                        .HasColumnType("datetime2");
+
                     b.Property<string>("Description")
                         .HasColumnType("nvarchar(max)");
 
@@ -688,6 +737,9 @@ namespace BMS.DAL.Migrations
 
                     b.Property<string>("Image")
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
 
                     b.Property<DateTime>("LastUpdateDate")
                         .HasColumnType("datetime2");
@@ -1078,6 +1130,25 @@ namespace BMS.DAL.Migrations
                     b.Navigation("User");
                 });
 
+            modelBuilder.Entity("BMS.Core.Domains.Entities.Favourite", b =>
+                {
+                    b.HasOne("BMS.Core.Domains.Entities.Shop", "Shop")
+                        .WithMany("Favourites")
+                        .HasForeignKey("ShopId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("BMS.Core.Domains.Entities.User", "User")
+                        .WithMany("Favourites")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Shop");
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("BMS.Core.Domains.Entities.Feedback", b =>
                 {
                     b.HasOne("BMS.Core.Domains.Entities.Shop", "Shop")
@@ -1154,6 +1225,11 @@ namespace BMS.DAL.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
+                    b.HasOne("BMS.Core.Domains.Entities.Feedback", "Feedback")
+                        .WithOne("Order")
+                        .HasForeignKey("BMS.Core.Domains.Entities.Order", "FeedbackId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
                     b.HasOne("BMS.Core.Domains.Entities.Shop", "Shop")
                         .WithMany("Orders")
                         .HasForeignKey("ShopId")
@@ -1161,6 +1237,8 @@ namespace BMS.DAL.Migrations
                         .IsRequired();
 
                     b.Navigation("Customer");
+
+                    b.Navigation("Feedback");
 
                     b.Navigation("Shop");
                 });
@@ -1184,16 +1262,16 @@ namespace BMS.DAL.Migrations
                     b.Navigation("Product");
                 });
 
-            modelBuilder.Entity("BMS.Core.Domains.Entities.PackageHistory", b =>
+            modelBuilder.Entity("BMS.Core.Domains.Entities.Package_Shop", b =>
                 {
                     b.HasOne("BMS.Core.Domains.Entities.Package", "Package")
-                        .WithMany("PackageHistories")
+                        .WithMany("Package_Shop")
                         .HasForeignKey("PackageId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("BMS.Core.Domains.Entities.Shop", "Shop")
-                        .WithMany("PackageHistories")
+                        .WithMany("Package_Shop")
                         .HasForeignKey("ShopId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -1342,6 +1420,12 @@ namespace BMS.DAL.Migrations
                     b.Navigation("CouponUsages");
                 });
 
+            modelBuilder.Entity("BMS.Core.Domains.Entities.Feedback", b =>
+                {
+                    b.Navigation("Order")
+                        .IsRequired();
+                });
+
             modelBuilder.Entity("BMS.Core.Domains.Entities.Order", b =>
                 {
                     b.Navigation("CouponUsages");
@@ -1355,7 +1439,7 @@ namespace BMS.DAL.Migrations
 
             modelBuilder.Entity("BMS.Core.Domains.Entities.Package", b =>
                 {
-                    b.Navigation("PackageHistories");
+                    b.Navigation("Package_Shop");
                 });
 
             modelBuilder.Entity("BMS.Core.Domains.Entities.Product", b =>
@@ -1380,6 +1464,8 @@ namespace BMS.DAL.Migrations
 
                     b.Navigation("Coupons");
 
+                    b.Navigation("Favourites");
+
                     b.Navigation("Feedbacks");
 
                     b.Navigation("Notifications");
@@ -1388,7 +1474,7 @@ namespace BMS.DAL.Migrations
 
                     b.Navigation("Orders");
 
-                    b.Navigation("PackageHistories");
+                    b.Navigation("Package_Shop");
 
                     b.Navigation("Products");
 
@@ -1402,6 +1488,8 @@ namespace BMS.DAL.Migrations
                     b.Navigation("Carts");
 
                     b.Navigation("CouponUsages");
+
+                    b.Navigation("Favourites");
 
                     b.Navigation("Feedbacks");
 

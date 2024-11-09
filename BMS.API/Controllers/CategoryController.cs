@@ -36,7 +36,7 @@ namespace BMS.API.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> CreateCategory([FromQuery] CreateCategoryRequest category)
+        public async Task<IActionResult> CreateCategory([FromForm] CreateCategoryRequest category)
         {
             return await ExecuteServiceLogic(
                                async () => await _categoryService.AddCategory(category).ConfigureAwait(false)
@@ -49,11 +49,11 @@ namespace BMS.API.Controllers
                                async () => await _categoryService.GetAllCategory(pagingRequest).ConfigureAwait(false)
                                           ).ConfigureAwait(false);
         }
-        [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateCategory(Guid Id, [FromQuery] UpdateCategoryRequest category)
+        [HttpPut]
+        public async Task<IActionResult> UpdateCategory([FromForm] UpdateCategoryRequest category)
         {
             return await ExecuteServiceLogic(
-                               async () => await _categoryService.UpdateCategory(Id, category).ConfigureAwait(false)
+                               async () => await _categoryService.UpdateCategory(category.Id, category).ConfigureAwait(false)
                                           ).ConfigureAwait(false);
         }
     }
