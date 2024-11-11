@@ -33,6 +33,7 @@ namespace BMS.DAL
         public IOpeningHoursRepository OpeningHoursRepository => new OpeningHoursRepository(_dbContext);
         public IImageRepository ImageRepository => new ImageRepository(_dbContext);
         public IFavouriteRepository FavoriteRepository => new FavouriteRepository(_dbContext);
+        public IOTPRepository OTPRepository => new OTPRepository(_dbContext);
         public DbContext _dbContext { get; }
 
         public UnitOfWork(DbContext dbContext)

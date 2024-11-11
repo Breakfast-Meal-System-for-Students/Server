@@ -33,6 +33,7 @@ namespace BMS.Core.Domains.Entities
         public ICollection<CouponUsage>? CouponUsages { get; set; } = new List<CouponUsage>();
         public ICollection<CartGroupUser> CartGroupUsers { get; set; } = new List<CartGroupUser>();
         public ICollection<Favourite> Favourites { get; set; } = new List<Favourite>();
+        public ICollection<OTP> OTPs { get; set; } = new List<OTP>();
         // Implement ISoftDelete properties
         public bool IsDeleted { get; set; } = false; // Default value here
         public DateTime? DeletedDate { get; set; }

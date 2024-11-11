@@ -15,5 +15,6 @@ namespace BMS.BLL.Services.IServices
         Task<ServiceActionResult> ConfirmEmail(string userId, string token);
 
         Task<ServiceActionResult> SendOTP(string email);
+        Task<ServiceActionResult> CheckOTP(string email, string OTP);
     }
 }

@@ -173,7 +173,7 @@ namespace BMS.BLL.Services
             };
     
         //  public string? Password { get; set; } = null!;
-        var password = AccountCreationHelper.GenerateRandomPassword();
+            var password = AccountCreationHelper.GenerateRandomPassword();
 
             var result = await _userManager.CreateAsync(userEntity, password);
 

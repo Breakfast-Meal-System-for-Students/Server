@@ -40,13 +40,13 @@ namespace BMS.BLL.Services
         {
             var orderId = new Guid(vnPayRequest.OrderInfo ?? throw new BusinessRuleException("Invalid order"));
             var order = await _unitOfWork.OrderRepository.FindAsync(orderId) ?? throw new BusinessRuleException("Invalid order");
-            if (order.Status.Equals(OrderStatus.COMPLETE))
+            if (order.Status.Equals(OrderStatus.COMPLETE.ToString()))
             {
                 return new ServiceActionResult(false)
                 {
                     Detail = "Order is already paid"
                 };
-            } else if (order.Status.Equals(OrderStatus.CANCEL))
+            } else if (order.Status.Equals(OrderStatus.CANCEL.ToString()))
             {
                 return new ServiceActionResult(false)
                 {
@@ -102,13 +102,13 @@ namespace BMS.BLL.Services
                 var orderId = new Guid(response.vnp_OrderInfo ?? throw new BusinessRuleException("Invalid order"));
                 var order = (await _unitOfWork.OrderRepository.GetAllAsyncAsQueryable()).Include(x => x.Transactions).FirstOrDefault(y => y.Id == orderId) ?? throw new BusinessRuleException("Invalid application");
 
-                if (order.Status.Equals(Core.Domains.Enums.OrderStatus.COMPLETE))
+                if (order.Status.Equals(Core.Domains.Enums.OrderStatus.COMPLETE.ToString()))
                 {
                     return new ServiceActionResult(false)
                     {
                         Detail = "Order is already paid"
                     };
-                } else if (order.Status.Equals(OrderStatus.CANCEL))
+                } else if (order.Status.Equals(OrderStatus.CANCEL.ToString()))
                 {
                     return new ServiceActionResult(false)
                     {

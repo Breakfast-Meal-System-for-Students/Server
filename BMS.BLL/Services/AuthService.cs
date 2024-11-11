@@ -44,6 +44,42 @@ namespace BMS.BLL.Services
             _cookieService = cookieService;
         }
 
+        public async Task<ServiceActionResult> CheckOTP(string email, string OTP)
+        {
+            var user = await _userManager.FindByEmailAsync(email);
+            if (user == null)
+            {
+                return new ServiceActionResult(false, "User not found");
+            }
+            var otp = (await _unitOfWork.OTPRepository.GetAllAsyncAsQueryable()).Where(x => x.UserId == user.Id && x.Otp == OTP).FirstOrDefault();
+            if (otp == null)
+            {
+                return new ServiceActionResult(true)
+                {
+                    Data = false,
+                    Detail = "OTP is not true"
+                };
+            } else
+            {
+                if (otp.EndDate < DateTime.Now)
+                {
+                    return new ServiceActionResult(true)
+                    {
+                        Data = false,
+                        Detail = "OTP is expired"
+                    };
+                }
+                else
+                {
+                    return new ServiceActionResult(true)
+                    {
+                        Data = true,
+                    };
+                }
+            }
+
+        }
+
         public async Task<ServiceActionResult> ConfirmEmail(string userId, string token)
         {
             if (userId == null || token == null)
@@ -123,13 +159,33 @@ namespace BMS.BLL.Services
 
         public async Task<ServiceActionResult> SendOTP(string email)
         {
+            var user = await _userManager.FindByEmailAsync(email);
+            if (user == null)
+            {
+                return new ServiceActionResult(false, "User not found");
+            }
             string otp = GenerateOTP(6);
+            var dbOTPs = (await _unitOfWork.OTPRepository.GetAllAsyncAsQueryable()).Where(x => x.UserId == user.Id).ToList();
+            while(dbOTPs.Any(x => x.Otp == otp && x.EndDate > DateTime.Now))
+            {
+                otp = GenerateOTP(6);
+            }
             await _emailService.SendEmailOTP(email, otp);
+            OTP o = new OTP()
+            {
+                Otp = otp,
+                EndDate = DateTime.Now.AddMinutes(1),
+                UserId = user.Id,
+            };
+            await _unitOfWork.OTPRepository.DeleteRangeAsync((dbOTPs.Where(x => x.EndDate < DateTime.Now)));
+            await _unitOfWork.OTPRepository.AddAsync(o);
             return new ServiceActionResult(true)
             {
                 Data = otp
             };
         }
+
+
 
         private string GenerateOTP(int length)
         {

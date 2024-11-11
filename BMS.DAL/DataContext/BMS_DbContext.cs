@@ -43,6 +43,7 @@ namespace BMS.DAL.DataContext
         public DbSet<CartGroupUser> CartGroupUsers { get; set; }
         public DbSet<ShopWeeklyReport> ShopWeeklyReports { get; set; }
         public DbSet<Favourite> Favourites { get; set; }
+        public DbSet<OTP> OTPs { get; set; }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
@@ -253,6 +254,11 @@ namespace BMS.DAL.DataContext
                 .WithMany(s => s.Favourites)
                 .HasForeignKey(oh => oh.UserId)
                 .OnDelete(DeleteBehavior.Restrict);
+            modelBuilder.Entity<OTP>()
+                .HasOne(oh => oh.User)
+                .WithMany(s => s.OTPs)
+                .HasForeignKey(oh => oh.UserId)
+                .OnDelete(DeleteBehavior.Cascade);
             // seed dât
             modelBuilder.Entity<Role>().HasData(
           new Role { Id = Guid.NewGuid(), Name = "Admin", NormalizedName="Admin"},

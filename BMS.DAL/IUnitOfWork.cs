@@ -31,6 +31,7 @@ namespace BMS.DAL
         public IOpeningHoursRepository OpeningHoursRepository { get; }
         public IImageRepository ImageRepository { get; }
         public IFavouriteRepository FavoriteRepository { get; }
+        public IOTPRepository OTPRepository { get; }
         void Commit();
         Task CommitAsync();
         void Rollback();

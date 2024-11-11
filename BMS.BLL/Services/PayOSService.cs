@@ -40,14 +40,14 @@ namespace BMS.BLL.Services
             //TODO: something
             var orderId = request.OrderCode;
             var order = (await _unitOfWork.OrderRepository.GetAllAsyncAsQueryable()).Include(x => x.Transactions).FirstOrDefault(y => y.Id == orderId) ?? throw new BusinessRuleException("Invalid order");
-            if (order.Status.Equals(Core.Domains.Enums.OrderStatus.COMPLETE))
+            if (order.Status.Equals(OrderStatus.COMPLETE.ToString()))
             {
                 return new ServiceActionResult(false)
                 {
                     Detail = "Order is already paid"
                 };
             }
-            else if (order.Status.Equals(OrderStatus.CANCEL))
+            else if (order.Status.Equals(OrderStatus.CANCEL.ToString()))
             {
                 return new ServiceActionResult(false)
                 {
@@ -79,14 +79,14 @@ namespace BMS.BLL.Services
             WebhookData webhookData = _payOS.verifyPaymentWebhookData(webhookBody);
             var orderId = new Guid(webhookBody.data.description.Split(':')[0] ?? throw new Exception("Invalid order"));
             var order = (await _unitOfWork.OrderRepository.GetAllAsyncAsQueryable()).Include(x => x.Transactions).FirstOrDefault(y => y.Id == orderId) ?? throw new BusinessRuleException("Invalid order");
-            if (order.Status.Equals(Core.Domains.Enums.OrderStatus.COMPLETE))
+            if (order.Status.Equals(OrderStatus.COMPLETE.ToString()))
             {
                 return new ServiceActionResult(false)
                 {
                     Detail = "Order is already paid"
                 };
             }
-            else if (order.Status.Equals(OrderStatus.CANCEL))
+            else if (order.Status.Equals(OrderStatus.CANCEL.ToString()))
             {
                 return new ServiceActionResult(false)
                 {
