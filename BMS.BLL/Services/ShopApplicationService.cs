@@ -64,7 +64,10 @@ namespace BMS.BLL.Services
                 Models.Responses.Map.Location location = await _googleMapService.GetCoordinatesFromAddress(shopApplication.Address);
                 if ( location==null)
                 {
-                    throw new BusinessRuleException($"Address invalid");
+                    return new ServiceActionResult(false)
+                    {
+                        Detail = "Address invalid"
+                    };
                 }
                 shopApplication.lat = location.Lat;
                 shopApplication.lng = location.Lng;
