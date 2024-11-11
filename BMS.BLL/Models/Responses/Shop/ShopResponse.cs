@@ -18,6 +18,9 @@ namespace BMS.BLL.Models.Responses.Shop
 
         public string Email { get; set; } = null!;
         public string Phone { get; set; } = null!;
+
+        public double? lat { get; set; } 
+        public double? lng { get; set; }
         public ShopStatus Status { get; set; } = ShopStatus.PENDING;
         public Guid? UserId { get; set; }
     }
