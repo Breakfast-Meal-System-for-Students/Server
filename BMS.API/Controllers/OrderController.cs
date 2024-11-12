@@ -110,7 +110,6 @@ namespace BMS.API.Controllers
                 await _hubContext.Clients.Group(_userClaims.UserId.ToString())
                     .SendAsync("OrderCreate", _userClaims.UserId);
             }
-
             return await ExecuteServiceLogic(() => Task.FromResult(result)).ConfigureAwait(false);
         }
 

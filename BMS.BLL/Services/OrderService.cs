@@ -344,7 +344,11 @@ namespace BMS.BLL.Services
 
             await _hubContext.Clients.User(notification.UserId.ToString()).SendAsync("Create Order", notification.Object);
 
-            return new ServiceActionResult() { Detail = "Order has been created successfully" };
+            return new ServiceActionResult()
+            {
+                Data = order.Id,
+                Detail = "Order has been created successfully" 
+            };
         }
 
         public async Task<ServiceActionResult> GetListOrders(SearchOrderRequest request)
