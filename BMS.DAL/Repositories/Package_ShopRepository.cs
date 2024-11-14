@@ -11,9 +11,9 @@ namespace BMS.DAL.Repositories
 {
 
 
-    public class Package_Shop : GenericRepository<Core.Domains.Entities.Package_Shop>, IPackage_ShopRepository
+    public class Package_ShopRepository : GenericRepository<Core.Domains.Entities.Package_Shop>, IPackage_ShopRepository
     {
-        public Package_Shop(DbContext dbContext) : base(dbContext)
+        public Package_ShopRepository(DbContext dbContext) : base(dbContext)
         {
         }
     }

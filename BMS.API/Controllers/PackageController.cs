@@ -48,19 +48,41 @@ namespace BMS.API.Controllers
                                           ).ConfigureAwait(false);
         }
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdatePackage([FromBody] UpdatePackageRequest Package)
+        public async Task<IActionResult> UpdatePackage(Guid Id, [FromBody] UpdatePackageRequest Package)
         {
             return await ExecuteServiceLogic(
-                               async () => await _packageService.UpdatePackage(Package.Id, Package).ConfigureAwait(false)
+                               async () => await _packageService.UpdatePackage(Id, Package).ConfigureAwait(false)
                                           ).ConfigureAwait(false);
         }
         [HttpGet("{id}")]
-
-
         public async Task<IActionResult> GetPackage(Guid id)
         {
             return await ExecuteServiceLogic(
                 async () => await _packageService.GetPackage(id).ConfigureAwait(false)
+            ).ConfigureAwait(false);
+        }
+
+        [HttpGet("GetPackageForShopInUse/{shopId}")]
+        public async Task<IActionResult> GetPackageForShopInUse(Guid shopId, [FromQuery]PackageRequest request)
+        {
+            return await ExecuteServiceLogic(
+                async () => await _packageService.GetPackageForShopInUse(shopId, request).ConfigureAwait(false)
+            ).ConfigureAwait(false);
+        }
+
+        [HttpGet("GetPackageForHistoryBuyingByShop/{shopId}")]
+        public async Task<IActionResult> GetPackageForHistoryBuyingByShop(Guid shopId, [FromQuery] PackageRequest request)
+        {
+            return await ExecuteServiceLogic(
+                async () => await _packageService.GetPackageForHistoryBuyingByShop(shopId, request).ConfigureAwait(false)
+            ).ConfigureAwait(false);
+        }
+
+        [HttpPost("BuyPackageByShop")]
+        public async Task<IActionResult> BuyPackageByShop(Guid shopId, Guid packageId)
+        {
+            return await ExecuteServiceLogic(
+                async () => await _packageService.BuyPackageByShop(shopId, packageId).ConfigureAwait(false)
             ).ConfigureAwait(false);
         }
     }

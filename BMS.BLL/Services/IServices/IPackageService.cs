@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using BMS.BLL.Models.Requests.Basic;
 
 namespace BMS.BLL.Services.IServices
 {
@@ -17,6 +18,8 @@ namespace BMS.BLL.Services.IServices
         Task<ServiceActionResult> UpdatePackage(Guid id, UpdatePackageRequest request);
         Task<ServiceActionResult> DeletePackage(Guid id);
         Task<ServiceActionResult> GetPackage(Guid id);
-
+        Task<ServiceActionResult> GetPackageForShopInUse(Guid shopId, PackageRequest request);
+        Task<ServiceActionResult> GetPackageForHistoryBuyingByShop(Guid shopId, PackageRequest request);
+        Task<ServiceActionResult> BuyPackageByShop(Guid shopId, Guid packageId);
     }
 }
