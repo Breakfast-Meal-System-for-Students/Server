@@ -2,6 +2,8 @@
 using BMS.BLL.Models.Requests.Package;
 using BMS.BLL.Services.BaseServices;
 using BMS.BLL.Services.IServices;
+using BMS.Core.Domains.Constants;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace BMS.API.Controllers
@@ -16,15 +18,12 @@ namespace BMS.API.Controllers
         public PackageController(IPackageService PackageService)
         {
             _packageService = PackageService;
-
-
-
             _baseService = (BaseService)_packageService;
         }
 
 
         [HttpDelete("{id}")]
-
+        [Authorize(Roles = UserRoleConstants.ADMIN + "," + UserRoleConstants.STAFF)]
         public async Task<IActionResult> DeletePackage(Guid id)
         {
 
@@ -34,6 +33,7 @@ namespace BMS.API.Controllers
         }
 
         [HttpPost]
+        [Authorize(Roles = UserRoleConstants.ADMIN + "," + UserRoleConstants.STAFF)]
         public async Task<IActionResult> CreatePackage([FromBody] CreatePackageRequest Package)
         {
             return await ExecuteServiceLogic(
@@ -41,6 +41,7 @@ namespace BMS.API.Controllers
                                           ).ConfigureAwait(false);
         }
         [HttpGet]
+        [Authorize(Roles = UserRoleConstants.ADMIN + "," + UserRoleConstants.STAFF + "," + UserRoleConstants.SHOP)]
         public async Task<IActionResult> GetAllPackage([FromQuery] PackageRequest pagingRequest)
         {
             return await ExecuteServiceLogic(
@@ -48,6 +49,7 @@ namespace BMS.API.Controllers
                                           ).ConfigureAwait(false);
         }
         [HttpPut("{id}")]
+        [Authorize(Roles = UserRoleConstants.ADMIN + "," + UserRoleConstants.STAFF)]
         public async Task<IActionResult> UpdatePackage(Guid Id, [FromBody] UpdatePackageRequest Package)
         {
             return await ExecuteServiceLogic(
@@ -55,6 +57,7 @@ namespace BMS.API.Controllers
                                           ).ConfigureAwait(false);
         }
         [HttpGet("{id}")]
+        [Authorize(Roles = UserRoleConstants.ADMIN + "," + UserRoleConstants.STAFF + "," + UserRoleConstants.SHOP)]
         public async Task<IActionResult> GetPackage(Guid id)
         {
             return await ExecuteServiceLogic(
@@ -63,6 +66,7 @@ namespace BMS.API.Controllers
         }
 
         [HttpGet("GetPackageForShopInUse/{shopId}")]
+        [Authorize(Roles = UserRoleConstants.SHOP)]
         public async Task<IActionResult> GetPackageForShopInUse(Guid shopId, [FromQuery]PackageRequest request)
         {
             return await ExecuteServiceLogic(
@@ -71,6 +75,7 @@ namespace BMS.API.Controllers
         }
 
         [HttpGet("GetPackageForHistoryBuyingByShop/{shopId}")]
+        [Authorize(Roles = UserRoleConstants.SHOP)]
         public async Task<IActionResult> GetPackageForHistoryBuyingByShop(Guid shopId, [FromQuery] PackageRequest request)
         {
             return await ExecuteServiceLogic(
@@ -79,10 +84,11 @@ namespace BMS.API.Controllers
         }
 
         [HttpPost("BuyPackageByShop")]
-        public async Task<IActionResult> BuyPackageByShop(Guid shopId, Guid packageId)
+        [Authorize(Roles = UserRoleConstants.SHOP)]
+        public async Task<IActionResult> BuyPackageByShop([FromForm]BuyPackageRequest request)
         {
             return await ExecuteServiceLogic(
-                async () => await _packageService.BuyPackageByShop(shopId, packageId).ConfigureAwait(false)
+                async () => await _packageService.BuyPackageByShop(request.ShopId, request.PackageId).ConfigureAwait(false)
             ).ConfigureAwait(false);
         }
     }
