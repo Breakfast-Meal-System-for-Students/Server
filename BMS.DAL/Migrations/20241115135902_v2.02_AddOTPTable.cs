@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace BMS.DAL.Migrations
 {
     /// <inheritdoc />
-    public partial class v202_AddIsGroupToTableOrderAndUserIdToOrderItem : Migration
+    public partial class v202_AddOTPTable : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -56,15 +56,37 @@ namespace BMS.DAL.Migrations
                 type: "uniqueidentifier",
                 nullable: true);
 
+            migrationBuilder.CreateTable(
+                name: "OTPs",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    Otp = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    EndDate = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    UserId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    CreateDate = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    LastUpdateDate = table.Column<DateTime>(type: "datetime2", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_OTPs", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_OTPs_AspNetUsers_UserId",
+                        column: x => x.UserId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
             migrationBuilder.InsertData(
                 table: "AspNetRoles",
                 columns: new[] { "Id", "ConcurrencyStamp", "Name", "NormalizedName" },
                 values: new object[,]
                 {
-                    { new Guid("9e594aad-2be2-460b-a311-7dca774b3831"), null, "Admin", "Admin" },
-                    { new Guid("a6212522-e9ec-4529-8c0a-24d021dbbc29"), null, "Staff", "Staff" },
-                    { new Guid("b3e5157c-49d6-43be-830d-e6ca6e1b508a"), null, "User", "User" },
-                    { new Guid("e46b93f7-92be-476e-ad6f-41f2e1f337a6"), null, "Shop", "Shop" }
+                    { new Guid("18086028-9bde-49d5-8fd0-d5ae95540136"), null, "User", "User" },
+                    { new Guid("20c108ff-44d2-4788-a365-24b71440b408"), null, "Shop", "Shop" },
+                    { new Guid("cf01d670-dfc1-4690-abb5-115e555dd2ba"), null, "Staff", "Staff" },
+                    { new Guid("e49ed277-786a-442c-90ba-c82828e301f2"), null, "Admin", "Admin" }
                 });
 
             migrationBuilder.InsertData(
@@ -72,43 +94,51 @@ namespace BMS.DAL.Migrations
                 columns: new[] { "Id", "CreateDate", "DeletedDate", "Description", "Image", "IsDeleted", "LastUpdateDate", "Name" },
                 values: new object[,]
                 {
-                    { new Guid("8c5b6a83-bb4c-47e0-9a43-4ef3890b0b44"), new DateTime(2024, 11, 5, 17, 54, 3, 732, DateTimeKind.Local).AddTicks(7826), null, "SuShi", null, false, new DateTime(2024, 11, 5, 17, 54, 3, 732, DateTimeKind.Local).AddTicks(7827), "SuShi" },
-                    { new Guid("ca4dca1b-5597-4a80-b7f9-935acddd6969"), new DateTime(2024, 11, 5, 17, 54, 3, 732, DateTimeKind.Local).AddTicks(7813), null, "Rice", null, false, new DateTime(2024, 11, 5, 17, 54, 3, 732, DateTimeKind.Local).AddTicks(7823), "Rice" }
+                    { new Guid("41cd0bee-df8b-4c20-99ae-719e2457495c"), new DateTime(2024, 11, 15, 20, 59, 1, 755, DateTimeKind.Local).AddTicks(949), null, "SuShi", null, false, new DateTime(2024, 11, 15, 20, 59, 1, 755, DateTimeKind.Local).AddTicks(949), "SuShi" },
+                    { new Guid("ae177975-1141-4588-83d9-1ac64eb9dcbe"), new DateTime(2024, 11, 15, 20, 59, 1, 755, DateTimeKind.Local).AddTicks(935), null, "Rice", null, false, new DateTime(2024, 11, 15, 20, 59, 1, 755, DateTimeKind.Local).AddTicks(945), "Rice" }
                 });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_OTPs_UserId",
+                table: "OTPs",
+                column: "UserId");
         }
 
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.DeleteData(
-                table: "AspNetRoles",
-                keyColumn: "Id",
-                keyValue: new Guid("9e594aad-2be2-460b-a311-7dca774b3831"));
+            migrationBuilder.DropTable(
+                name: "OTPs");
 
             migrationBuilder.DeleteData(
                 table: "AspNetRoles",
                 keyColumn: "Id",
-                keyValue: new Guid("a6212522-e9ec-4529-8c0a-24d021dbbc29"));
+                keyValue: new Guid("18086028-9bde-49d5-8fd0-d5ae95540136"));
 
             migrationBuilder.DeleteData(
                 table: "AspNetRoles",
                 keyColumn: "Id",
-                keyValue: new Guid("b3e5157c-49d6-43be-830d-e6ca6e1b508a"));
+                keyValue: new Guid("20c108ff-44d2-4788-a365-24b71440b408"));
 
             migrationBuilder.DeleteData(
                 table: "AspNetRoles",
                 keyColumn: "Id",
-                keyValue: new Guid("e46b93f7-92be-476e-ad6f-41f2e1f337a6"));
+                keyValue: new Guid("cf01d670-dfc1-4690-abb5-115e555dd2ba"));
+
+            migrationBuilder.DeleteData(
+                table: "AspNetRoles",
+                keyColumn: "Id",
+                keyValue: new Guid("e49ed277-786a-442c-90ba-c82828e301f2"));
 
             migrationBuilder.DeleteData(
                 table: "Categories",
                 keyColumn: "Id",
-                keyValue: new Guid("8c5b6a83-bb4c-47e0-9a43-4ef3890b0b44"));
+                keyValue: new Guid("41cd0bee-df8b-4c20-99ae-719e2457495c"));
 
             migrationBuilder.DeleteData(
                 table: "Categories",
                 keyColumn: "Id",
-                keyValue: new Guid("ca4dca1b-5597-4a80-b7f9-935acddd6969"));
+                keyValue: new Guid("ae177975-1141-4588-83d9-1ac64eb9dcbe"));
 
             migrationBuilder.DropColumn(
                 name: "IsGroup",

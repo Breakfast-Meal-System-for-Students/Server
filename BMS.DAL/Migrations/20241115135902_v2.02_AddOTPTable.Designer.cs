@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace BMS.DAL.Migrations
 {
     [DbContext(typeof(BMS_DbContext))]
-    [Migration("20241111150012_v2.02_AddOTPTable")]
+    [Migration("20241115135902_v2.02_AddOTPTable")]
     partial class v202_AddOTPTable
     {
         /// <inheritdoc />
@@ -159,20 +159,20 @@ namespace BMS.DAL.Migrations
                     b.HasData(
                         new
                         {
-                            Id = new Guid("711ba5f0-4d47-434f-95a2-eb910a9679a3"),
-                            CreateDate = new DateTime(2024, 11, 11, 22, 0, 11, 202, DateTimeKind.Local).AddTicks(8805),
+                            Id = new Guid("ae177975-1141-4588-83d9-1ac64eb9dcbe"),
+                            CreateDate = new DateTime(2024, 11, 15, 20, 59, 1, 755, DateTimeKind.Local).AddTicks(935),
                             Description = "Rice",
                             IsDeleted = false,
-                            LastUpdateDate = new DateTime(2024, 11, 11, 22, 0, 11, 202, DateTimeKind.Local).AddTicks(8891),
+                            LastUpdateDate = new DateTime(2024, 11, 15, 20, 59, 1, 755, DateTimeKind.Local).AddTicks(945),
                             Name = "Rice"
                         },
                         new
                         {
-                            Id = new Guid("d6f8e1f4-a964-4845-b5ec-35ca95a335c8"),
-                            CreateDate = new DateTime(2024, 11, 11, 22, 0, 11, 202, DateTimeKind.Local).AddTicks(8896),
+                            Id = new Guid("41cd0bee-df8b-4c20-99ae-719e2457495c"),
+                            CreateDate = new DateTime(2024, 11, 15, 20, 59, 1, 755, DateTimeKind.Local).AddTicks(949),
                             Description = "SuShi",
                             IsDeleted = false,
-                            LastUpdateDate = new DateTime(2024, 11, 11, 22, 0, 11, 202, DateTimeKind.Local).AddTicks(8897),
+                            LastUpdateDate = new DateTime(2024, 11, 15, 20, 59, 1, 755, DateTimeKind.Local).AddTicks(949),
                             Name = "SuShi"
                         });
                 });
@@ -487,6 +487,9 @@ namespace BMS.DAL.Migrations
                     b.Property<Guid?>("FeedbackId")
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<bool>("IsGroup")
+                        .HasColumnType("bit");
+
                     b.Property<DateTime>("LastUpdateDate")
                         .HasColumnType("datetime2");
 
@@ -543,6 +546,9 @@ namespace BMS.DAL.Migrations
 
                     b.Property<int>("Quantity")
                         .HasColumnType("int");
+
+                    b.Property<Guid?>("UserId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.HasKey("Id");
 
@@ -720,25 +726,25 @@ namespace BMS.DAL.Migrations
                     b.HasData(
                         new
                         {
-                            Id = new Guid("29f9c13f-8e7b-46dc-8d71-642a61908fbd"),
+                            Id = new Guid("e49ed277-786a-442c-90ba-c82828e301f2"),
                             Name = "Admin",
                             NormalizedName = "Admin"
                         },
                         new
                         {
-                            Id = new Guid("5022ffc8-03d6-4a82-82c7-08e932a69add"),
+                            Id = new Guid("cf01d670-dfc1-4690-abb5-115e555dd2ba"),
                             Name = "Staff",
                             NormalizedName = "Staff"
                         },
                         new
                         {
-                            Id = new Guid("2a921e2c-d17e-40b9-8a29-2740036c2023"),
+                            Id = new Guid("18086028-9bde-49d5-8fd0-d5ae95540136"),
                             Name = "User",
                             NormalizedName = "User"
                         },
                         new
                         {
-                            Id = new Guid("813afcf4-3389-43ff-ae31-a1fc0bb99725"),
+                            Id = new Guid("20c108ff-44d2-4788-a365-24b71440b408"),
                             Name = "Shop",
                             NormalizedName = "Shop"
                         });
