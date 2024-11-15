@@ -298,6 +298,10 @@ namespace BMS.BLL.Services
                 order.QRCode = _qrCodeService.GenerateQRCode(qrContent);
             }
 
+            if (cart.IsGroup)
+            {
+                order.IsGroup = true;
+            }
             await _unitOfWork.OrderRepository.AddAsync(order);
 
             var orderItems = cart.CartDetails.Select(item => new OrderItem
@@ -305,7 +309,8 @@ namespace BMS.BLL.Services
                 OrderId = order.Id,
                 ProductId = item.ProductId,
                 Quantity = item.Quantity,
-                Price = item.Price
+                Price = item.Price,
+                UserId = item.CartGroupUserId
             }).ToList();
 
             await _unitOfWork.OrderItemRepository.AddRangeAsync(orderItems);

@@ -4,6 +4,7 @@ using BMS.DAL.DataContext;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace BMS.DAL.Migrations
 {
     [DbContext(typeof(BMS_DbContext))]
-    partial class BMS_DbContextModelSnapshot : ModelSnapshot
+    [Migration("20241105105404_v2.02_AddIsGroupToTableOrderAndUserIdToOrderItem")]
+    partial class v202_AddIsGroupToTableOrderAndUserIdToOrderItem
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -156,20 +159,20 @@ namespace BMS.DAL.Migrations
                     b.HasData(
                         new
                         {
-                            Id = new Guid("711ba5f0-4d47-434f-95a2-eb910a9679a3"),
-                            CreateDate = new DateTime(2024, 11, 11, 22, 0, 11, 202, DateTimeKind.Local).AddTicks(8805),
+                            Id = new Guid("ca4dca1b-5597-4a80-b7f9-935acddd6969"),
+                            CreateDate = new DateTime(2024, 11, 5, 17, 54, 3, 732, DateTimeKind.Local).AddTicks(7813),
                             Description = "Rice",
                             IsDeleted = false,
-                            LastUpdateDate = new DateTime(2024, 11, 11, 22, 0, 11, 202, DateTimeKind.Local).AddTicks(8891),
+                            LastUpdateDate = new DateTime(2024, 11, 5, 17, 54, 3, 732, DateTimeKind.Local).AddTicks(7823),
                             Name = "Rice"
                         },
                         new
                         {
-                            Id = new Guid("d6f8e1f4-a964-4845-b5ec-35ca95a335c8"),
-                            CreateDate = new DateTime(2024, 11, 11, 22, 0, 11, 202, DateTimeKind.Local).AddTicks(8896),
+                            Id = new Guid("8c5b6a83-bb4c-47e0-9a43-4ef3890b0b44"),
+                            CreateDate = new DateTime(2024, 11, 5, 17, 54, 3, 732, DateTimeKind.Local).AddTicks(7826),
                             Description = "SuShi",
                             IsDeleted = false,
-                            LastUpdateDate = new DateTime(2024, 11, 11, 22, 0, 11, 202, DateTimeKind.Local).AddTicks(8897),
+                            LastUpdateDate = new DateTime(2024, 11, 5, 17, 54, 3, 732, DateTimeKind.Local).AddTicks(7827),
                             Name = "SuShi"
                         });
                 });
@@ -401,35 +404,6 @@ namespace BMS.DAL.Migrations
                     b.HasIndex("UserId");
 
                     b.ToTable("Notifications");
-                });
-
-            modelBuilder.Entity("BMS.Core.Domains.Entities.OTP", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<DateTime>("CreateDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<DateTime>("EndDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<DateTime>("LastUpdateDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("Otp")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<Guid>("UserId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("UserId");
-
-                    b.ToTable("OTPs");
                 });
 
             modelBuilder.Entity("BMS.Core.Domains.Entities.OpeningHours", b =>
@@ -723,25 +697,25 @@ namespace BMS.DAL.Migrations
                     b.HasData(
                         new
                         {
-                            Id = new Guid("29f9c13f-8e7b-46dc-8d71-642a61908fbd"),
+                            Id = new Guid("9e594aad-2be2-460b-a311-7dca774b3831"),
                             Name = "Admin",
                             NormalizedName = "Admin"
                         },
                         new
                         {
-                            Id = new Guid("5022ffc8-03d6-4a82-82c7-08e932a69add"),
+                            Id = new Guid("a6212522-e9ec-4529-8c0a-24d021dbbc29"),
                             Name = "Staff",
                             NormalizedName = "Staff"
                         },
                         new
                         {
-                            Id = new Guid("2a921e2c-d17e-40b9-8a29-2740036c2023"),
+                            Id = new Guid("b3e5157c-49d6-43be-830d-e6ca6e1b508a"),
                             Name = "User",
                             NormalizedName = "User"
                         },
                         new
                         {
-                            Id = new Guid("813afcf4-3389-43ff-ae31-a1fc0bb99725"),
+                            Id = new Guid("e46b93f7-92be-476e-ad6f-41f2e1f337a6"),
                             Name = "Shop",
                             NormalizedName = "Shop"
                         });
@@ -1241,17 +1215,6 @@ namespace BMS.DAL.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("BMS.Core.Domains.Entities.OTP", b =>
-                {
-                    b.HasOne("BMS.Core.Domains.Entities.User", "User")
-                        .WithMany("OTPs")
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("User");
-                });
-
             modelBuilder.Entity("BMS.Core.Domains.Entities.OpeningHours", b =>
                 {
                     b.HasOne("BMS.Core.Domains.Entities.Shop", "Shop")
@@ -1540,8 +1503,6 @@ namespace BMS.DAL.Migrations
                     b.Navigation("Feedbacks");
 
                     b.Navigation("Notifications");
-
-                    b.Navigation("OTPs");
 
                     b.Navigation("Orders");
 
