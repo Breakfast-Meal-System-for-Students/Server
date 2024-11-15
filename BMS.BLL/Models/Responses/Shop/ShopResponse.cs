@@ -23,5 +23,6 @@ namespace BMS.BLL.Models.Responses.Shop
         public double? lng { get; set; }
         public ShopStatus Status { get; set; } = ShopStatus.PENDING;
         public Guid? UserId { get; set; }
+        public bool IsDeleted { get; set; } = false;
     }
 }

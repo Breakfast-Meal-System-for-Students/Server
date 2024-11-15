@@ -4,6 +4,7 @@ using BMS.BLL.Models;
 using BMS.BLL.Models.Requests.Basic;
 using BMS.BLL.Models.Requests.Cart;
 using BMS.BLL.Models.Responses.Cart;
+using BMS.BLL.Models.Responses.Shop;
 using BMS.BLL.Models.Responses.Users;
 using BMS.BLL.Services.BaseServices;
 using BMS.BLL.Services.IServices;
@@ -115,7 +116,7 @@ namespace BMS.BLL.Services
         public async Task<ServiceActionResult> ChangeCartToGroup(Guid userId, Guid shopId)
         {
             var shop = await _shopService.GetShop(shopId);
-            if (shop.Data == null)
+            if (shop.Data == null || ((ShopResponse)shop.Data).IsDeleted == true)
             {
                 throw new ArgumentNullException("Shop does not exist or has been deleted");
             }
@@ -277,11 +278,16 @@ namespace BMS.BLL.Services
             };
         }
 
-    private async Task<string> GenerateShareLink(Guid cartId)
+    private async Task<LinkResponse> GenerateShareLink(Guid cartId)
         {
-            var baseUrl = "https://bms-fs-api.azurewebsites.net/api/Cart/GetCartBySharing/";
+            //var baseUrl = "https://bms-fs-api.azurewebsites.net/api/Cart/GetCartBySharing/";
             string tokenString = await _tokenService.GenerateTokenForShareLink(cartId);
-            return $"{baseUrl}{cartId}" + $"?access_token={tokenString}";
+            //return $"{baseUrl}{cartId}" + $"?access_token={tokenString}";
+            return new LinkResponse()
+            {
+                CartId = cartId,
+                AccessToken = tokenString,
+            };
         }
     }
 }
