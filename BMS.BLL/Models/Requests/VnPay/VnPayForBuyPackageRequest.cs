@@ -6,9 +6,10 @@ using System.Threading.Tasks;
 
 namespace BMS.BLL.Models.Requests.VnPay
 {
-    public class VnPayRequest
+    public class VnPayForBuyPackageRequest
     {
-        public string OrderInfo { get; set; }
+        public Guid ShopId { get; set; }
+        public Guid PackageId { get; set; }
         public string FullName { get; set; }
         public string OrderType { get; set; }
         public string Description { get; set; }

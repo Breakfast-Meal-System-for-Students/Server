@@ -67,7 +67,57 @@ namespace BMS.BLL.Services
             vnpay.AddRequestData(VnPayConstansts.LOCALE, _vnPaySettings.Locale);
             vnpay.AddRequestData(VnPayConstansts.ORDER_INFOR, vnPayRequest.OrderInfo);
             vnpay.AddRequestData(VnPayConstansts.ORDER_TYPE, vnPayRequest.OrderType);
-            vnpay.AddRequestData(VnPayConstansts.RETURN_URL, _vnPaySettings.ReturnUrl);
+            vnpay.AddRequestData(VnPayConstansts.RETURN_URL, vnPayRequest.ReturnUrl);
+            vnpay.AddRequestData(VnPayConstansts.TXN_REF, tick);
+
+            string paymentUrl = vnpay.CreateRequestUrl(_vnPaySettings.BaseUrl, _vnPaySettings.HashSecret);
+            await Task.CompletedTask;
+
+            return new ServiceActionResult() { Data = paymentUrl };
+        }
+
+        public async Task<ServiceActionResult> CreatePaymentUrlForBuyPackage(HttpContext context, VnPayForBuyPackageRequest request)
+        {
+
+            var shop = await _unitOfWork.ShopRepository.FindAsync(request.ShopId);
+            if (shop == null || shop.IsDeleted == true)
+            {
+                return new ServiceActionResult(false)
+                {
+                    Detail = "Shop is not valid or delete"
+                };
+            }
+            var package = await _unitOfWork.PackageRepository.FindAsync(request.PackageId);
+            if (package == null || package.IsDeleted == true)
+            {
+                return new ServiceActionResult(false)
+                {
+                    Detail = "Package is not valid or delete"
+                };
+            }
+            var packageDB = (await _unitOfWork.Package_ShopRepository.GetAllAsyncAsQueryable()).Include(x => x.Package).Where(x => x.ShopId == request.ShopId && x.PackageId == request.PackageId && x.CreateDate.AddDays(x.Package.Duration) > DateTime.Now).ToList();
+            if (packageDB != null && packageDB.Any())
+            {
+                return new ServiceActionResult(false)
+                {
+                    Detail = "The Package is being used in Shop. You can not buy the same Package."
+                };
+            }
+            var tick = DateTime.Now.Ticks.ToString();
+
+            var vnpay = new VnPayLibrary();
+
+            vnpay.AddRequestData(VnPayConstansts.VERSION, _vnPaySettings.Version);
+            vnpay.AddRequestData(VnPayConstansts.COMMAND, _vnPaySettings.Command);
+            vnpay.AddRequestData(VnPayConstansts.TMN_CODE, _vnPaySettings.TmnCode);
+            vnpay.AddRequestData(VnPayConstansts.AMOUNT, (request.Amount * 100).ToString());
+            vnpay.AddRequestData(VnPayConstansts.CREATE_DATE, DateTime.UtcNow.ToString("yyyyMMddHHmmss"));
+            vnpay.AddRequestData(VnPayConstansts.CURR_CODE, _vnPaySettings.CurrencyCode);
+            vnpay.AddRequestData(VnPayConstansts.IP_ADDRESS, Utils.GetIpAddress(context));
+            vnpay.AddRequestData(VnPayConstansts.LOCALE, _vnPaySettings.Locale);
+            vnpay.AddRequestData(VnPayConstansts.ORDER_INFOR, $"{request.ShopId} + / + {request.PackageId}");
+            vnpay.AddRequestData(VnPayConstansts.ORDER_TYPE, request.OrderType);
+            vnpay.AddRequestData(VnPayConstansts.RETURN_URL, request.ReturnUrl);
             vnpay.AddRequestData(VnPayConstansts.TXN_REF, tick);
 
             string paymentUrl = vnpay.CreateRequestUrl(_vnPaySettings.BaseUrl, _vnPaySettings.HashSecret);

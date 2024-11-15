@@ -13,6 +13,7 @@ namespace BMS.BLL.Services.IServices
     public interface IVnPayService
     {
         Task<ServiceActionResult> CreatePaymentUrl(HttpContext context, VnPayRequest request);
+        Task<ServiceActionResult> CreatePaymentUrlForBuyPackage(HttpContext context, VnPayForBuyPackageRequest request);
         Task<ServiceActionResult> PaymentExecute(VnPayResponse response, bool isIPN = false);
     }
 }

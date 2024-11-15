@@ -32,6 +32,16 @@ namespace BMS.API.Controllers
            ).ConfigureAwait(false);
         }
 
+        [HttpPost("create-payment-url-forbuypackage")]
+        [Authorize]
+        public async Task<IActionResult> CreatePaymentUrlForBuyPackage(VnPayForBuyPackageRequest request)
+        {
+            var context = HttpContext;
+            return await ExecuteServiceLogic(
+               async () => await _vnPayService.CreatePaymentUrlForBuyPackage(context, request).ConfigureAwait(false)
+           ).ConfigureAwait(false);
+        }
+
         [HttpGet("payment-callback")]
         public async Task<IActionResult> PaymentCallBack([FromQuery] VnPayResponse response)
         {
