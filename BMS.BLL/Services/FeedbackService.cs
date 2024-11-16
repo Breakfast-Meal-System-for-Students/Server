@@ -7,6 +7,7 @@ using BMS.BLL.Models.Responses.Feedbacks;
 using BMS.BLL.Models.Responses.Shop;
 using BMS.BLL.Services.BaseServices;
 using BMS.BLL.Services.IServices;
+using BMS.BLL.Utilities;
 using BMS.Core.Domains.Entities;
 using BMS.Core.Domains.Enums;
 using BMS.Core.Helpers;
@@ -33,9 +34,21 @@ namespace BMS.BLL.Services
 
         public async Task<ServiceActionResult> AddFeedback(FeedbackRequest request)
         {
+            var shop = await _unitOfWork.ShopRepository.FindAsync(request.ShopId);
+            if (shop == null)
+            {
+                return new ServiceActionResult
+                {
+                    Detail = "Shop is not valid or delete"
+                };
+            }
+            int count = (await _unitOfWork.FeedbackRepository.GetAllAsyncAsQueryable()).Where(x => x.ShopId == request.ShopId && x.Status == FeedbackStatus.APPROVED).Count();
+            shop.Rate = RatingHelper.CaculateRaingForShopWhenHaveNewFeedback(shop.Rate.GetValueOrDefault(0.0), request.Rating, count);
+            await _unitOfWork.ShopRepository.UpdateAsync(shop);
             var feedbackEntity = _mapper.Map<Feedback>(request);
             feedbackEntity.Status = FeedbackStatus.APPROVED;
             await _unitOfWork.FeedbackRepository.AddAsync(feedbackEntity);
+            
             return new ServiceActionResult();
         }
 

@@ -33,8 +33,9 @@ namespace BMS.BLL.Services
         private readonly RoleManager<Role> _roleManager;
         private readonly IOpeningHoursService _openingHoursService;
         private readonly IGoogleMapService _googleMapService;
+        private readonly IFileStorageService _fileStorageService;
         public ShopApplicationService(IUnitOfWork unitOfWork,
-            IMapper mapper,  UserManager<User> userManager, IEmailService emailService, RoleManager<Role> roleManager, IOpeningHoursService openingHoursService, IGoogleMapService googleMapService) : base(unitOfWork, mapper)
+            IMapper mapper,  UserManager<User> userManager, IEmailService emailService, RoleManager<Role> roleManager, IOpeningHoursService openingHoursService, IGoogleMapService googleMapService, IFileStorageService fileStorageService) : base(unitOfWork, mapper)
         {
             _unitOfWork = unitOfWork;
             _mapper = mapper;
@@ -43,6 +44,7 @@ namespace BMS.BLL.Services
             _roleManager = roleManager;
             _openingHoursService = openingHoursService;
             _googleMapService = googleMapService;
+            _fileStorageService = fileStorageService;
         }
         public async Task<ServiceActionResult> CreateShopApplication(CreateShopApplicationRequest applicationRequest)
         {
@@ -71,6 +73,12 @@ namespace BMS.BLL.Services
                 }
                 shopApplication.lat = location.Lat;
                 shopApplication.lng = location.Lng;
+                if(applicationRequest.Image != null)
+                {
+                    var imageUrl = await _fileStorageService.UploadFileBlobAsync(applicationRequest.Image);
+                    shopApplication.Image = imageUrl;
+                }
+                shopApplication.Rate = 5;
                 await _unitOfWork.ShopRepository.AddAsync(shopApplication);
                 await _unitOfWork.CommitAsync();
                 return new ServiceActionResult();

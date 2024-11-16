@@ -103,7 +103,8 @@ namespace BMS.BLL.Utilities.AutoMapperProfiles
                 #region feedback
                 CreateMap<Feedback, FeedbackResponse>();
 
-                CreateMap<FeedbackRequest, Feedback>();
+                CreateMap<FeedbackRequest, Feedback>()
+                    .ForMember(dest => dest.Rate, opt => opt.MapFrom(src => src.Rating));
 
                 CreateMap<Feedback, FeedbackForStaffResponse>()
                     .ForMember(dest => dest.UserName, opt => opt.MapFrom(src => src.User!.FirstName))
