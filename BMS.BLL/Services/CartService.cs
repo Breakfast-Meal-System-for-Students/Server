@@ -165,11 +165,12 @@ namespace BMS.BLL.Services
                 return new ServiceActionResult(false, "Cart is not exits or deleted");
             } else
             {
-                await _unitOfWork.CartRepository.DeleteAsync(cart);
+                
                 var cartDetails = (await _unitOfWork.CartDetailRepository.GetAllAsyncAsQueryable()).Where(x => x.CartId == cartId).AsEnumerable();
                 await _unitOfWork.CartDetailRepository.DeleteRangeAsync(cartDetails);
                 var cartGroupUsers = (await _unitOfWork.CartGroupUserRepository.GetAllAsyncAsQueryable()).Where(x => x.CartId == cartId).AsEnumerable();
                 await _unitOfWork.CartGroupUserRepository.DeleteRangeAsync(cartGroupUsers);
+                await _unitOfWork.CartRepository.DeleteAsync(cart);
                 return new ServiceActionResult(true, "Delete Successfully");
             }
             
