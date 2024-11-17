@@ -143,6 +143,7 @@ namespace BMS.BLL.Utilities.AutoMapperProfiles
                 CreateMap<Cart, CartResponse>()
                     .ForMember(dest => dest.CartDetails, opt => opt.MapFrom(src => src.CartDetails));
                 CreateMap<CartDetailRequest, CartDetail>();
+                CreateMap<CartGroupDetailRequest, CartDetail>();
                 CreateMap<CartGroupUser, CartGroupUserResponse2>();
                 #endregion
                 #region registerCategory  

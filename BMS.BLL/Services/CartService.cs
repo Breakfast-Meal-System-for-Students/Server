@@ -76,6 +76,14 @@ namespace BMS.BLL.Services
 
         public async Task<ServiceActionResult> AddCartDetailForGroup(Guid userId, Guid cartId, CartGroupDetailRequest request)
         {
+            var shop = await _unitOfWork.ShopRepository.FindAsync(request.ShopId);
+            if (shop == null || shop.IsDeleted == true)
+            {
+                return new ServiceActionResult(false)
+                {
+                    Detail = "Shop is not valid or delete"
+                };
+            }
             var cart = (await _unitOfWork.CartRepository.GetAllAsyncAsQueryable()).Where(x => x.Id == cartId).FirstOrDefault();
             if (cart == null)
             {

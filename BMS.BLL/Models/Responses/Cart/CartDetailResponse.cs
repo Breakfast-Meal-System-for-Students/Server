@@ -19,5 +19,8 @@ namespace BMS.BLL.Models.Responses.Cart
         public int Quantity { get; set; }
         public double Price { get; set; }
         public string? Note { get; set; }
+        public Guid? CartGroupUserId { get; set; }
+        //public string CartGroupUserName { get; set; }
+        //public string CartGroupUserImage { get; set; }
     }
 }
