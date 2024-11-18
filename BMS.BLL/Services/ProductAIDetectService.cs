@@ -122,7 +122,7 @@ namespace BMS.BLL.Services
             }
         }
 
-        public async Task<string> DetectImageAsync(IFormFile image, string name, string description)
+        public async Task<string> DetectImageAsync(IFormFile image, string name)
         {
             if (image == null || image.Length == 0)
                 throw new ArgumentException("Invalid image file.");
@@ -130,7 +130,7 @@ namespace BMS.BLL.Services
             try
             {
 
-                string text = "If the image is related to the topic of food and beverages, check if it aligns with the name " + name + " and description " + description + " If have return result= 0. If it does not match, return result= 1. Use the following format exactly ,Loại bỏ Markdown ```json: {{\"result\": \"1 or 0\", \"reason\": \"this is the reason\"}}. For example: {{\"result\": \"1\", \"reason\": \"The image does not match the name and description, or it is not related to food and beverages\"}}.";
+                string text = "If the image is related to the topic of food and beverages, check if it aligns with the name " + name + " If have return result= 0. If it does not match, return result= 1. Use the following format exactly ,Loại bỏ Markdown ```json: {{\"result\": \"1 or 0\", \"reason\": \"this is the reason\"}}. For example: {{\"result\": \"1\", \"reason\": \"The image does not match the name , or it is not related to food and beverages\"}}.";
                 string result = await DescribeImageAsync(image, text);
 
                 return result;
@@ -140,7 +140,7 @@ namespace BMS.BLL.Services
                 throw new Exception($"Error processing image: {ex.Message}", ex);
             }
         }
-        public async Task<ImageAIResponse> DetectImageProductAsync(IFormFile image, string name, string description)
+        public async Task<ImageAIResponse> DetectImageProductAsync(IFormFile image, string name)
         {
             if (image == null || image.Length == 0)
                 throw new ArgumentException("Invalid image file.");
@@ -148,8 +148,7 @@ namespace BMS.BLL.Services
             try
             {
 
-                string text = "If the image is related to the topic of food and beverages, check if it aligns with the name " + name + " and description " + description + " If have return result= 0. If it does not match, return result= 1. Use the following format exactly ,Loại bỏ Markdown ```json: {{\"result\": \"1 or 0\", \"reason\": \"this is the reason\"}}. For example: {{\"result\": \"1\", \"reason\": \"The image does not match the name and description, or it is not related to food and beverages\"}}.";
-                string content = await DescribeImageAsync(image, text);
+                string content = await DescribeImageAsync(image, name);
                 ImageAIResponse result =  GetResultAndReasonFromJson(content);
                 return result;
             }

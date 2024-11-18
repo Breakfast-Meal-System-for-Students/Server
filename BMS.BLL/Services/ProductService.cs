@@ -67,7 +67,7 @@ namespace BMS.BLL.Services
                 {
                   
                     var imageUrl = await _fileStorageService.UploadFileBlobAsync(imageFile);
-                    temp = await _productAIDetectService.DetectImageProductAsync(imageFile, productEntity.Name, productEntity.Description);
+                    temp = await _productAIDetectService.DetectImageProductAsync(imageFile, productEntity.Name);
                     // Upload image to file storage (assuming the request.Images is a list of IFormFile)
                     if (temp != null && temp.Result.Equals("1"))
                     {
