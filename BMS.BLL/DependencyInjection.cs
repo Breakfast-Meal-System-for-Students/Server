@@ -63,6 +63,7 @@ namespace BMS.BLL
             services.AddScoped<IOpeningHoursService, OpeningHoursService>();
             services.AddScoped<IFavouriteService, FavouriteService>();
             services.AddScoped<IRecommendationService, RecommendationService>();
+            services.AddScoped<IProductAIDetectService, ProductAIDetectService>();
             #endregion
 
             #region
