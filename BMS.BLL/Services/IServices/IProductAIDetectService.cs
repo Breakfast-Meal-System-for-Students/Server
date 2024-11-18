@@ -12,7 +12,7 @@ namespace BMS.BLL.Services.IServices
     {
         Task<string> DescribeImageAsync(IFormFile image, string text);
         Task<string> PolicyImageAsync(IFormFile image);
-        Task<string> DetectImageAsync(IFormFile image, string name, string description);
+        Task<string> DetectImageAsync(IFormFile image, string name);
         Task<ImageAIResponse> DetectImageProductAsync(IFormFile image, string name);
     }
 }
