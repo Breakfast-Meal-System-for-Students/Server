@@ -15,6 +15,7 @@ using System.Threading.Tasks;
 using BMS.BLL.Models.Requests.Product;
 using Microsoft.EntityFrameworkCore;
 using BMS.BLL.Models.Responses.Package;
+using BMS.BLL.Models.Responses.AI;
 
 namespace BMS.BLL.Services
 {
@@ -24,11 +25,13 @@ namespace BMS.BLL.Services
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
         private readonly IFileStorageService _fileStorageService;
-        public ProductService(IUnitOfWork unitOfWork, IMapper mapper, IFileStorageService fileStorageService) : base(unitOfWork, mapper)
+        private readonly IProductAIDetectService _productAIDetectService;
+        public ProductService(IUnitOfWork unitOfWork, IMapper mapper, IFileStorageService fileStorageService, IProductAIDetectService productAIDetectService) : base(unitOfWork, mapper)
         {
             _unitOfWork = unitOfWork;
             _mapper = mapper;
             _fileStorageService = fileStorageService;
+            _productAIDetectService = productAIDetectService;
         }
 
         public async Task<ServiceActionResult> GetAllProduct(ProductRequest queryParameters)
@@ -56,15 +59,25 @@ namespace BMS.BLL.Services
         {
             // Map request to Product entity
             var productEntity = _mapper.Map<Product>(request);
-
+            ImageAIResponse temp = new ImageAIResponse();
             // Handle image upload and create Image entities
             if (request.Images != null && request.Images.Any())
             {
                 foreach (var imageFile in request.Images)
                 {
-                    // Upload image to file storage (assuming the request.Images is a list of IFormFile)
+                  
                     var imageUrl = await _fileStorageService.UploadFileBlobAsync(imageFile);
-
+                    temp = await _productAIDetectService.DetectImageProductAsync(imageFile, productEntity.Name, productEntity.Description);
+                    // Upload image to file storage (assuming the request.Images is a list of IFormFile)
+                    if (temp != null && temp.Result.Equals("1"))
+                    {
+                        return new ServiceActionResult(false)
+                        {
+                            Detail = temp.Reason ,
+                            IsSuccess = false,
+                            
+                        };
+                    }
                     // Create Image entity and associate with the Product
                     var imageEntity = new Image
                     {
