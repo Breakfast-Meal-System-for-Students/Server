@@ -77,7 +77,8 @@ namespace BMS.BLL.Utilities.AutoMapperProfiles
 
                 CreateMap<Shop, ShopApplicationResponse>();
                 CreateMap<Shop, ShopRequest>();
-                CreateMap<Shop, ShopResponse>();
+                CreateMap<Shop, ShopResponse>()
+                    .ForMember(dest => dest.Phone, opt => opt.MapFrom(src => src.PhoneNumber));
 
                 #endregion
                 #region order
