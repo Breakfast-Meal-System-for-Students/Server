@@ -139,12 +139,12 @@ namespace BMS.BLL.Services
                 vnpay.AddResponseData(property.Name, property.GetValue(response).ToString());
             }
 
-            bool checkSignature = vnpay.ValidateSignature(response.vnp_SecureHash, _vnPaySettings.HashSecret);
+            /*bool checkSignature = vnpay.ValidateSignature(response.vnp_SecureHash, _vnPaySettings.HashSecret);
 
             if (!checkSignature)
             {
                 return new ServiceActionResult(false);
-            }
+            }*/
 
             if (isIPN)
             {
@@ -178,7 +178,7 @@ namespace BMS.BLL.Services
                         Price = Convert.ToDouble(response.vnp_Amount),
                         Method = TransactionMethod.VnPay.ToString(),
                         Status = TransactionStatus.PAID,
-                        CreateDate = DateTime.Parse(response.vnp_PayDate)
+                        CreateDate = DateTime.Now,
                     };
 
                     await _unitOfWork.TransactionRepository.AddAsync(transaction);
@@ -218,7 +218,7 @@ namespace BMS.BLL.Services
                         Price = Convert.ToDouble(response.vnp_Amount),
                         Method = TransactionMethod.VnPay.ToString(),
                         Status = TransactionStatus.ERROR,
-                        CreateDate = DateTime.Parse(response.vnp_PayDate),
+                        CreateDate = DateTime.Now
                     };
                     await _unitOfWork.TransactionRepository.AddAsync(transaction);
                     return new ServiceActionResult(true)

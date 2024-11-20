@@ -344,7 +344,9 @@ namespace BMS.BLL.Services
 
             notification.Destination = NotificationDestination.FORSTAFF;
             await _unitOfWork.NotificationRepository.AddAsync(notification);
-
+            await _unitOfWork.CartDetailRepository.DeleteRangeAsync(cart.CartDetails);
+            var cartGroupUsers = (await _unitOfWork.CartGroupUserRepository.GetAllAsyncAsQueryable()).Where(x => x.CartId == cart.Id).AsEnumerable();
+            await _unitOfWork.CartGroupUserRepository.DeleteRangeAsync(cartGroupUsers);
             await _unitOfWork.CartRepository.DeleteAsync(cart.Id);
 
             await _hubContext.Clients.User(notification.UserId.ToString()).SendAsync("Create Order", notification.Object);

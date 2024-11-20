@@ -42,11 +42,11 @@ namespace BMS.API.Controllers
            ).ConfigureAwait(false);
         }
 
-        [HttpGet("payment-callback")]
-        public async Task<IActionResult> PaymentCallBack([FromQuery] VnPayResponse response)
+        [HttpPost("payment-callback")]
+        public async Task<IActionResult> PaymentCallBack([FromBody] VnPayResponse response)
         {
             return await ExecuteServiceLogic(
-               async () => await _vnPayService.PaymentExecute(response).ConfigureAwait(false)
+               async () => await _vnPayService.PaymentExecute(response, true).ConfigureAwait(false)
            ).ConfigureAwait(false);
         }
 
