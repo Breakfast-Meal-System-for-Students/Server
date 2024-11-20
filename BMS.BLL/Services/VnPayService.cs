@@ -128,7 +128,7 @@ namespace BMS.BLL.Services
 
         public async Task<ServiceActionResult> PaymentExecute(VnPayResponse response, bool isIPN = false)
         {
-            var vnpay = new VnPayLibrary();
+            /*var vnpay = new VnPayLibrary();
 
             Type type = response.GetType();
 
@@ -137,7 +137,7 @@ namespace BMS.BLL.Services
             foreach (PropertyInfo property in properties)
             {
                 vnpay.AddResponseData(property.Name, property.GetValue(response).ToString());
-            }
+            }*/
 
             /*bool checkSignature = vnpay.ValidateSignature(response.vnp_SecureHash, _vnPaySettings.HashSecret);
 
@@ -148,7 +148,7 @@ namespace BMS.BLL.Services
 
             if (isIPN)
             {
-                Double.TryParse(response.vnp_Amount, out double result);
+                //Double.TryParse(response.vnp_Amount, out double result);
                 var orderId = new Guid(response.vnp_OrderInfo ?? throw new BusinessRuleException("Invalid order"));
                 var order = (await _unitOfWork.OrderRepository.GetAllAsyncAsQueryable()).Include(x => x.Transactions).FirstOrDefault(y => y.Id == orderId) ?? throw new BusinessRuleException("Invalid application");
 
@@ -166,8 +166,7 @@ namespace BMS.BLL.Services
                     };
                 }
 
-                var isPaySucceed = (response.vnp_ResponseCode?.Equals("00") ?? false)
-                    && (response.vnp_TransactionStatus?.Equals("00") ?? false);
+                var isPaySucceed = response.vnp_ResponseCode?.Equals("00") ?? false;
 
                 if (isPaySucceed)
                 {
