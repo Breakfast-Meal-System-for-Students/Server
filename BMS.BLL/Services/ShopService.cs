@@ -22,6 +22,7 @@ using System.Threading.Tasks;
 using BMS.BLL.Models.Requests.Shop;
 using BMS.BLL.Models.Responses.Shop;
 using Microsoft.EntityFrameworkCore;
+using BMS.BLL.Models.Responses.Map;
 
 namespace BMS.BLL.Services
 {
@@ -65,29 +66,25 @@ namespace BMS.BLL.Services
 
         public async Task<ServiceActionResult> UpdateShop(Guid id, UpdateShopRequest request)
         {
-
-
             var Shop = await _unitOfWork.ShopRepository.FindAsync(id) ?? throw new ArgumentNullException("Shop is not exist");
-
-
             Shop.LastUpdateDate = DateTime.UtcNow;
             Shop.Name = request.Name;
             Shop.Description = request.Description;
             Shop.Address = request.Address;
             Shop.PhoneNumber = request.Phone;
+            Location location = await _googleMapService.GetCoordinatesFromAddress(request.Address);
+            if (location == null)
+            {
+                throw new BusinessRuleException($"Address invalid");
+            }
+            Shop.lat = location.Lat;
+            Shop.lng = location.Lng;
             if (request.Image != null)
             {
                 var imageUrl = await _fileStorageService.UploadFileBlobAsync((Microsoft.AspNetCore.Http.IFormFile)request.Image);
                 Shop.Image = imageUrl;
             }
-             
-                Models.Responses.Map.Location location = await _googleMapService.GetCoordinatesFromAddress(request.Address);
-                if ( location==null)
-                {
-                    throw new BusinessRuleException($"Address invalid");
-                }
-            Shop.lat = location.Lat;
-            Shop.lng = location.Lng;
+            await _unitOfWork.ShopRepository.UpdateAsync(Shop);
             return new ServiceActionResult(true) { Data = Shop };
         }
 
