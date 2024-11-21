@@ -589,5 +589,11 @@ namespace BMS.BLL.Services
             
             _recommendationEngine.TrainModel(data);
         }
+
+        public async Task<ServiceActionResult> DeleteAllOrderInShop(Guid shopId)
+        {
+            var orders = (await _unitOfWork.OrderRepository.GetAllAsyncAsQueryable()).Where(x => x.ShopId == shopId).ToList();
+            return new ServiceActionResult();
+        }
     }
 }

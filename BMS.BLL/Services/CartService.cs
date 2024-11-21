@@ -39,7 +39,7 @@ namespace BMS.BLL.Services
         public async Task<ServiceActionResult> AddCartDetail(Guid userId, Guid shopId, CartDetailRequest request)
         {
             Expression<Func<Cart, bool>> filter = cart => (cart.CustomerId == userId && cart.ShopId == shopId);
-            var cart = await _unitOfWork.CartRepository.FindAsyncAsQueryable(filter);
+            var cart = (await _unitOfWork.CartRepository.GetAllAsyncAsQueryable()).Where(filter);
             if (cart == null || cart.FirstOrDefault() == null)
             {
                 Cart newCart = new Cart();
@@ -56,7 +56,7 @@ namespace BMS.BLL.Services
             {
                 request.CartId = cart.FirstOrDefault().Id;
                 CartDetail cartDetails = _mapper.Map<CartDetail>(request);
-                var cartDetailInDB = (await _unitOfWork.CartDetailRepository.GetAllAsyncAsQueryable()).Where(x => x.ProductId.Equals(cartDetails.ProductId) && x.CartId == cartDetails.CartId).FirstOrDefault();
+                var cartDetailInDB = (await _unitOfWork.CartDetailRepository.GetAllAsyncAsQueryable()).Where(x => x.ProductId.Equals(cartDetails.ProductId) && x.CartId == cartDetails.CartId && x.Note == cartDetails.Note).FirstOrDefault();
                 if (cartDetailInDB != null && cartDetailInDB.Note.Equals(cartDetails.Note))
                 {
                     cartDetailInDB.Quantity += cartDetails.Quantity;
