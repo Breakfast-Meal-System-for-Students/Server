@@ -13,6 +13,7 @@ namespace BMS.BLL.Models.Responses.Package
         public double Price { get; set; }
         public string Description { get; set; } = null!;
         public int Duration { get; set; }
+        public DateTime? ExpiredDate { get; set; }
         public bool IsDeleted { get; set; } = false; // Default value here
         public DateTime? DeletedDate { get; set; }
     }

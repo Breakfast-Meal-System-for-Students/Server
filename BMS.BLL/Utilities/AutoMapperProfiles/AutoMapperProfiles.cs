@@ -163,7 +163,8 @@ namespace BMS.BLL.Utilities.AutoMapperProfiles
                 CreateMap<Package, UpdatePackageRequest>();
                 CreateMap<CreatePackageRequest, Package>();
 
-                CreateMap<Package, PackageResponse>();
+                CreateMap<Package, PackageResponse>()
+                    .ForMember(dest => dest.ExpiredDate, opt => opt.MapFrom(src => src.Package_Shop.Where(x => x.PackageId == src.Id).OrderByDescending(y => y.CreateDate).FirstOrDefault().CreateDate.AddDays(src.Duration)));
                 #endregion
                 #region image
               
