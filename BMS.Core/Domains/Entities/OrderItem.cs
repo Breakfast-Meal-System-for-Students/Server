@@ -17,5 +17,6 @@ namespace BMS.Core.Domains.Entities
         public Guid OrderId { get; set; }
         public Order Order { get; set; } = null!;
         public Guid? UserId { get; set; }
+        public string? Note { get; set; }
     }
 }

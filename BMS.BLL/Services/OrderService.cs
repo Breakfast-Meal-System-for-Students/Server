@@ -310,6 +310,7 @@ namespace BMS.BLL.Services
                 ProductId = item.ProductId,
                 Quantity = item.Quantity,
                 Price = item.Price,
+                Note = item.Note,
                 UserId = item.CartGroupUserId
             }).ToList();
 
