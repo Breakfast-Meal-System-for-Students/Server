@@ -383,7 +383,7 @@ namespace BMS.BLL.Services
 
         public async Task<ServiceActionResult> GetOrderByID(Guid id)
         {
-            var order = (await _unitOfWork.OrderRepository.GetAllAsyncAsQueryable()).Include(a => a.OrderItems).Include(b => b.Customer).Include(c => c.Shop).Where(x => x.Id == id).SingleOrDefault();
+            var order = (await _unitOfWork.OrderRepository.GetAllAsyncAsQueryable()).Include(a => a.OrderItems).ThenInclude(d => d.Product).ThenInclude(e => e.Images).Include(b => b.Customer).Include(c => c.Shop).Where(x => x.Id == id).SingleOrDefault();
             if (order != null)
             {
                 var returnOrder = _mapper.Map<OrderResponse>(order);
