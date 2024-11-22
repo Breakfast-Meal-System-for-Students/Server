@@ -16,6 +16,7 @@ namespace BMS.BLL.Models.Responses.Admin
         public Guid ProductId { get; set; }
         public string ProductName { get; set; }
         public ICollection<ImageResponse> ProductImages { get; set; }
+        public string? Note { get; set; }
         public Guid OrderId { get; set; }
         public Guid? UserId { get; set; }
     }
