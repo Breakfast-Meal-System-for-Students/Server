@@ -41,6 +41,15 @@ namespace BMS.API.Controllers
 
         [HttpGet("GetOrderById{id}")]
         //[Authorize(Roles = UserRoleConstants.ADMIN)]
+        public async Task<IActionResult> GetOrderById1(Guid id)
+        {
+            return await ExecuteServiceLogic(
+                async () => await _orderService.GetOrderByID(id).ConfigureAwait(false)
+            ).ConfigureAwait(false);
+        }
+
+        [HttpGet("GetOrderById/{id}")]
+        //[Authorize(Roles = UserRoleConstants.ADMIN)]
         public async Task<IActionResult> GetOrderById(Guid id)
         {
             return await ExecuteServiceLogic(
@@ -130,7 +139,7 @@ namespace BMS.API.Controllers
                                           ).ConfigureAwait(false);
         }
 
-        [HttpGet("CheckOrderIsPayed{orderId}")]
+        [HttpGet("CheckOrderIsPayed/{orderId}")]
         //[Authorize(Roles = UserRoleConstants.ADMIN)]
         public async Task<IActionResult> CheckOrderIsPayed(Guid orderId)
         {
