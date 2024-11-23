@@ -153,6 +153,99 @@ namespace BMS.BLL.Services
             return new ServiceActionResult(true) { Data = paginationResult };
         }
 
+        public async Task<ServiceActionResult> GetTotalRevenue(TotalTRansactionRequest request)
+        {
+            var transactions = (await _unitOfWork.TransactionRepository.GetAllAsyncAsQueryable());
+            if (request.Year != 0)
+            {
+                if (request.Month != 0)
+                {
+                    if (request.Day != 0)
+                    {
+                        transactions = transactions.Where(x => x.CreateDate.Year == request.Year && x.CreateDate.Month == request.Month && x.CreateDate.Day == request.Day);
+                    }
+                    else
+                    {
+                        transactions = transactions.Where(x => x.CreateDate.Year == request.Year && x.CreateDate.Month == request.Month);
+                    }
+                }
+                else
+                {
+                    transactions = transactions.Where(x => x.CreateDate.Year == request.Year);
+                }
+            }
+            /*if (request.Status != 0)
+            {
+                transactions = transactions.Where(x => x.Status.Equals(request.Status));
+            }*/
+            return new ServiceActionResult()
+            {
+                Data = transactions.Where(x => x.Status.Equals(TransactionStatus.PAID)).Sum(x => x.Price)
+            };
+        }
+
+        public async Task<ServiceActionResult> GetTotalRevenueForShop(Guid shopId, TotalTRansactionRequest request)
+        {
+            var transactions = (await _unitOfWork.TransactionRepository.GetAllAsyncAsQueryable()).Include(a => a.Order).Where(x => x.Order.ShopId == shopId);
+            if (request.Year != 0)
+            {
+                if (request.Month != 0)
+                {
+                    if (request.Day != 0)
+                    {
+                        transactions = transactions.Where(x => x.CreateDate.Year == request.Year && x.CreateDate.Month == request.Month && x.CreateDate.Day == request.Day);
+                    }
+                    else
+                    {
+                        transactions = transactions.Where(x => x.CreateDate.Year == request.Year && x.CreateDate.Month == request.Month);
+                    }
+                }
+                else
+                {
+                    transactions = transactions.Where(x => x.CreateDate.Year == request.Year);
+                }
+            }
+            /*if (request.Status != 0)
+            {
+                transactions = transactions.Where(x => x.Status.Equals(request.Status));
+            }*/
+            return new ServiceActionResult()
+            {
+                Data = transactions.Where(x => x.Status.Equals(TransactionStatus.PAID)).Sum(x => x.Price)
+            };
+        }
+
+        public async Task<ServiceActionResult> GetTotalRevenueForUser(Guid userId, TotalTRansactionRequest request)
+        {
+            var transactions = (await _unitOfWork.TransactionRepository.GetAllAsyncAsQueryable()).Include(a => a.Order).Where(x => x.Order.CustomerId == userId);
+            if (request.Year != 0)
+            {
+                if (request.Month != 0)
+                {
+                    if (request.Day != 0)
+                    {
+                        transactions = transactions.Where(x => x.CreateDate.Year == request.Year && x.CreateDate.Month == request.Month && x.CreateDate.Day == request.Day);
+                    }
+                    else
+                    {
+                        transactions = transactions.Where(x => x.CreateDate.Year == request.Year && x.CreateDate.Month == request.Month);
+                    }
+                }
+                else
+                {
+                    transactions = transactions.Where(x => x.CreateDate.Year == request.Year);
+                }
+            }
+            /*if (request.Status != 0)
+            {
+                transactions = transactions.Where(x => x.Status.Equals(request.Status));
+            }*/
+            return new ServiceActionResult()
+            {
+                Data = transactions.Where(x => x.Status.Equals(TransactionStatus.PAID)).Sum(x => x.Price)
+            };
+        }
+
         public async Task<ServiceActionResult> GetTotalTransaction(TotalTRansactionRequest request)
         {
             var transactions = (await _unitOfWork.TransactionRepository.GetAllAsyncAsQueryable());
