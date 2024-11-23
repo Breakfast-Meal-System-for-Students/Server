@@ -49,7 +49,11 @@ namespace BMS.BLL.Services
 
         public async Task<ServiceActionResult> GetListTracsactions(SearchTransactionRequest request)
         {
-            IQueryable<Transaction> transactionQuery = (await _unitOfWork.TransactionRepository.GetAllAsyncAsQueryable()).Include(a => a.Order);
+            IQueryable<Transaction> transactionQuery = (await _unitOfWork.TransactionRepository.GetAllAsyncAsQueryable())
+                                                        .Include(a => a.Order)
+                                                            .ThenInclude(order => order.Customer)
+                                                        .Include(a => a.Order)
+                                                            .ThenInclude(order => order.Shop);
 
             //var canParsed = Enum.TryParse(request.Status, true, out OrderStatus status);
             if (request.Status != 0)
@@ -182,7 +186,12 @@ namespace BMS.BLL.Services
 
         public async Task<ServiceActionResult> GetTransactionByID(Guid id)
         {
-            var transaction = (await _unitOfWork.TransactionRepository.GetAllAsyncAsQueryable()).Include(a => a.Order).Where(x => x.Id == id).FirstOrDefault();
+            var transaction = (await _unitOfWork.TransactionRepository.GetAllAsyncAsQueryable())
+                                .Include(a => a.Order)
+                                    .ThenInclude(order => order.Customer)
+                                .Include(a => a.Order)
+                                    .ThenInclude(order => order.Shop)
+                                .Where(x => x.Id == id).FirstOrDefault();
             if (transaction != null)
             {
                 var returnTransaction = _mapper.Map<TransactionResponse>(transaction);
@@ -197,7 +206,12 @@ namespace BMS.BLL.Services
 
         public async Task<ServiceActionResult> GetTransactionByOrderID(Guid id)
         {
-            var transaction = (await _unitOfWork.TransactionRepository.GetAllAsyncAsQueryable()).Include(a => a.Order).Where(x => x.OrderId == id).ToList();
+            var transaction = (await _unitOfWork.TransactionRepository.GetAllAsyncAsQueryable())
+                                .Include(a => a.Order)
+                                    .ThenInclude(order => order.Customer)
+                                .Include(a => a.Order)
+                                    .ThenInclude(order => order.Shop)
+                                .Where(x => x.OrderId == id).ToList();
             if (transaction != null)
             {
                 var returnOrder = _mapper.Map<List<TransactionResponse>>(transaction);
@@ -212,7 +226,12 @@ namespace BMS.BLL.Services
 
         public async Task<ServiceActionResult> GetTransactionByShop(Guid id, SearchTransactionRequest request)
         {
-            IQueryable<Transaction> transactionQuery = (await _unitOfWork.TransactionRepository.GetAllAsyncAsQueryable()).Include(a => a.Order).Where(x => x.Order.ShopId == id);
+            IQueryable<Transaction> transactionQuery = (await _unitOfWork.TransactionRepository.GetAllAsyncAsQueryable())
+                                                        .Include(a => a.Order)
+                                                            .ThenInclude(order => order.Customer)
+                                                        .Include(a => a.Order)
+                                                            .ThenInclude(order => order.Shop)
+                                                        .Where(x => x.Order.ShopId == id);
 
             //var canParsed = Enum.TryParse(request.Status, true, out OrderStatus status);
             if (request.Status != 0)
@@ -235,7 +254,12 @@ namespace BMS.BLL.Services
 
         public async Task<ServiceActionResult> GetTransactionByUser(Guid id, SearchTransactionRequest request)
         {
-            IQueryable<Transaction> transactionQuery = (await _unitOfWork.TransactionRepository.GetAllAsyncAsQueryable()).Include(a => a.Order).Where(x => x.Order.CustomerId == id);
+            IQueryable<Transaction> transactionQuery = (await _unitOfWork.TransactionRepository.GetAllAsyncAsQueryable())
+                                                        .Include(a => a.Order)
+                                                            .ThenInclude(order => order.Customer)
+                                                        .Include(a => a.Order)
+                                                            .ThenInclude(order => order.Shop)
+                                                        .Where(x => x.Order.CustomerId == id);
 
             //var canParsed = Enum.TryParse(request.Status, true, out OrderStatus status);
             if (request.Status != 0)
