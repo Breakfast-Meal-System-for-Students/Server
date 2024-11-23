@@ -19,6 +19,6 @@ namespace BMS.BLL.Models.Responses.Admin
 
         public TransactionStatus Status { get; set; }
 
-        public Order Order { get; set; }
+        public OrderResponse Order { get; set; }
     }
 }

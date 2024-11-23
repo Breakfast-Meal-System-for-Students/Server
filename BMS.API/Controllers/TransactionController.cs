@@ -27,7 +27,7 @@ namespace BMS.API.Controllers
             ).ConfigureAwait(false);
         }
 
-        [HttpGet("GetTransactionById{id}")]
+        [HttpGet("GetTransactionById/{id}")]
         //[Authorize(Roles = UserRoleConstants.ADMIN)]
         public async Task<IActionResult> GetTransactionById(Guid id)
         {
@@ -36,7 +36,7 @@ namespace BMS.API.Controllers
             ).ConfigureAwait(false);
         }
 
-        [HttpGet("GetTransactionByOrderId{id}")]
+        [HttpGet("GetTransactionByOrderId/{id}")]
         //[Authorize(Roles = UserRoleConstants.ADMIN)]
         public async Task<IActionResult> GetTransactionByOrderId(Guid id)
         {
