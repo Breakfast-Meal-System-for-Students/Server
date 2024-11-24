@@ -106,6 +106,7 @@ namespace BMS.BLL.Services
                 {
                     ShopId = group.Key,
                     ShopName = group.FirstOrDefault().Name,
+                    ShopImage = group.FirstOrDefault().Image,
                     TotalTransactionAmount = group
                         .SelectMany(shop => shop.Orders)
                         .SelectMany(order => order.Transactions)
@@ -143,6 +144,7 @@ namespace BMS.BLL.Services
                         {
                             Id = group.Key,
                             Name = group.FirstOrDefault().FirstName + group.FirstOrDefault().LastName,
+                            Image = group.FirstOrDefault().Avatar,
                             TotalTransactionAmount = group
                                 .SelectMany(shop => shop.Orders)
                                 .SelectMany(order => order.Transactions)
