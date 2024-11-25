@@ -29,17 +29,40 @@ namespace BMS.BLL.Services
         private readonly UserManager<User> _userManager;
         private readonly ITokenService _tokenService;
         private readonly IShopService _shopService;
-        public CartService(IUnitOfWork unitOfWork, IMapper mapper, UserManager<User> userManager, ITokenService tokenService, IShopService shopService) : base(unitOfWork, mapper)
+        private IProductService _productService;
+        public CartService(IUnitOfWork unitOfWork, IMapper mapper, UserManager<User> userManager, ITokenService tokenService, IShopService shopService, IProductService productService) : base(unitOfWork, mapper)
         {
             _userManager = userManager;
             _tokenService = tokenService;
             _shopService = shopService;
+            _productService = productService;
         }
 
         public async Task<ServiceActionResult> AddCartDetail(Guid userId, Guid shopId, CartDetailRequest request)
         {
+            int inventory = 0;
+            var productInShop = (await _unitOfWork.ProductRepository.GetAllAsyncAsQueryable()).Where(x => x.Id == request.ProductId && x.ShopId == shopId).SingleOrDefault();
+            if (productInShop == null)
+            {
+                return new ServiceActionResult(false)
+                {
+                    Detail = "Product is not in This Shop"
+                };
+            }
+            else
+            {
+
+                inventory = await _productService.GetInventoryOfProductInDay(request.ProductId);
+                if (request.Quantity > inventory)
+                {
+                    return new ServiceActionResult(false)
+                    {
+                        Detail = $"The Inventory Of This Product In Shop is had already {inventory} now. Please booking this product less than or equals {inventory}"
+                    };
+                }
+            }
             Expression<Func<Cart, bool>> filter = cart => (cart.CustomerId == userId && cart.ShopId == shopId);
-            var cart = (await _unitOfWork.CartRepository.GetAllAsyncAsQueryable()).Where(filter);
+            var cart = (await _unitOfWork.CartRepository.GetAllAsyncAsQueryable()).Include(a => a.CartDetails).Where(filter);
             if (cart == null || cart.FirstOrDefault() == null)
             {
                 Cart newCart = new Cart();
@@ -54,6 +77,14 @@ namespace BMS.BLL.Services
                 await _unitOfWork.CartDetailRepository.AddAsync(cartDetails);
             } else
             {
+                int x = cart.FirstOrDefault().CartDetails.Where(a => a.ProductId == request.ProductId).Sum(x => x.Quantity);
+                if (request.Quantity > (inventory - x))
+                {
+                    return new ServiceActionResult(false)
+                    {
+                        Detail = $"The Inventory Of This Product In Shop is had already {inventory} now and you added {x} to your Cart. Please booking this product less than or equals {inventory - x}"
+                    };
+                }
                 request.CartId = cart.FirstOrDefault().Id;
                 CartDetail cartDetails = _mapper.Map<CartDetail>(request);
                 var cartDetailInDB = (await _unitOfWork.CartDetailRepository.GetAllAsyncAsQueryable()).Where(x => x.ProductId.Equals(cartDetails.ProductId) && x.CartId == cartDetails.CartId && x.Note == cartDetails.Note).FirstOrDefault();
@@ -84,7 +115,7 @@ namespace BMS.BLL.Services
                     Detail = "Shop is not valid or delete"
                 };
             }
-            var cart = (await _unitOfWork.CartRepository.GetAllAsyncAsQueryable()).Where(x => x.Id == cartId).FirstOrDefault();
+            var cart = (await _unitOfWork.CartRepository.GetAllAsyncAsQueryable()).Include(a => a.CartDetails).Where(x => x.Id == cartId).FirstOrDefault();
             if (cart == null)
             {
                 return new ServiceActionResult(false, "Cart is not exits or deleted");
@@ -93,6 +124,34 @@ namespace BMS.BLL.Services
                 if(cart.IsGroup == false)
                 {
                     return new ServiceActionResult(false, "Cart is not group");
+                }
+                var productInShop = (await _unitOfWork.ProductRepository.GetAllAsyncAsQueryable()).Where(x => x.Id == request.ProductId && x.ShopId == request.ShopId).SingleOrDefault();
+                if (productInShop == null)
+                {
+                    return new ServiceActionResult(false)
+                    {
+                        Detail = "Product is not in This Shop"
+                    };
+                }
+                else
+                {
+                    var inventory = await _productService.GetInventoryOfProductInDay(request.ProductId);
+                    if (request.Quantity > inventory)
+                    {
+                        return new ServiceActionResult(false)
+                        {
+                            Detail = $"The Inventory Of This Product In Shop is had already {inventory} now. Please booking this product less than or equals {inventory}"
+                        };
+                    }
+                    int x = cart.CartDetails.Where(a => a.ProductId == request.ProductId).Sum(x => x.Quantity);
+                    if (request.Quantity > (inventory - x))
+                    {
+                        return new ServiceActionResult(false)
+                        {
+                            Detail = $"The Inventory Of This Product In Shop is had already {inventory} now and the cart group added {x} to this Cart. Please booking this product less than or equals {inventory - x}"
+                        };
+                    }
+
                 }
                 request.CartId = cart.Id;
                 CartDetail cartDetail = _mapper.Map<CartDetail>(request);

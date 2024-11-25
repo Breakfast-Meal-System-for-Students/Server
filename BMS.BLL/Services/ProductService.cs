@@ -59,6 +59,11 @@ namespace BMS.BLL.Services
         {
             // Map request to Product entity
             var productEntity = _mapper.Map<Product>(request);
+            if (productEntity.Inventory.GetValueOrDefault() <= 0)
+            {
+                productEntity.Inventory = 9999;
+            }
+
             ImageAIResponse temp = new ImageAIResponse();
             // Handle image upload and create Image entities
             if (request.Images != null && request.Images.Any())
@@ -113,7 +118,14 @@ namespace BMS.BLL.Services
             product.Description = request.Description;
             product.Name = request.Name;
             product.LastUpdateDate = DateTime.UtcNow;
-
+            if(request.Inventory.GetValueOrDefault() <= 0)
+            {
+                product.Inventory = 9999;
+            } else 
+            {
+                product.Inventory = request.Inventory;
+            }
+            
 
             // Handle image updates
             if (request.Images != null && request.Images.Any())
@@ -175,7 +187,7 @@ namespace BMS.BLL.Services
         public async Task<ServiceActionResult> GetAllProductByShopId(Guid id,ProductRequest queryParameters)
         {
 
-            IQueryable<Product> ProductQueryable = (await _unitOfWork.ProductRepository.GetAllAsyncAsQueryable()).Where(a => a.IsDeleted == false & a.ShopId==id).Include(a => a.Images);
+            IQueryable<Product> ProductQueryable = (await _unitOfWork.ProductRepository.GetAllAsyncAsQueryable()).Where(a => a.IsDeleted == false & a.ShopId == id).Include(a => a.Images);
 
 
 
@@ -192,6 +204,16 @@ namespace BMS.BLL.Services
 
 
             return new ServiceActionResult() { Data = paginationResult };
+        }
+
+        public async Task<int> GetInventoryOfProductInDay(Guid productId)
+        {
+            var product = await _unitOfWork.ProductRepository.FindAsync(productId);
+            var today = DateTime.Now.Date;
+            var totalQuantity = (await _unitOfWork.OrderItemRepository.GetAllAsyncAsQueryable())
+                .Where(x => x.ProductId == productId && x.CreateDate.Date == today)
+                .Sum(x => x.Quantity);
+            return product.Inventory.GetValueOrDefault() - totalQuantity;
         }
     }
 }
