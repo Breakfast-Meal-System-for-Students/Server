@@ -52,14 +52,15 @@ namespace BMS.API.Controllers.Base
             try
             {
                 var result = await serviceLogicFunc();
-                /*if (result.IsSuccess)
+                if (result.IsSuccess)
                 {
                     _baseService.Commit();
-                } else
+                }
+                else
                 {
                     _baseService.Rollback();
-                }*/
-                _baseService.Commit();
+                }
+                //_baseService.Commit();
                 return BuildSuccessResult(result);
 
             }

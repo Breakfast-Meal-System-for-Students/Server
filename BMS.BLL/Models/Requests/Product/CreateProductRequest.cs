@@ -13,7 +13,7 @@ namespace BMS.BLL.Models.Requests.Product
         public string Name { get; set; } = null!;
         public string Description { get; set; } = null!;
         public double Price { get; set; }
-
+        public int? Inventory { get; set; }
         public Guid ShopId { get; set; }
 
         public List<IFormFile> Images { get; set; } = new List<IFormFile>();

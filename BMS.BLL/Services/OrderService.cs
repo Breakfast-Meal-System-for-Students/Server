@@ -37,11 +37,13 @@ namespace BMS.BLL.Services
         private readonly IQRCodeService _qrCodeService;
         private readonly IHubContext<NotificationHub> _hubContext;
         private readonly RecommendationEngine _recommendationEngine;
-        public OrderService(IUnitOfWork unitOfWork, IMapper mapper, IQRCodeService qrCodeService, IHubContext<NotificationHub> hubContext, RecommendationEngine recommendationEngine) : base(unitOfWork, mapper)
+        private readonly IProductService _productService;
+        public OrderService(IUnitOfWork unitOfWork, IMapper mapper, IQRCodeService qrCodeService, IHubContext<NotificationHub> hubContext, RecommendationEngine recommendationEngine, IProductService productService) : base(unitOfWork, mapper)
         {
             _qrCodeService = qrCodeService;
             _hubContext = hubContext;
             _recommendationEngine = recommendationEngine;
+            _productService = productService;
         }
 
         public async Task<ServiceActionResult> ChangeOrderStatus(Guid id, OrderStatus status)
@@ -50,18 +52,44 @@ namespace BMS.BLL.Services
             var canParsed = Enum.TryParse(order.Status, true, out OrderStatus s);
             if (canParsed)
             {
-                if (s.Equals(OrderStatus.COMPLETE)) throw new BusinessRuleException("Order is Completed, so that you can not change this");
-                if (s.Equals(OrderStatus.CANCEL)) throw new BusinessRuleException("Order is Canceled, so that you can not change this");
+                if (s.Equals(OrderStatus.COMPLETE))
+                {
+                    return new ServiceActionResult(false)
+                    {
+                        Detail = "Order is Completed, so that you can not change this"
+                    };
+                }
+                if (s.Equals(OrderStatus.CANCEL)) 
+                {
+                    return new ServiceActionResult(false)
+                    {
+                        Detail = "Order is Canceled, so that you can not change this"
+                    };
+                }
                 if(Enum.Equals(status, s))
                 {
-                    throw new BusinessRuleException($"Order is already in {status}, so that you can not change this");
+                    return new ServiceActionResult(false)
+                    {
+                        Detail = $"Order is already in {status}, so that you can not change this"
+                    };
                 }
-                if (s.CompareTo(status) > 0) throw new BusinessRuleException($"Order is already in {s}, so that you can not change back to {status}");
+                if (s.CompareTo(status) > 0)
+                {
+                    return new ServiceActionResult(false)
+                    {
+                        Detail = $"Order is already in {s}, so that you can not change back to {status}"
+                    };
+                }
                 bool isPayed = bool.Parse((await CheckOrderIsPayed(id)).Data.ToString());
                 if (status.Equals(OrderStatus.CANCEL))
                 {
                     if (!(s <= OrderStatus.CHECKING && isPayed == false))
-                    throw new BusinessRuleException($"Order is already in {s} or is payed. So that not Cancel");
+                    {
+                        return new ServiceActionResult(false)
+                        {
+                            Detail = $"Order is already in {s} or is payed. So that not Cancel"
+                        };
+                    }
                 }
 
                 if (status.Equals(OrderStatus.COMPLETE))
@@ -233,12 +261,37 @@ namespace BMS.BLL.Services
         {
             Expression<Func<Cart, bool>> filter = cart => (cart.Id == request.CartId);
             var cart = (await _unitOfWork.CartRepository.FindAsyncAsQueryable(filter))
-                            .Include(y => y.CartDetails)
+                            .Include(y => y.CartDetails).ThenInclude(x => x.Product)
                             .FirstOrDefault();
 
             if (cart == null)
             {
                 return new ServiceActionResult() { Detail = "Cart does not exist or is deleted" };
+            }
+            if (cart.CartDetails == null || !cart.CartDetails.Any())
+            {
+                return new ServiceActionResult() { Detail = "Cart is Empty. Please choose product and Add to Cart" };
+            } else
+            {
+                var serviceActionResult = new ServiceActionResult(false) { Detail = String.Empty };
+                var listCartDetail = cart.CartDetails.GroupBy(a => a.ProductId).Select(group => new
+                {
+                    Id = group.Key,
+                    Name = group.FirstOrDefault().Product.Name,
+                    Quantity = group.Sum(x => x.Quantity)
+                });
+                foreach (var item in listCartDetail)
+                {
+                    int inventory = await _productService.GetInventoryOfProductInDay(item.Id);
+                    if (item.Quantity > inventory)
+                    {
+                        serviceActionResult.Detail += $"The Inventory Of {item.Name} In Shop is had already {inventory} now. Please booking this product less than or equals {inventory} {Environment.NewLine} ";
+                    }
+                }
+                if (serviceActionResult.Detail != String.Empty)
+                {
+                    return serviceActionResult;
+                }
             }
 
             Order order = new Order

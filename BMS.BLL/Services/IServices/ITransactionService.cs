@@ -24,5 +24,8 @@ namespace BMS.BLL.Services.IServices
 
         Task<ServiceActionResult> AddTransaction(Guid orderId);
         Task<ServiceActionResult> UpdateTransaction(Guid transactionId, TransactionMethod transactionMethod = 0, TransactionStatus transactionStatus = 0);
+        Task<ServiceActionResult> GetTotalRevenue(TotalTRansactionRequest request);
+        Task<ServiceActionResult> GetTotalRevenueForShop(Guid shopId, TotalTRansactionRequest request);
+        Task<ServiceActionResult> GetTotalRevenueForUser(Guid userId, TotalTRansactionRequest request);
     }
 }
