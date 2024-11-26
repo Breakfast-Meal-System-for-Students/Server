@@ -271,7 +271,8 @@ namespace BMS.BLL.Services
             if (cart.CartDetails == null || !cart.CartDetails.Any())
             {
                 return new ServiceActionResult() { Detail = "Cart is Empty. Please choose product and Add to Cart" };
-            } else
+            } 
+            /*else
             {
                 var serviceActionResult = new ServiceActionResult(false) { Detail = String.Empty };
                 var listCartDetail = cart.CartDetails.GroupBy(a => a.ProductId).Select(group => new
@@ -282,7 +283,7 @@ namespace BMS.BLL.Services
                 });
                 foreach (var item in listCartDetail)
                 {
-                    int inventory = await _productService.GetInventoryOfProductInDay(item.Id);
+                    int inventory = await _productService.GetInventoryOfProductInDay(item.Id, request.OrderDate.GetValueOrDefault());
                     if (item.Quantity > inventory)
                     {
                         serviceActionResult.Detail += $"The Inventory Of {item.Name} In Shop is had already {inventory} now. Please booking this product less than or equals {inventory} {Environment.NewLine} ";
@@ -292,7 +293,7 @@ namespace BMS.BLL.Services
                 {
                     return serviceActionResult;
                 }
-            }
+            }*/
 
             Order order = new Order
             {

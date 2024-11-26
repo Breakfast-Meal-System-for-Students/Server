@@ -59,10 +59,10 @@ namespace BMS.BLL.Services
         {
             // Map request to Product entity
             var productEntity = _mapper.Map<Product>(request);
-            if (productEntity.Inventory.GetValueOrDefault() <= 0)
+            /*if (productEntity.Inventory.GetValueOrDefault() <= 0)
             {
                 productEntity.Inventory = 9999;
-            }
+            }*/
 
             ImageAIResponse temp = new ImageAIResponse();
             // Handle image upload and create Image entities
@@ -118,13 +118,13 @@ namespace BMS.BLL.Services
             product.Description = request.Description;
             product.Name = request.Name;
             product.LastUpdateDate = DateTime.UtcNow;
-            if(request.Inventory.GetValueOrDefault() <= 0)
+            /*if(request.Inventory.GetValueOrDefault() <= 0)
             {
                 product.Inventory = 9999;
             } else 
             {
                 product.Inventory = request.Inventory;
-            }
+            }*/
             
 
             // Handle image updates
@@ -206,14 +206,27 @@ namespace BMS.BLL.Services
             return new ServiceActionResult() { Data = paginationResult };
         }
 
-        public async Task<int> GetInventoryOfProductInDay(Guid productId)
+        public async Task<int> GetInventoryOfProductInDay(Guid productId, DateTime orderDate)
         {
             var product = await _unitOfWork.ProductRepository.FindAsync(productId);
-            var today = DateTime.Now.Date;
+            var today = orderDate.Date;
             var totalQuantity = (await _unitOfWork.OrderItemRepository.GetAllAsyncAsQueryable())
                 .Where(x => x.ProductId == productId && x.CreateDate.Date == today)
                 .Sum(x => x.Quantity);
             return product.Inventory.GetValueOrDefault() - totalQuantity;
+        }
+
+        public async Task<ServiceActionResult> ChangeOutOfStock(Guid productId)
+        {
+            var product = (await _unitOfWork.ProductRepository.GetAllAsyncAsQueryable())
+                          .Where(a => a.IsDeleted == false && a.Id == productId)
+                          .FirstOrDefault()?? throw new ArgumentNullException("Product does not exist or has been deleted");
+            product.isOutOfStock = product.isOutOfStock ? false : true;
+            return new ServiceActionResult(true)
+            {
+                Data = product.isOutOfStock,
+                Detail = "Change OutOfStock Successfully"
+            };
         }
     }
 }

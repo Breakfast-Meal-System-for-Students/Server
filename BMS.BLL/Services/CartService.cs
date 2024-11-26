@@ -49,7 +49,7 @@ namespace BMS.BLL.Services
                     Detail = "Product is not in This Shop"
                 };
             }
-            else
+            /*else
             {
 
                 inventory = await _productService.GetInventoryOfProductInDay(request.ProductId);
@@ -60,7 +60,7 @@ namespace BMS.BLL.Services
                         Detail = $"The Inventory Of This Product In Shop is had already {inventory} now. Please booking this product less than or equals {inventory}"
                     };
                 }
-            }
+            }*/
             Expression<Func<Cart, bool>> filter = cart => (cart.CustomerId == userId && cart.ShopId == shopId);
             var cart = (await _unitOfWork.CartRepository.GetAllAsyncAsQueryable()).Include(a => a.CartDetails).Where(filter);
             if (cart == null || cart.FirstOrDefault() == null)
@@ -77,14 +77,14 @@ namespace BMS.BLL.Services
                 await _unitOfWork.CartDetailRepository.AddAsync(cartDetails);
             } else
             {
-                int x = cart.FirstOrDefault().CartDetails.Where(a => a.ProductId == request.ProductId).Sum(x => x.Quantity);
+                /*int x = cart.FirstOrDefault().CartDetails.Where(a => a.ProductId == request.ProductId).Sum(x => x.Quantity);
                 if (request.Quantity > (inventory - x))
                 {
                     return new ServiceActionResult(false)
                     {
                         Detail = $"The Inventory Of This Product In Shop is had already {inventory} now and you added {x} to your Cart. Please booking this product less than or equals {inventory - x}"
                     };
-                }
+                }*/
                 request.CartId = cart.FirstOrDefault().Id;
                 CartDetail cartDetails = _mapper.Map<CartDetail>(request);
                 var cartDetailInDB = (await _unitOfWork.CartDetailRepository.GetAllAsyncAsQueryable()).Where(x => x.ProductId.Equals(cartDetails.ProductId) && x.CartId == cartDetails.CartId && x.Note == cartDetails.Note).FirstOrDefault();
@@ -133,7 +133,7 @@ namespace BMS.BLL.Services
                         Detail = "Product is not in This Shop"
                     };
                 }
-                else
+                /*else
                 {
                     var inventory = await _productService.GetInventoryOfProductInDay(request.ProductId);
                     if (request.Quantity > inventory)
@@ -152,7 +152,7 @@ namespace BMS.BLL.Services
                         };
                     }
 
-                }
+                }*/
                 request.CartId = cart.Id;
                 CartDetail cartDetail = _mapper.Map<CartDetail>(request);
                 

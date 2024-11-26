@@ -19,6 +19,7 @@ namespace BMS.Core.Domains.Entities
         public Shop Shop { get; set; } = null!;
         public double PrepareTime {  get; set; }
         public int? Inventory { get; set; }
+        public bool isOutOfStock { get; set; }
         public ICollection<Image>? Images { get; set; } = new List<Image>();
         public ICollection<OrderItem>? OrderItems { get; set; } = new List<OrderItem>();
 

@@ -20,6 +20,7 @@ namespace BMS.BLL.Services.IServices
         Task<ServiceActionResult> GetProduct(Guid id);
 
         Task<ServiceActionResult> GetAllProductByShopId(Guid id, ProductRequest queryParameters);
-        Task<int> GetInventoryOfProductInDay(Guid productId);
+        Task<int> GetInventoryOfProductInDay(Guid productId, DateTime orderDate);
+        Task<ServiceActionResult> ChangeOutOfStock(Guid productId);
     }
 }

@@ -3,6 +3,8 @@ using BMS.BLL.Models.Requests.Product;
 using BMS.BLL.Services;
 using BMS.BLL.Services.BaseServices;
 using BMS.BLL.Services.IServices;
+using BMS.Core.Domains.Constants;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace BMS.API.Controllers
@@ -52,22 +54,29 @@ namespace BMS.API.Controllers
                                async () => await _productService.UpdateProduct(Id, Product).ConfigureAwait(false)
                                           ).ConfigureAwait(false);
         }
+
         [HttpGet("{id}")]
-
-
         public async Task<IActionResult> GetProduct(Guid id)
         {
             return await ExecuteServiceLogic(
                 async () => await _productService.GetProduct(id).ConfigureAwait(false)
             ).ConfigureAwait(false);
         }
+        
         [HttpGet(("all-product-by-shop-id"))]
-
-
         public async Task<IActionResult> GetAllProductByShopid(Guid id, [FromQuery] ProductRequest pagingRequest)
         {
             return await ExecuteServiceLogic(
                 async () => await _productService.GetAllProductByShopId(id, pagingRequest).ConfigureAwait(false)
+            ).ConfigureAwait(false);
+        }
+
+        [HttpPut(("ChangeOutOfStock"))]
+        [Authorize(Roles = UserRoleConstants.SHOP)]
+        public async Task<IActionResult> ChangeOutOfStock([FromForm]Guid productId)
+        {
+            return await ExecuteServiceLogic(
+                async () => await _productService.ChangeOutOfStock(productId).ConfigureAwait(false)
             ).ConfigureAwait(false);
         }
     }
