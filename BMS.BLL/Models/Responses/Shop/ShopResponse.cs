@@ -21,6 +21,7 @@ namespace BMS.BLL.Models.Responses.Shop
 
         public double? lat { get; set; } 
         public double? lng { get; set; }
+        public DateTime ExpiredDate { get; set; }
         public ShopStatus Status { get; set; } = ShopStatus.PENDING;
         public Guid? UserId { get; set; }
         public bool IsDeleted { get; set; } = false;

@@ -44,7 +44,7 @@ namespace BMS.BLL.Services
         public async Task<ServiceActionResult> GetAllShop(ShopRequest queryParameters)
         {
 
-            IQueryable<Shop> ShopQueryable = (await _unitOfWork.ShopRepository.GetAllAsyncAsQueryable());
+            IQueryable<Shop> ShopQueryable = (await _unitOfWork.ShopRepository.GetAllAsyncAsQueryable()).Include(a => a.Package_Shop).ThenInclude(b => b.Package);
 
 
 
@@ -111,6 +111,26 @@ namespace BMS.BLL.Services
                     .ThenInclude(o => o.Transactions)
                     .Where(s => s.Orders.Any(o => o.CreateDate >= startDate && o.CreateDate <= endDate && o.Transactions.Any(t => t.Status == TransactionStatus.PAID && (t.Method == TransactionMethod.VnPay.ToString() || t.Method == TransactionMethod.PayOs.ToString()))))
                     .ToList();
+        }
+
+        public async Task<ServiceActionResult> GetAllShopForMobile(ShopRequest request)
+        {
+            IQueryable<Shop> ShopQueryable = (await _unitOfWork.ShopRepository.GetAllAsyncAsQueryable()).Include(a => a.Package_Shop).ThenInclude(b => b.Package)
+                                        .Where(x => x.Status == ShopStatus.ACCEPTED && (x.Package_Shop.Any()
+                                        ? x.Package_Shop.Max(x => x.Package != null ? x.CreateDate.AddDays(x.Package.Duration) : DateTime.MinValue)
+                                        : DateTime.MinValue) > DateTime.Now);
+
+            if (!string.IsNullOrEmpty(request.Search))
+            {
+                ShopQueryable = ShopQueryable.Where(m => m.Name.Contains(request.Search));
+            }
+
+            ShopQueryable = request.IsDesc ? ShopQueryable.OrderByDescending(a => a.CreateDate) : ShopQueryable.OrderBy(a => a.CreateDate);
+
+            var paginationResult = PaginationHelper
+            .BuildPaginatedResult<Shop, ShopResponse>(_mapper, ShopQueryable, request.PageSize, request.PageIndex);
+
+            return new ServiceActionResult() { Data = paginationResult };
         }
     }
 }

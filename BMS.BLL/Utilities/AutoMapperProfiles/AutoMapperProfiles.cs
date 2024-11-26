@@ -73,12 +73,19 @@ namespace BMS.BLL.Utilities.AutoMapperProfiles
                 #endregion
                 #region shop  
 
-                CreateMap<CreateShopApplicationRequest, Shop>();
+                CreateMap<CreateShopApplicationRequest, Shop>()
+                    .ForMember(dest => dest.PhoneNumber, opt => opt.MapFrom(src => src.Phone));
 
-                CreateMap<Shop, ShopApplicationResponse>();
+                CreateMap<Shop, ShopApplicationResponse>()
+                    .ForMember(dest => dest.Phone, opt => opt.MapFrom(src => src.PhoneNumber));
                 CreateMap<Shop, ShopRequest>();
                 CreateMap<Shop, ShopResponse>()
-                    .ForMember(dest => dest.Phone, opt => opt.MapFrom(src => src.PhoneNumber));
+                    .ForMember(dest => dest.Phone, opt => opt.MapFrom(src => src.PhoneNumber))
+                    .ForMember(dest => dest.ExpiredDate, opt => opt.MapFrom(src =>
+                        src.Package_Shop != null && src.Package_Shop.Any()
+                            ? src.Package_Shop.Max(x => x.Package != null ? x.CreateDate.AddDays(x.Package.Duration) : DateTime.MinValue)
+                            : DateTime.MinValue
+                        ));
 
                 #endregion
                 #region order

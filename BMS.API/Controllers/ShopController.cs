@@ -30,7 +30,6 @@ namespace BMS.API.Controllers
                                           ).ConfigureAwait(false);
         }
 
-
         [HttpGet]
         public async Task<IActionResult> GetAllShop([FromQuery] ShopRequest pagingRequest)
         {
@@ -38,6 +37,7 @@ namespace BMS.API.Controllers
                                async () => await _packageService.GetAllShop(pagingRequest).ConfigureAwait(false)
                                           ).ConfigureAwait(false);
         }
+
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateShop(Guid Id, [FromForm] UpdateShopRequest Shop)
         {
@@ -45,14 +45,21 @@ namespace BMS.API.Controllers
                                async () => await _packageService.UpdateShop(Id, Shop).ConfigureAwait(false)
                                           ).ConfigureAwait(false);
         }
+
         [HttpGet("{id}")]
-
-
         public async Task<IActionResult> GetShop(Guid id)
         {
             return await ExecuteServiceLogic(
                 async () => await _packageService.GetShop(id).ConfigureAwait(false)
             ).ConfigureAwait(false);
+        }
+
+        [HttpGet("GetAllShopForMobile")]
+        public async Task<IActionResult> GetAllShopForMobile([FromQuery] ShopRequest pagingRequest)
+        {
+            return await ExecuteServiceLogic(
+                               async () => await _packageService.GetAllShopForMobile(pagingRequest).ConfigureAwait(false)
+                                          ).ConfigureAwait(false);
         }
     }
 }
