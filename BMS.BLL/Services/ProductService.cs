@@ -46,6 +46,11 @@ namespace BMS.BLL.Services
                 ProductQueryable = ProductQueryable.Where(m => m.Description.Contains(queryParameters.Search));
             }
 
+            if (queryParameters.IsOutOfStock != null)
+            {
+                ProductQueryable = ProductQueryable.Where(m => m.isOutOfStock == queryParameters.IsOutOfStock);
+            }
+
             ProductQueryable = queryParameters.IsDesc ? ProductQueryable.OrderByDescending(a => a.CreateDate) : ProductQueryable.OrderBy(a => a.CreateDate);
 
             var paginationResult = PaginationHelper
@@ -194,6 +199,11 @@ namespace BMS.BLL.Services
             if (!string.IsNullOrEmpty(queryParameters.Search))
             {
                 ProductQueryable = ProductQueryable.Where(m => m.Description.Contains(queryParameters.Search));
+            }
+
+            if (queryParameters.IsOutOfStock != null)
+            {
+                ProductQueryable = ProductQueryable.Where(m => m.isOutOfStock == queryParameters.IsOutOfStock);
             }
 
             ProductQueryable = queryParameters.IsDesc ? ProductQueryable.OrderByDescending(a => a.CreateDate) : ProductQueryable.OrderBy(a => a.CreateDate);

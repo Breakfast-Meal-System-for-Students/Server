@@ -52,11 +52,15 @@ namespace BMS.BLL.Services
             if (user != null)
             {
                 var roles = await _userManager.GetRolesAsync(user);
-                bool isInShopRole = roles.Contains(UserRoleConstants.SHOP);
+                /*bool isInShopRole = roles.Contains(UserRoleConstants.SHOP);
                 if (isInShopRole)
                 {
                     throw new BusinessRuleException($"{applicationRequest.Email} is already used by a Shop in System");
-                }
+                }*/
+                return new ServiceActionResult(false)
+                {
+                    Detail = $"The Email {applicationRequest.Email} is already used in BMS System"
+                };
             }
             var shopApplication = _mapper.Map<Shop>(applicationRequest);
             // Analys lat and lng
