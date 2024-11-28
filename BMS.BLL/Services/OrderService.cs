@@ -38,17 +38,37 @@ namespace BMS.BLL.Services
         private readonly IHubContext<NotificationHub> _hubContext;
         private readonly RecommendationEngine _recommendationEngine;
         private readonly IProductService _productService;
-        public OrderService(IUnitOfWork unitOfWork, IMapper mapper, IQRCodeService qrCodeService, IHubContext<NotificationHub> hubContext, RecommendationEngine recommendationEngine, IProductService productService) : base(unitOfWork, mapper)
+        private readonly IAuthService _authService;
+        public OrderService(IUnitOfWork unitOfWork, IMapper mapper, IQRCodeService qrCodeService, IHubContext<NotificationHub> hubContext, RecommendationEngine recommendationEngine, IProductService productService, IAuthService authService) : base(unitOfWork, mapper)
         {
             _qrCodeService = qrCodeService;
             _hubContext = hubContext;
             _recommendationEngine = recommendationEngine;
             _productService = productService;
+            _authService = authService;
         }
 
-        public async Task<ServiceActionResult> ChangeOrderStatus(Guid id, OrderStatus status)
+        public async Task<ServiceActionResult> ChangeOrderStatus(Guid id, OrderStatus status, Guid userId)
         {
             var order = await _unitOfWork.OrderRepository.FindAsync(id);
+            if(order == null)
+            {
+                return new ServiceActionResult(false)
+                {
+                    Detail = "Order is not Exist"
+                };
+            }
+            List<string> rolesOfUser = (await _authService.GetRole(userId)).ToList();
+            if (rolesOfUser.Contains(UserRoleConstants.USER))
+            {
+                if (order.CustomerId != userId)
+                {
+                    return new ServiceActionResult(false)
+                    {
+                        Detail = "Order is not of User"
+                    };
+                }
+            }
             var canParsed = Enum.TryParse(order.Status, true, out OrderStatus s);
             if (canParsed)
             {
@@ -267,15 +287,31 @@ namespace BMS.BLL.Services
 
             if (cart == null)
             {
-                return new ServiceActionResult() { Detail = "Cart does not exist or is deleted" };
+                return new ServiceActionResult(false) { Detail = "Cart does not exist or is deleted" };
             }
             if (cart.CartDetails == null || !cart.CartDetails.Any())
             {
-                return new ServiceActionResult() { Detail = "Cart is Empty. Please choose product and Add to Cart" };
+                return new ServiceActionResult(false) { Detail = "Cart is Empty. Please choose product and Add to Cart" };
             } 
             else
             {
-                if
+                List<CartDetail> cartDetails = new List<CartDetail>();
+                foreach (var item in cart.CartDetails)
+                {
+                    if (item.Product.isOutOfStock)
+                    {
+                        cartDetails.Add(item);
+                    }
+                }
+                if (cartDetails.Any())
+                {
+                    await _unitOfWork.CartDetailRepository.DeleteRangeAsync(cartDetails);
+                    await _unitOfWork.CommitAsync();
+                    return new ServiceActionResult(false)
+                    {
+                        Detail = $"Some Products is out Of Stock. They are removed from your cart. Plese order again"
+                    };
+                }
             }
             /*else
             {
@@ -316,11 +352,11 @@ namespace BMS.BLL.Services
                 var coupon = await _unitOfWork.CouponRepository.FindAsync(request.VoucherId);
                 if (coupon == null || coupon.IsDeleted)
                 {
-                    return new ServiceActionResult() { Detail = "Coupon does not exist or is deleted" };
+                    return new ServiceActionResult(false) { Detail = "Coupon does not exist or is deleted" };
                 }
                 if (coupon.ShopId != order.ShopId)
                 {
-                    return new ServiceActionResult() { Detail = "Coupon is not used in this shop" };
+                    return new ServiceActionResult(false) { Detail = "Coupon is not used in this shop" };
                 }
                 if (coupon.StartDate >= order.CreateDate)
                 {

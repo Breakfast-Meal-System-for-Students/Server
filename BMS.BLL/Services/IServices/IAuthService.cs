@@ -16,5 +16,6 @@ namespace BMS.BLL.Services.IServices
 
         Task<ServiceActionResult> SendOTP(string email);
         Task<ServiceActionResult> CheckOTP(string email, string OTP);
+        Task<IList<string>> GetRole(Guid userId);
     }
 }

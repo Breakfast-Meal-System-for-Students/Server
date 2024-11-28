@@ -185,7 +185,13 @@ namespace BMS.BLL.Services
             };
         }
 
-
+        public async Task<IList<string>> GetRole(Guid userId)
+        {
+            var user = await _userManager.FindByIdAsync(userId.ToString());
+            if (user == null)
+                throw new UserNotFoundException($"Invalid user with email {userId}");
+            return await _userManager.GetRolesAsync(user);
+        }
 
         private string GenerateOTP(int length)
         {

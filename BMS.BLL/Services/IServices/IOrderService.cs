@@ -18,7 +18,7 @@ namespace BMS.BLL.Services.IServices
         Task<ServiceActionResult> GetOrderByID(Guid id);
         Task<ServiceActionResult> GetOrderByUser(Guid id, SearchOrderRequest request);
         Task<ServiceActionResult> GetOrderByShop(Guid id, SearchOrderRequest request);
-        Task<ServiceActionResult> ChangeOrderStatus(Guid id, OrderStatus status);
+        Task<ServiceActionResult> ChangeOrderStatus(Guid id, OrderStatus status, Guid userId);
         Task<ServiceActionResult> GetTotalOrder(TotalOrdersRequest request);
 
         Task<ServiceActionResult> CreateOrder(CreateOrderRequest request);

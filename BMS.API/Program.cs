@@ -77,18 +77,11 @@ app.UseStaticFiles(new StaticFileOptions
 });
 app.UseRouting();
 // Serve static files from .well-known with JSON content type
-app.UseEndpoints(endpoints =>
-{
-    endpoints.MapHub<NotificationHub>("/notificationHub");
-    endpoints.MapHub<CartHub>("/cartHub");
-    endpoints.MapHub<MyHub>("/myhub");
-    endpoints.MapHub<OrderHub>("/orderHub");
-});
 
-//app.MapHub<CartHub>("/cartHub");
-//app.MapHub<MyHub>("/myhub");
-//app.MapHub<NotificationHub>("/notificationHub");
-//app.MapHub<OrderHub>("/orderHub");
+app.MapHub<CartHub>("/cartHub");
+app.MapHub<MyHub>("/myhub");
+app.MapHub<NotificationHub>("/notificationHub");
+app.MapHub<OrderHub>("/orderHub");
 // Authentication and Authorization middleware should be placed here
 app.UseAuthentication();  // Enable authentication middleware
 app.UseAuthorization();   // Enable authorization middleware
