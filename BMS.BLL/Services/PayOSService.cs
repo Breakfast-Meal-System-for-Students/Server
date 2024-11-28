@@ -28,11 +28,12 @@ namespace BMS.BLL.Services
         private readonly UserClaims _user;
         private readonly PayOS _payOS;
         private readonly IHubContext<NotificationHub> _hubContext;
-        public PayOSService(PayOS payOS, IOptions<PayOSSettings> payOsSettings, IUserClaimsService userClaimsService, IUnitOfWork unitOfWork, IMapper mapper) : base(unitOfWork, mapper)
+        public PayOSService(PayOS payOS, IOptions<PayOSSettings> payOsSettings, IUserClaimsService userClaimsService, IUnitOfWork unitOfWork, IMapper mapper, IHubContext<NotificationHub> hubContext) : base(unitOfWork, mapper)
         {
             _payOS = payOS;
             _payOsSettings = payOsSettings.Value;
             _user = userClaimsService.GetUserClaims();
+            _hubContext = hubContext;
         }
 
         public async Task<ServiceActionResult> CreatePaymentLink(PayOsRequest request)
@@ -128,8 +129,8 @@ namespace BMS.BLL.Services
 
                 await _unitOfWork.CommitAsync();
 
-  
-
+                await _hubContext.Clients.User(notification.UserId.ToString()).SendAsync("ReceiveNotification", notification.Object);
+                await _hubContext.Clients.User(notification.ShopId.ToString()).SendAsync("ReceiveNotification", notification.Object);
 
                 return new ServiceActionResult(true)
                 {

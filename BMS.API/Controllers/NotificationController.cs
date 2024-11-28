@@ -81,7 +81,7 @@ namespace BMS.API.Controllers
             if (result.IsSuccess)
             {
                 var notification = (Notification)result.Data;
-                await _hubContext.Clients.User(notification.UserId.ToString()).SendAsync("Change Status Notification", notification.Object);
+                await _hubContext.Clients.User(notification.UserId.ToString()).SendAsync("ReceiveNotification", notification.Object);
             }
 
             return await ExecuteServiceLogic(() => Task.FromResult(result)).ConfigureAwait(false);

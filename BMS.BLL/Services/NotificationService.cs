@@ -104,7 +104,7 @@ namespace BMS.BLL.Services
                 notification.Object += orderItem.Product.PrepareTime != 0 ? $": {orderItem.Product.PrepareTime}" : "";
             }
             await _unitOfWork.NotificationRepository.AddAsync(notification);
-            await _hubContext.Clients.User(notification.UserId.ToString()).SendAsync($"Create Notification Automatically", notification.Object);
+            await _hubContext.Clients.User(notification.UserId.ToString()).SendAsync("ReceiveNotification", notification.Object);
             return new ServiceActionResult() { Data = notification };
         }
 

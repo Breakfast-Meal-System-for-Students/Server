@@ -130,7 +130,8 @@ namespace BMS.BLL.Services
                     notification.Destination = NotificationDestination.FORSTAFF;
                     await _unitOfWork.NotificationRepository.AddAsync(notification);
                 }
-                await _hubContext.Clients.User(notification.UserId.ToString()).SendAsync($"The Status Of Order is changed from {s} to {status}", notification.Object);
+                await _hubContext.Clients.User(order.CustomerId.ToString()).SendAsync("ReceiveNotification", notification.Object);
+                await _hubContext.Clients.User(order.ShopId.ToString()).SendAsync("ReceiveNotification", notification.Object);
                 
                 return new ServiceActionResult() { Detail = $" Change Order Status from {s} to {status} sucessfully" };
             } else
@@ -272,6 +273,10 @@ namespace BMS.BLL.Services
             {
                 return new ServiceActionResult() { Detail = "Cart is Empty. Please choose product and Add to Cart" };
             } 
+            else
+            {
+                if
+            }
             /*else
             {
                 var serviceActionResult = new ServiceActionResult(false) { Detail = String.Empty };
@@ -404,8 +409,8 @@ namespace BMS.BLL.Services
             await _unitOfWork.CartGroupUserRepository.DeleteRangeAsync(cartGroupUsers);
             await _unitOfWork.CartRepository.DeleteAsync(cart.Id);
 
-            await _hubContext.Clients.User(notification.UserId.ToString()).SendAsync("Create Order", notification.Object);
-
+            await _hubContext.Clients.User(notification.UserId.ToString()).SendAsync("ReceiveNotification", notification.Object);
+            await _hubContext.Clients.User(notification.ShopId.ToString()).SendAsync("ReceiveNotification", notification.Object);
             return new ServiceActionResult()
             {
                 Data = order.Id,

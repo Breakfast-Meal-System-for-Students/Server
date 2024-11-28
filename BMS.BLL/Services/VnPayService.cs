@@ -28,12 +28,13 @@ namespace BMS.BLL.Services
     public class VnPayService : BaseService, IVnPayService
     {
         private readonly VNPaySettings _vnPaySettings;
-
+        private readonly IHubContext<NotificationHub> _hubContext;
         public VnPayService(IOptions<VNPaySettings> vnPaySettings,
             IUnitOfWork unitOfWork,
-            IMapper mapper) : base(unitOfWork, mapper)
+            IMapper mapper, IHubContext<NotificationHub> hubContext) : base(unitOfWork, mapper)
         {
             _vnPaySettings = vnPaySettings.Value;
+            _hubContext = hubContext;
         }
 
         public async Task<ServiceActionResult> CreatePaymentUrl(HttpContext context, VnPayRequest vnPayRequest)
@@ -201,7 +202,8 @@ namespace BMS.BLL.Services
 
                     await _unitOfWork.CommitAsync();
 
-
+                    await _hubContext.Clients.User(notification.UserId.ToString()).SendAsync("ReceiveNotification", notification.Object);
+                    await _hubContext.Clients.User(notification.ShopId.ToString()).SendAsync("ReceiveNotification", notification.Object);
 
 
                     return new ServiceActionResult(true)
