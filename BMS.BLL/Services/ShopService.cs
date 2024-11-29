@@ -67,18 +67,51 @@ namespace BMS.BLL.Services
         public async Task<ServiceActionResult> UpdateShop(Guid id, UpdateShopRequest request)
         {
             var Shop = await _unitOfWork.ShopRepository.FindAsync(id) ?? throw new ArgumentNullException("Shop is not exist");
-            Shop.LastUpdateDate = DateTime.UtcNow;
+            Shop.LastUpdateDate = DateTime.Now;
+            Shop.Name = request.Name;
+            Shop.Description = request.Description;
+            Shop.Address = request.Address;
+            Shop.PhoneNumber = request.Phone;
+            if (request.Address != null)
+            {
+                Location location = await _googleMapService.GetCoordinatesFromAddress(request.Address);
+                if (location != null)
+                {
+                    Shop.lat = location.Lat;
+                    Shop.lng = location.Lng;
+                } else
+                {
+                    Shop.lat = null;
+                    Shop.lng = null;
+                }
+            }
+            if (request.Image != null)
+            {
+                var imageUrl = await _fileStorageService.UploadFileBlobAsync((Microsoft.AspNetCore.Http.IFormFile)request.Image);
+                Shop.Image = imageUrl;
+            }
+            await _unitOfWork.ShopRepository.UpdateAsync(Shop);
+            return new ServiceActionResult(true) { Data = Shop };
+        }
+
+        public async Task<ServiceActionResult> UpdateShopByStaff(Guid id, UpdateShopRequestByStaff request)
+        {
+            var Shop = await _unitOfWork.ShopRepository.FindAsync(id) ?? throw new ArgumentNullException("Shop is not exist");
+            Shop.LastUpdateDate = DateTime.Now;
             Shop.Name = request.Name;
             Shop.Description = request.Description;
             Shop.Address = request.Address;
             Shop.PhoneNumber = request.Phone;
             Location location = await _googleMapService.GetCoordinatesFromAddress(request.Address);
-            if (location == null)
+            if (location != null)
             {
-                throw new BusinessRuleException($"Address invalid");
+                Shop.lat = location.Lat;
+                Shop.lng = location.Lng;
+            }else
+            {
+                Shop.lat = request.lat;
+                Shop.lng = request.lng;
             }
-            Shop.lat = location.Lat;
-            Shop.lng = location.Lng;
             if (request.Image != null)
             {
                 var imageUrl = await _fileStorageService.UploadFileBlobAsync((Microsoft.AspNetCore.Http.IFormFile)request.Image);
@@ -131,6 +164,33 @@ namespace BMS.BLL.Services
             .BuildPaginatedResult<Shop, ShopResponse>(_mapper, ShopQueryable, request.PageSize, request.PageIndex);
 
             return new ServiceActionResult() { Data = paginationResult };
+        }
+
+        public async Task<ServiceActionResult> CountNewShop(TotalShopRequest request)
+        {
+            var shops = (await _unitOfWork.ShopRepository.GetAllAsyncAsQueryable());
+            if (request.Year != 0)
+            {
+                if (request.Month != 0)
+                {
+                    if (request.Day != 0)
+                    {
+                        shops = shops.Where(x => x.CreateDate.Year == request.Year && x.CreateDate.Month == request.Month && x.CreateDate.Day == request.Day);
+                    }
+                    else
+                    {
+                        shops = shops.Where(x => x.CreateDate.Year == request.Year && x.CreateDate.Month == request.Month);
+                    }
+                }
+                else
+                {
+                    shops = shops.Where(x => x.CreateDate.Year == request.Year);
+                }
+            }
+            return new ServiceActionResult()
+            {
+                Data = shops.Count()
+            };
         }
     }
 }

@@ -144,10 +144,16 @@ namespace BMS.BLL.Utilities.AutoMapperProfiles
                     .ForMember(dest => dest.Categorys, opt => opt.MapFrom(src => src.RegisterCategorys));
                 #endregion
                 #region cart
-                CreateMap<CartGroupUser, CartGroupUserResponse>();
+                CreateMap<CartGroupUser, CartGroupUserResponse>()
+                    /*.ForMember(dest => dest.FirstName, opt => opt.MapFrom(src => src.User.FirstName))
+                    .ForMember(dest => dest.LastName, opt => opt.MapFrom(src => src.User.LastName))
+                    .ForMember(dest => dest.Avatar, opt => opt.MapFrom(src => src.User.Avatar))*/;
                 CreateMap<CartDetail, CartDetailResponse>()
                     .ForMember(dest => dest.Images, opt => opt.MapFrom(src => src.Product!.Images))
-                    .ForMember(dest => dest.Name, opt => opt.MapFrom(src => src.Product!.Name));
+                    .ForMember(dest => dest.Name, opt => opt.MapFrom(src => src.Product!.Name))
+                    .ForMember(dest => dest.CartGroupUserId, opt => opt.MapFrom(src => src.CartGroupUserId))
+                    .ForMember(dest => dest.CartGroupUserImage, opt => opt.MapFrom(src => src.CartGroupUser.User.Avatar))
+                    .ForMember(dest => dest.CartGroupUserName, opt => opt.MapFrom(src => (src.CartGroupUser.User.FirstName + " " + src.CartGroupUser.User.LastName)));
                 CreateMap<Cart, CartResponse>()
                     .ForMember(dest => dest.CartDetails, opt => opt.MapFrom(src => src.CartDetails));
                 CreateMap<CartDetailRequest, CartDetail>();

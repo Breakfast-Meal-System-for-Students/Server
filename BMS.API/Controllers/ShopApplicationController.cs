@@ -53,7 +53,7 @@ namespace BMS.API.Controllers
         public async Task<IActionResult> ReviewedApplication([FromForm] ReviewShopApplicationRequest request)
         {
             return await ExecuteServiceLogic(
-                async () => await _shopApplicationService.ReviewApplication(request.Id, request.Status).ConfigureAwait(false)
+                async () => await _shopApplicationService.ReviewApplication(request.Id, request.Status, request.Message).ConfigureAwait(false)
             ).ConfigureAwait(false);
         }
     }

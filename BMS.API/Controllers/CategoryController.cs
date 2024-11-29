@@ -20,7 +20,7 @@ namespace BMS.API.Controllers
             _categoryService = categoryService;
 
             _registercategoryService = registerCategoryService;
-    
+
             _baseService = (BaseService)_categoryService;
         }
 
@@ -29,7 +29,7 @@ namespace BMS.API.Controllers
 
         public async Task<IActionResult> DeleteCategory(Guid id)
         {
-            
+
             return await ExecuteServiceLogic(
                                async () => await _categoryService.DeleteCategory(id).ConfigureAwait(false)
                                           ).ConfigureAwait(false);
@@ -47,6 +47,14 @@ namespace BMS.API.Controllers
         {
             return await ExecuteServiceLogic(
                                async () => await _categoryService.GetAllCategory(pagingRequest).ConfigureAwait(false)
+                                          ).ConfigureAwait(false);
+        }
+
+        [HttpGet("{id}")]
+        public async Task<IActionResult> GetCategoryById(Guid Id)
+        {
+            return await ExecuteServiceLogic(
+                               async () => await _categoryService.GetCategoryById(Id).ConfigureAwait(false)
                                           ).ConfigureAwait(false);
         }
         [HttpPut]

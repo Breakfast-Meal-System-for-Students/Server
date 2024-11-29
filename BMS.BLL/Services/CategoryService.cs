@@ -17,6 +17,7 @@ using System.Threading.Tasks;
 using BMS.BLL.Models.Requests.Category;
 using BMS.BLL.Models.Responses.Category;
 using static System.Runtime.InteropServices.JavaScript.JSType;
+using Azure.Core;
 
 namespace BMS.BLL.Services
 {
@@ -35,14 +36,11 @@ namespace BMS.BLL.Services
 
         public async Task<ServiceActionResult> GetAllCategory(CategoryRequest queryParameters)
         {
-
-            IQueryable<Category> categoryQueryable = (await _unitOfWork.CategoryRepositoy.GetAllAsyncAsQueryable()).Where(a=> a.IsDeleted==false);
-
-
+            IQueryable<Category> categoryQueryable = (await _unitOfWork.CategoryRepositoy.GetAllAsyncAsQueryable()).Where(a=> a.IsDeleted == false);
 
             if (!string.IsNullOrEmpty(queryParameters.Search))
             {
-                categoryQueryable = categoryQueryable.Where(m => m.Description.Contains(queryParameters.Search));
+                categoryQueryable = categoryQueryable.Where(m => m.Name.Contains(queryParameters.Search));
             }
 
             categoryQueryable = queryParameters.IsDesc ? categoryQueryable.OrderByDescending(a => a.CreateDate) : categoryQueryable.OrderBy(a => a.CreateDate);
@@ -50,14 +48,11 @@ namespace BMS.BLL.Services
             var paginationResult = PaginationHelper
             .BuildPaginatedResult<Category, CategoryResponse>(_mapper, categoryQueryable, queryParameters.PageSize, queryParameters.PageIndex);
 
-
-
             return new ServiceActionResult() { Data = paginationResult };
         }
+
         public async Task<ServiceActionResult> AddCategory(CreateCategoryRequest request)
         {
-        
-            
             var categoryEntity = _mapper.Map<Category>(request);
             if (request.Image != null)
             {
@@ -73,8 +68,6 @@ namespace BMS.BLL.Services
 
         public async Task<ServiceActionResult> UpdateCategory(Guid id, UpdateCategoryRequest request)
         {
-
-           
             var category = await _unitOfWork.CategoryRepositoy.FindAsync(id) ?? throw new ArgumentNullException("Category is not exist");
             category.Description = request.Description;
             if (request.Image != null)
@@ -82,7 +75,6 @@ namespace BMS.BLL.Services
                 var imageUrl = await _fileStorageService.UploadFileBlobAsync(request.Image);
                 category.Image = imageUrl;
             }
-          
             category.LastUpdateDate = DateTime.UtcNow;
             category.Name = request.Name;
             await _unitOfWork.CommitAsync();
@@ -90,13 +82,27 @@ namespace BMS.BLL.Services
             return new ServiceActionResult(true) { Data = category };
         }
 
-
-
         public async Task<ServiceActionResult> DeleteCategory(Guid id)
         {
             await _unitOfWork.CategoryRepositoy.SoftDeleteByIdAsync(id);
             return new ServiceActionResult();
         }
 
+        public async Task<ServiceActionResult> GetCategoryById(Guid categoryId)
+        {
+            var category = (await _unitOfWork.CategoryRepositoy.GetAllAsyncAsQueryable()).Where(a => a.Id == categoryId);
+            if (category == null)
+            {
+                return new ServiceActionResult(false)
+                {
+                    Detail = "The Category is not existed."
+                };
+            }
+            var categoryResponse = _mapper.Map<CategoryResponse>(category);
+            return new ServiceActionResult(true)
+            {
+                Data = categoryResponse
+            };
+        }
     }
 }

@@ -14,6 +14,6 @@ namespace BMS.BLL.Services.IServices
         Task<ServiceActionResult> CreateShopApplication(CreateShopApplicationRequest applicationRequest);
         Task<ServiceActionResult> GetAllApplications(ShopApplicationRequest request);
         Task<ServiceActionResult> GetApplication(Guid id);
-        Task<ServiceActionResult> ReviewApplication(Guid id, string status);
+        Task<ServiceActionResult> ReviewApplication(Guid id, string status, string message);
     }
 }

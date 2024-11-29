@@ -15,7 +15,7 @@ namespace BMS.BLL.Services.IServices
     {
         Task<ServiceActionResult> GetAllCategory(CategoryRequest queryParameters);
         Task<ServiceActionResult> AddCategory(CreateCategoryRequest request);
-
+        Task<ServiceActionResult> GetCategoryById(Guid categoryId);
         Task<ServiceActionResult> UpdateCategory(Guid id, UpdateCategoryRequest request);
         Task<ServiceActionResult> DeleteCategory(Guid id);
 

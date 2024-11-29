@@ -260,7 +260,8 @@ namespace BMS.BLL.Services
 
         public async Task<ServiceActionResult> GetAllCartItemInCart(Guid cartId, PagingRequest request)
         {
-            var cartDetails = (await _unitOfWork.CartDetailRepository.GetAllAsyncAsQueryable()).Where(x => x.CartId == cartId).Include(y => y.Product).ThenInclude(z => z.Images);
+            var cartDetails = (await _unitOfWork.CartDetailRepository.GetAllAsyncAsQueryable()).Where(x => x.CartId == cartId).Include(y => y.Product).ThenInclude(z => z.Images)
+                                                                                                                            .Include(a => a.CartGroupUser).ThenInclude(a => a.User);
             var paginationResult = PaginationHelper
             .BuildPaginatedResult<CartDetail, CartDetailResponse>(_mapper, cartDetails, request.PageSize, request.PageIndex);
 
@@ -269,7 +270,8 @@ namespace BMS.BLL.Services
 
         public async Task<ServiceActionResult> GetCartByID(Guid cartId)
         {
-            var cart = (await _unitOfWork.CartRepository.GetAllAsyncAsQueryable()).Where(x => x.Id == cartId).Include(y => y.CartDetails).ThenInclude(a => a.Product).Include(z => z.CartGroupUsers).FirstOrDefault();
+            var cart = (await _unitOfWork.CartRepository.GetAllAsyncAsQueryable()).Where(x => x.Id == cartId).Include(y => y.CartDetails).ThenInclude(a => a.Product)
+                                                                                          .Include(y => y.CartDetails).Include(z => z.CartGroupUsers).ThenInclude(a => a.User).FirstOrDefault();
             if (cart == null)
             {
                 return new ServiceActionResult(false, "Cart is not exits or deleted");
@@ -285,7 +287,8 @@ namespace BMS.BLL.Services
 
         public async Task<ServiceActionResult> GetCartDetail(Guid cartDetailId)
         {
-            var cartDetail = (await _unitOfWork.CartDetailRepository.GetAllAsyncAsQueryable()).Where(x => x.Id == cartDetailId).Include(y => y.Product).ThenInclude(z => z.Images).FirstOrDefault();
+            var cartDetail = (await _unitOfWork.CartDetailRepository.GetAllAsyncAsQueryable()).Where(x => x.Id == cartDetailId).Include(y => y.Product).ThenInclude(z => z.Images)
+                                                                                                            .Include(a => a.CartGroupUser).ThenInclude(a => a.User).FirstOrDefault();
 
             return new ServiceActionResult(true) { Data = cartDetail };
         }
@@ -293,7 +296,8 @@ namespace BMS.BLL.Services
         public async Task<ServiceActionResult> GetCartInShopForUser(Guid userId, Guid shopId)
         {
             Expression<Func<Cart, bool>> filter = cart => (cart.CustomerId == userId && cart.ShopId == shopId);
-            var cart = (await _unitOfWork.CartRepository.FindAsyncAsQueryable(filter)).Include(x => x.CartDetails).ThenInclude(y => y.Product).ThenInclude(z => z.Images).FirstOrDefault();
+            var cart = (await _unitOfWork.CartRepository.FindAsyncAsQueryable(filter)).Include(x => x.CartDetails).ThenInclude(y => y.Product).ThenInclude(z => z.Images)
+                                                                                       .Include(x => x.CartDetails).ThenInclude(y => y.CartGroupUser).ThenInclude(a => a.User).FirstOrDefault();
             return new ServiceActionResult(true)
             {
                 Data = _mapper.Map<CartResponse>(cart)

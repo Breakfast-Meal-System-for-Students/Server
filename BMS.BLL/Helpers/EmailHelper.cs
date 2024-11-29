@@ -69,7 +69,7 @@ namespace BMS.BLL.Helpers
             return emailBody;
         }
 
-        public static string GetRejectedEmailBody(string userName, string companyName)
+        public static string GetRejectedEmailBody(string userName, string companyName, string message)
         {
             return $@"Dear {userName},<br>
 
@@ -77,7 +77,7 @@ namespace BMS.BLL.Helpers
 
                         After careful consideration, we regret to inform you that we have decided not to move forward with your application. <br>
 
-                        While your qualifications are impressive, we have selected another candidate whose skills and experience align more closely with our current needs. <br>                        
+                        The reason is : {message} <br>                        
 
                         Thank you once again for considering {companyName}. We value your interest and hope you find success in your career endeavors.<br>
 

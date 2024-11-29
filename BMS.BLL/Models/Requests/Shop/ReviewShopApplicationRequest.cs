@@ -12,5 +12,6 @@ namespace BMS.BLL.Models.Requests.Shop
         [Required]
         public Guid Id {  get; set; }
         public string Status { get; set; }
+        public string Message { get; set; }
     }
 }

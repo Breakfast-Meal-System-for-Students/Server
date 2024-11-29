@@ -68,15 +68,12 @@ namespace BMS.BLL.Services
             {
                 
                 Models.Responses.Map.Location location = await _googleMapService.GetCoordinatesFromAddress(shopApplication.Address);
-                if ( location==null)
+                if (location != null)
                 {
-                    return new ServiceActionResult(false)
-                    {
-                        Detail = "Address invalid"
-                    };
+                    shopApplication.lat = location.Lat;
+                    shopApplication.lng = location.Lng;
                 }
-                shopApplication.lat = location.Lat;
-                shopApplication.lng = location.Lng;
+                
                 if(applicationRequest.Image != null)
                 {
                     var imageUrl = await _fileStorageService.UploadFileBlobAsync(applicationRequest.Image);
@@ -126,7 +123,7 @@ namespace BMS.BLL.Services
             return new ServiceActionResult(true) { Data = returnApplication };
         }
 
-        public async Task<ServiceActionResult> ReviewApplication(Guid id, string status)
+        public async Task<ServiceActionResult> ReviewApplication(Guid id, string status, string message)
         {
             var application = await _unitOfWork.ShopRepository.FindAsync(id) ?? throw new ArgumentNullException("Application is not exist");
 
@@ -151,7 +148,7 @@ namespace BMS.BLL.Services
             {
                 application.Status = ShopStatus.DENIED;
                 await _unitOfWork.CommitAsync();
-                await _emailService.SendEmailAsync(application.Email, "YOU HAVE NEW INFORMATION FROM BMS", EmailHelper.GetRejectedEmailBody(application.Name, "BMS"), true);
+                await _emailService.SendEmailAsync(application.Email, "YOU HAVE NEW INFORMATION FROM BMS", EmailHelper.GetRejectedEmailBody(application.Name, "BMS", message), true);
             }
             else
             {
@@ -160,7 +157,7 @@ namespace BMS.BLL.Services
 
             return new ServiceActionResult(true)
             {
-                Detail = "Register Successfully, Please check Your Email"
+                Detail = "Successfully, Please The Email is sended to Shop"
             };
         }
 
