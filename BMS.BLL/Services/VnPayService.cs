@@ -182,13 +182,14 @@ namespace BMS.BLL.Services
                     };
 
                     await _unitOfWork.TransactionRepository.AddAsync(transaction);
+                    await _unitOfWork.CommitAsync();
                     List<Notification> notifications = new List<Notification>();
                     Notification notification = new Notification
                     {
                         UserId = order.CustomerId,
                         OrderId = order.Id,
                         ShopId = order.ShopId,
-                        Object = $"Pay Order ID ${order.Id} sucessfully",
+                        Object = $"Payment Received! The customer has successfully paid for their order.",
                         Status = NotificationStatus.UnRead,
                         Title = NotificationTitle.PAYMENT_ORDER,
                         Destination = NotificationDestination.FORUSER
@@ -199,7 +200,7 @@ namespace BMS.BLL.Services
                         UserId = order.CustomerId,
                         OrderId = order.Id,
                         ShopId = order.ShopId,
-                        Object = $"Pay Order ID ${order.Id} sucessfully",
+                        Object = $"Payment Received! The customer has successfully paid for their order.",
                         Status = NotificationStatus.UnRead,
                         Title = NotificationTitle.PAYMENT_ORDER,
                         Destination = NotificationDestination.FORSHOP
@@ -210,7 +211,7 @@ namespace BMS.BLL.Services
                         UserId = order.CustomerId,
                         OrderId = order.Id,
                         ShopId = order.ShopId,
-                        Object = $"Pay Order ID ${order.Id} sucessfully",
+                        Object = $"Payment Received! The customer has successfully paid for their order.",
                         Status = NotificationStatus.UnRead,
                         Title = NotificationTitle.PAYMENT_ORDER,
                         Destination = NotificationDestination.FORSTAFF
@@ -220,8 +221,8 @@ namespace BMS.BLL.Services
 
                     await _unitOfWork.CommitAsync();
 
-                    await _hubContext.Clients.User(notification.UserId.ToString()).SendAsync("ReceiveNotification", notification.Object);
-                    await _hubContext.Clients.User(notification.ShopId.ToString()).SendAsync("ReceiveNotification", notification.Object);
+                    /*await _hubContext.Clients.User(notification.UserId.ToString()).SendAsync("ReceiveNotification", notification.Object);
+                    await _hubContext.Clients.User(notification.ShopId.ToString()).SendAsync("ReceiveNotification", notification.Object);*/
 
 
                     return new ServiceActionResult(true)

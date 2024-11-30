@@ -130,13 +130,14 @@ namespace BMS.BLL.Services
                 order.Status = status.ToString();
                 order.LastUpdateDate = DateTime.Now;
                 await _unitOfWork.OrderRepository.UpdateAsync(order);
+                await _unitOfWork.CommitAsync();
                 List<Notification> notifications = new List<Notification>();
                 Notification notification = new Notification
                 {
                     UserId = order.CustomerId,
                     OrderId = order.Id,
                     ShopId = order.ShopId,
-                    Object = $"Change Status Order From {s} to {status} sucessfully",
+                    Object = $"Order Update: The status of your order has been changed from {s} to {status}",
                     Status = NotificationStatus.UnRead,
                     Title = GetTitleNotification(status),
                     Destination = NotificationDestination.FORUSER
@@ -148,7 +149,7 @@ namespace BMS.BLL.Services
                     UserId = order.CustomerId,
                     OrderId = order.Id,
                     ShopId = order.ShopId,
-                    Object = $"Change Status Order From {s} to {status} sucessfully",
+                    Object = $"Order Update: The status of your order has been changed from {s} to {status}",
                     Status = NotificationStatus.UnRead,
                     Title = GetTitleNotification(status),
                     Destination = NotificationDestination.FORSHOP
@@ -162,7 +163,7 @@ namespace BMS.BLL.Services
                         UserId = order.CustomerId,
                         OrderId = order.Id,
                         ShopId = order.ShopId,
-                        Object = $"Change Status Order From {s} to {status} sucessfully",
+                        Object = $"Order Update: The status of your order has been changed from {s} to {status}",
                         Status = NotificationStatus.UnRead,
                         Title = GetTitleNotification(status),
                         Destination = NotificationDestination.FORSTAFF
@@ -170,9 +171,9 @@ namespace BMS.BLL.Services
                     notifications.Add(notificatio2);
                 }
                 await _unitOfWork.NotificationRepository.AddRangeAsync(notifications);
-                await _hubContext.Clients.User(order.CustomerId.ToString()).SendAsync("ReceiveNotification", notification.Object);
-                await _hubContext.Clients.User(order.ShopId.ToString()).SendAsync("ReceiveNotification", notification.Object);
-                
+                //await _hubContext.Clients.User(order.CustomerId.ToString()).SendAsync("ReceiveNotification", notification.Object);
+                //await _hubContext.Clients.User(order.ShopId.ToString()).SendAsync("ReceiveNotification", notification.Object);
+                await _unitOfWork.CommitAsync();
                 return new ServiceActionResult() { Detail = $" Change Order Status from {s} to {status} sucessfully" };
             } else
             {
@@ -441,13 +442,20 @@ namespace BMS.BLL.Services
                 };
                 await _unitOfWork.CouponUsageRepository.AddAsync(couponUsage);
             }
+            
+            await _unitOfWork.CartDetailRepository.DeleteRangeAsync(cart.CartDetails);
+            var cartGroupUsers = (await _unitOfWork.CartGroupUserRepository.GetAllAsyncAsQueryable()).Where(x => x.CartId == cart.Id).AsEnumerable();
+            await _unitOfWork.CartGroupUserRepository.DeleteRangeAsync(cartGroupUsers);
+            await _unitOfWork.CartRepository.DeleteAsync(cart.Id);
+
+            await _unitOfWork.CommitAsync();
             List<Notification> notifications = new List<Notification>();
             Notification notification = new Notification
             {
                 UserId = order.CustomerId,
                 OrderId = order.Id,
                 ShopId = order.ShopId,
-                Object = "Create Order",
+                Object = "New Order Created! A customer has placed an order.",
                 Status = NotificationStatus.UnRead,
                 Title = NotificationTitle.BOOKING_ORDER,
                 Destination = NotificationDestination.FORUSER
@@ -458,7 +466,7 @@ namespace BMS.BLL.Services
                 UserId = order.CustomerId,
                 OrderId = order.Id,
                 ShopId = order.ShopId,
-                Object = "Create Order",
+                Object = "New Order Created! A customer has placed an order.",
                 Status = NotificationStatus.UnRead,
                 Title = NotificationTitle.BOOKING_ORDER,
                 Destination = NotificationDestination.FORSHOP
@@ -469,20 +477,16 @@ namespace BMS.BLL.Services
                 UserId = order.CustomerId,
                 OrderId = order.Id,
                 ShopId = order.ShopId,
-                Object = "Create Order",
+                Object = "New Order Created! A customer has placed an order.",
                 Status = NotificationStatus.UnRead,
                 Title = NotificationTitle.BOOKING_ORDER,
                 Destination = NotificationDestination.FORSTAFF
             };
             notifications.Add(notification2);
             await _unitOfWork.NotificationRepository.AddRangeAsync(notifications);
-            await _unitOfWork.CartDetailRepository.DeleteRangeAsync(cart.CartDetails);
-            var cartGroupUsers = (await _unitOfWork.CartGroupUserRepository.GetAllAsyncAsQueryable()).Where(x => x.CartId == cart.Id).AsEnumerable();
-            await _unitOfWork.CartGroupUserRepository.DeleteRangeAsync(cartGroupUsers);
-            await _unitOfWork.CartRepository.DeleteAsync(cart.Id);
-
-            await _hubContext.Clients.User(notification.UserId.ToString()).SendAsync("ReceiveNotification", notification.Object);
-            await _hubContext.Clients.User(notification.ShopId.ToString()).SendAsync("ReceiveNotification", notification.Object);
+            await _unitOfWork.CommitAsync();
+            /*await _hubContext.Clients.User(notification.UserId.ToString()).SendAsync("ReceiveNotification", notification.Object);
+            await _hubContext.Clients.User(notification.ShopId.ToString()).SendAsync("ReceiveNotification", notification.Object);*/
             return new ServiceActionResult()
             {
                 Data = order.Id,
