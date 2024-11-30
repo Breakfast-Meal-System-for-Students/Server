@@ -20,12 +20,12 @@ namespace BMS.API.Controllers
             _productAIDetectService = productAIDetectService;
         }
 
-        [HttpPost("describe")]
-        public async Task<IActionResult> DescribeImage( IFormFile image)
+        [HttpPost("DetectImagewithProductName")]
+        public async Task<IActionResult> DescribeImage( IFormFile image , string productName)
         {
             try
             {
-                var result = await _productAIDetectService.PolicyImageAsync(image);
+                var result = await _productAIDetectService.DetectImageAsync(image, productName);
                 return Ok(result);
             }
             catch (ArgumentException ex)
@@ -37,5 +37,6 @@ namespace BMS.API.Controllers
                 return StatusCode(500, $"Internal server error: {ex.Message}");
             }
         }
+
     }
 }

@@ -21,7 +21,7 @@ namespace BMS.BLL.Services
             _httpClientFactory = httpClientFactory;
             _configuration = configuration;
         }
-
+        // Core Detect 
         public async Task<string> DescribeImageAsync(IFormFile image, string des)
         {
             if (image == null || image.Length == 0)
@@ -52,19 +52,25 @@ namespace BMS.BLL.Services
                         response_mime_type = "application/json"
                     },
                     contents = new[]
+        {
+        new
+        {
+            parts = new object[] // Khai báo kiểu rõ ràng cho mảng
+            {
+                new { text = des },
+                new
+                {
+                    inline_data = new
                     {
-                        new
-                        {
-                            parts = new[]
-                            {
-                                new
-                                {
-                                    text = $"image: {base64Image}" +$"{des}"
-                                }
-                            }
-                        }
+                        mime_type = "image/png",
+                        data = base64Image
                     }
+                }
+            }
+        }
+    }
                 };
+
                 var jsonContent = JsonSerializer.Serialize(requestBody);
 
                 // Tạo HTTP client và gửi request
@@ -100,9 +106,10 @@ namespace BMS.BLL.Services
             {
                 throw new Exception($"Error processing image: {ex.Message}", ex);
             }
+
         }
 
-
+        // Check Validate vilates policies
         public async Task<string> PolicyImageAsync(IFormFile image)
         {
             if (image == null || image.Length == 0)
@@ -111,7 +118,7 @@ namespace BMS.BLL.Services
             try
             {
 
-                string text = "If the image violates policies regarding nudity, violence, or political content and  the image is not related to the topic of food and beverages, return result= 1. If the image is valid, return result= 0. Use the following format exactly ,Loại bỏ Markdown ```json: {{\"result\": \"1 or 0\", \"reason\": \"this is the reason\"}}. For example: {{\"result\": \"1\", \"reason\": \"The image contains explicit content\"}}.";
+                string text = "If the image violates policies regarding nudity, violence, or political content and  the image is not related to the topic of food and beverages, return result= 0. If the image is valid, return result= 1. Use the following format exactly ,Loại bỏ Markdown ```json: {{\"result\": \"1 or 0\", \"reason\": \"this is the reason\"}}. For example: {{\"result\": \"1\", \"reason\": \"The image contains explicit content\"}}.";
                 string result = await DescribeImageAsync(image, text);
 
                 return result;
@@ -121,7 +128,7 @@ namespace BMS.BLL.Services
                 throw new Exception($"Error processing image: {ex.Message}", ex);
             }
         }
-
+        // Detect match Image with name
         public async Task<string> DetectImageAsync(IFormFile image, string name)
         {
             if (image == null || image.Length == 0)
@@ -130,7 +137,7 @@ namespace BMS.BLL.Services
             try
             {
 
-                string text = "If the image is related to the topic of food and beverages, check if it aligns with the name " + name + " If have return result= 0. If it does not match, return result= 1. Use the following format exactly ,Loại bỏ Markdown ```json: {{\"result\": \"1 or 0\", \"reason\": \"this is the reason\"}}. For example: {{\"result\": \"1\", \"reason\": \"The image does not match the name , or it is not related to food and beverages\"}}.";
+                string text = "If the image is related to the topic of food and beverages, check if it aligns with the name " + name + " If have return result= 1. If it does not match, return result= 0. Use the following format exactly ,Loại bỏ Markdown ```json: {{\"result\": \"1 or 0\", \"reason\": \"this is the reason\"}}. For example: {{\"result\": \"1\", \"reason\": \"The image does not match the name , or it is not related to food and beverages\"}}.";
                 string result = await DescribeImageAsync(image, text);
 
                 return result;
@@ -140,6 +147,8 @@ namespace BMS.BLL.Services
                 throw new Exception($"Error processing image: {ex.Message}", ex);
             }
         }
+
+        //Detect match Image with Name (convert to Json)
         public async Task<ImageAIResponse> DetectImageProductAsync(IFormFile image, string name)
         {
             if (image == null || image.Length == 0)
@@ -148,7 +157,7 @@ namespace BMS.BLL.Services
             try
             {
 
-                string content = await DescribeImageAsync(image, name);
+                string content = await DetectImageAsync(image, name);
                 ImageAIResponse result =  GetResultAndReasonFromJson(content);
                 return result;
             }
@@ -157,6 +166,8 @@ namespace BMS.BLL.Services
                 throw new Exception($"Error processing image: {ex.Message}", ex);
             }
         }
+
+        //Convert Result to Json
         public ImageAIResponse GetResultAndReasonFromJson(string jsonString)
         {
             try

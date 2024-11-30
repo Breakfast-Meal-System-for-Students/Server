@@ -77,18 +77,19 @@ namespace BMS.BLL.Services
                 {
                   
                      var imageUrl = await _fileStorageService.UploadFileBlobAsync(imageFile);
-                    //temp = await _productAIDetectService.DetectImageProductAsync(imageFile, productEntity.Name);
-                    //// Upload image to file storage (assuming the request.Images is a list of IFormFile)
-                    //if (temp != null && temp.Result.Equals("1"))
-                    //{
-                    //    return new ServiceActionResult(false)
-                    //    {
-                    //        Detail = temp.Reason ,
-                    //        IsSuccess = false,
-                            
-                    //    };
-                    //}
-                    // Create Image entity and associate with the Product
+                    /////
+                    temp = await _productAIDetectService.DetectImageProductAsync(imageFile, productEntity.Name);
+                    if (temp != null && temp.Result.Equals("0"))
+                    {
+                        return new ServiceActionResult(false)
+                        {
+                            Detail = temp.Reason,
+                            IsSuccess = false,
+
+                        };
+                    }
+                    ////
+                    //Create Image entity and associate with the Product
                     var imageEntity = new Image
                     {
                         Url = imageUrl,
