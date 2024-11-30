@@ -54,9 +54,10 @@ namespace BMS.BLL.Services
             foreach (var notification in notifications)
             {
                 notification.IsDeleted = true;
-                notification.DeletedDate = DateTime.UtcNow;
+                notification.DeletedDate = DateTime.Now;
             }
-            return new ServiceActionResult() { Detail = "Clear Readed Notification successfully" };
+            await _unitOfWork.CommitAsync();
+            return new ServiceActionResult() { Detail = "Clear Notification successfully" };
         }
 
         public async Task<ServiceActionResult> ClearNotificationForUser(ClearNotificationRequest request)
@@ -66,9 +67,10 @@ namespace BMS.BLL.Services
             foreach(var notification in notifications)
             {
                 notification.IsDeleted = true;
-                notification.DeletedDate = DateTime.UtcNow;
+                notification.DeletedDate = DateTime.Now;
             }
-            return new ServiceActionResult() { Detail = "Clear Readed Notification successfully" };
+            await _unitOfWork.CommitAsync();
+            return new ServiceActionResult() { Detail = "Clear Notification successfully" };
         }
 
         public async Task<ServiceActionResult> CountNotificationForShop(Guid shopId)
@@ -192,6 +194,32 @@ namespace BMS.BLL.Services
         public async Task SaveChange()
         {
             await _unitOfWork.CommitAsync();
+        }
+
+        public async Task<ServiceActionResult> ReadAllNotificationForUser(Guid userId)
+        {
+            var notifications = (await _unitOfWork.NotificationRepository.GetAllAsyncAsQueryable())
+                    .Where(x => x.UserId == userId && x.Destination == NotificationDestination.FORUSER).ToList();
+            foreach (var notification in notifications)
+            {
+                notification.Status = NotificationStatus.Readed;
+                notification.LastUpdateDate = DateTime.Now;
+            }
+            await _unitOfWork.CommitAsync();
+            return new ServiceActionResult() { Detail = "Read All Notification successfully" };
+        }
+
+        public async Task<ServiceActionResult> ReadAllNotificationForShop(Guid shopId)
+        {
+            var notifications = (await _unitOfWork.NotificationRepository.GetAllAsyncAsQueryable())
+                    .Where(x => x.ShopId == shopId && x.Destination == NotificationDestination.FORSHOP).ToList();
+            foreach (var notification in notifications)
+            {
+                notification.Status = NotificationStatus.Readed;
+                notification.LastUpdateDate = DateTime.Now;
+            }
+            await _unitOfWork.CommitAsync();
+            return new ServiceActionResult() { Detail = "Read All Notification successfully" };
         }
     }
 }

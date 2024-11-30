@@ -19,5 +19,6 @@ namespace BMS.BLL.Models.Responses.Notification
         public Guid ShopId { get; set; }
         public string ShopName { get; set; } = null!;
         public string? ShopImage { get; set; } = null!;
+        public DateTime CreateDate { get; set; }
     }
 }

@@ -19,5 +19,6 @@ namespace BMS.BLL.Models.Responses.Notification
         public string? Avatar { get; set; }
         public Guid OrderId { get; set; }
         public Guid ShopId { get; set; }
+        public DateTime CreateDate { get; set; }
     }
 }
