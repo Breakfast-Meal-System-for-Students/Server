@@ -34,15 +34,21 @@ namespace BMS.BLL.Services
         public async Task<ServiceActionResult> ChangeStatusNotification(Guid userId, Guid notificationId)
         {
             var notification = await _unitOfWork.NotificationRepository.FindAsync(notificationId);
-            if(notification == null) { throw new BusinessRuleException("Invalid Notification"); }
-            if(notification.UserId != userId)
+            if(notification == null) 
+            {
+                return new ServiceActionResult(false)
+                {
+                    Detail = "Invalid Notification"
+                };
+            }
+            /*if(notification.UserId != userId)
             {
                 throw new BusinessRuleException("Invalid userId");
-            }
+            }*/
             notification.Status = NotificationStatus.Readed;
             return new ServiceActionResult() 
             {
-                Data = notification, 
+                Data = notification,
                 Detail = "Notification is Readed"
             };
         }

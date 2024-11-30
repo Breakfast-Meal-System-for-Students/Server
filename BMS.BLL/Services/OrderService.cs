@@ -100,6 +100,13 @@ namespace BMS.BLL.Services
                         Detail = $"Order is already in {s}, so that you can not change back to {status}"
                     };
                 }
+                if(status == OrderStatus.TAKENOVER && s != OrderStatus.PREPARED)
+                {
+                    return new ServiceActionResult(false)
+                    {
+                        Detail = $"Order is already not in PREPARED, so that you can not change to {status}"
+                    };
+                }
                 bool isPayed = bool.Parse((await CheckOrderIsPayed(id)).Data.ToString());
                 if (status.Equals(OrderStatus.CANCEL))
                 {
@@ -132,29 +139,36 @@ namespace BMS.BLL.Services
                 await _unitOfWork.OrderRepository.UpdateAsync(order);
                 await _unitOfWork.CommitAsync();
                 List<Notification> notifications = new List<Notification>();
-                Notification notification = new Notification
+                if (!status.Equals(OrderStatus.TAKENOVER))
                 {
-                    UserId = order.CustomerId,
-                    OrderId = order.Id,
-                    ShopId = order.ShopId,
-                    Object = $"Order Update: The status of your order has been changed from {s} to {status}",
-                    Status = NotificationStatus.UnRead,
-                    Title = GetTitleNotification(status),
-                    Destination = NotificationDestination.FORUSER
-                };
-                notifications.Add(notification);
+                    Notification notification = new Notification
+                    {
+                        UserId = order.CustomerId,
+                        OrderId = order.Id,
+                        ShopId = order.ShopId,
+                        Object = $"Order Update: The status of your order has been changed from {s} to {status}",
+                        Status = NotificationStatus.UnRead,
+                        Title = GetTitleNotification(status),
+                        Destination = NotificationDestination.FORUSER
+                    };
+                    notifications.Add(notification);
+                }
 
-                Notification notification1 = new Notification
+                if (status.Equals(OrderStatus.TAKENOVER))
                 {
-                    UserId = order.CustomerId,
-                    OrderId = order.Id,
-                    ShopId = order.ShopId,
-                    Object = $"Order Update: The status of your order has been changed from {s} to {status}",
-                    Status = NotificationStatus.UnRead,
-                    Title = GetTitleNotification(status),
-                    Destination = NotificationDestination.FORSHOP
-                };
-                notifications.Add(notification1);
+                    Notification notification1 = new Notification
+                    {
+                        UserId = order.CustomerId,
+                        OrderId = order.Id,
+                        ShopId = order.ShopId,
+                        Object = $"Order Update: The status of your order has been changed from {s} to {status}",
+                        Status = NotificationStatus.UnRead,
+                        Title = GetTitleNotification(status),
+                        Destination = NotificationDestination.FORSHOP
+                    };
+                    notifications.Add(notification1);
+                }
+                
 
                 if (status.Equals(OrderStatus.COMPLETE))
                 {
