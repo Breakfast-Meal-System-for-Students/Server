@@ -74,13 +74,25 @@ namespace BMS.BLL.Services
         }
         public async Task<ServiceActionResult> AddReCategory(CreateRegisterCategoryRequest request)
         {
-
-
+            var product = (await _unitOfWork.ProductRepository.GetAllAsyncAsQueryable()).Where(x => x.Id == request.ProductId && x.IsDeleted == false).SingleOrDefault();
+            if (product == null)
+            {
+                return new ServiceActionResult(false)
+                {
+                    Detail = "Product is not Exists Or Deleted"
+                };
+            }
+            var category = (await _unitOfWork.CategoryRepositoy.GetAllAsyncAsQueryable()).Where(x => x.Id == request.CategoryId && x.IsDeleted == false).SingleOrDefault();
+            if (category == null)
+            {
+                return new ServiceActionResult(false)
+                {
+                    Detail = "Category is not Exists Or Deleted"
+                };
+            }
             var reCategoryEntity = _mapper.Map<RegisterCategory>(request);
-     
+            
             await _unitOfWork.RegisterCategoryRepository.AddAsync(reCategoryEntity);
-            // do something add feedback
-            await _unitOfWork.CommitAsync();
 
             return new ServiceActionResult(true) { Data = reCategoryEntity };
         }

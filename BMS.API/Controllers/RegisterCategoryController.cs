@@ -38,7 +38,7 @@ namespace BMS.API.Controllers
                                async () => await _registerCategoryService.AddReCategory(category).ConfigureAwait(false)
                                           ).ConfigureAwait(false);
         }
-        [HttpGet("all-category-by-product-id")]
+        [HttpGet("GetAllCategorybyProductId")]
         public async Task<IActionResult> GetAllCategorybyProductId(Guid productId, [FromQuery] RegisterCategoryRequest pagingRequest)
         {
             return await ExecuteServiceLogic(
@@ -46,7 +46,7 @@ namespace BMS.API.Controllers
                                           ).ConfigureAwait(false);
         }
 
-        [HttpGet("all-product-by-category-id")]
+        [HttpGet("GetAllProductByCategory")]
         public async Task<IActionResult> GetAllProductByCategory(Guid categoryId, [FromQuery] RegisterCategoryRequest pagingRequest)
         {
             return await ExecuteServiceLogic(
