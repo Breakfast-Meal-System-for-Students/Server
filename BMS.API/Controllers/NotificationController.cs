@@ -109,5 +109,23 @@ namespace BMS.API.Controllers
                 async () => await _notificationService.ClearNotificationForShop(request).ConfigureAwait(false)
             ).ConfigureAwait(false);
         }
+
+        [HttpPut("ReadAllNotificationForShop")]
+        [Authorize]
+        public async Task<IActionResult> ReadAllNotificationForShop(Guid shopId)
+        {
+            return await ExecuteServiceLogic(
+                async () => await _notificationService.ReadAllNotificationForShop(shopId).ConfigureAwait(false)
+            ).ConfigureAwait(false);
+        }
+
+        [HttpPut("ReadAllNotificationForUser")]
+        [Authorize]
+        public async Task<IActionResult> ReadAllNotificationForUser()
+        {
+            return await ExecuteServiceLogic(
+                async () => await _notificationService.ReadAllNotificationForUser(_userClaims.UserId).ConfigureAwait(false)
+            ).ConfigureAwait(false);
+        }
     }
 }

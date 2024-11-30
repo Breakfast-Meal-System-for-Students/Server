@@ -24,6 +24,8 @@ namespace BMS.BLL.Services.IServices
         Task<ServiceActionResult> CreateNotification(Order order);
         Task<ServiceActionResult> ClearNotificationForUser(ClearNotificationRequest request);
         Task<ServiceActionResult> ClearNotificationForShop(ClearNotificationRequest request);
+        Task<ServiceActionResult> ReadAllNotificationForUser(Guid userId);
+        Task<ServiceActionResult> ReadAllNotificationForShop(Guid shopId);
         Task<ServiceActionResult> GetNotificationForStaff(GetNotificationRequest request);
     }
 }

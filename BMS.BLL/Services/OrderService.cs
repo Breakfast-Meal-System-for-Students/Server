@@ -130,7 +130,7 @@ namespace BMS.BLL.Services
                 order.Status = status.ToString();
                 order.LastUpdateDate = DateTime.Now;
                 await _unitOfWork.OrderRepository.UpdateAsync(order);
-
+                List<Notification> notifications = new List<Notification>();
                 Notification notification = new Notification
                 {
                     UserId = order.CustomerId,
@@ -141,15 +141,35 @@ namespace BMS.BLL.Services
                     Title = GetTitleNotification(status),
                     Destination = NotificationDestination.FORUSER
                 };
+                notifications.Add(notification);
 
-                await _unitOfWork.NotificationRepository.AddAsync(notification);
-                notification.Destination = NotificationDestination.FORSHOP;
-                await _unitOfWork.NotificationRepository.AddAsync(notification);
+                Notification notification1 = new Notification
+                {
+                    UserId = order.CustomerId,
+                    OrderId = order.Id,
+                    ShopId = order.ShopId,
+                    Object = $"Change Status Order From {s} to {status} sucessfully",
+                    Status = NotificationStatus.UnRead,
+                    Title = GetTitleNotification(status),
+                    Destination = NotificationDestination.FORSHOP
+                };
+                notifications.Add(notification1);
+
                 if (status.Equals(OrderStatus.COMPLETE))
                 {
-                    notification.Destination = NotificationDestination.FORSTAFF;
-                    await _unitOfWork.NotificationRepository.AddAsync(notification);
+                    Notification notificatio2 = new Notification
+                    {
+                        UserId = order.CustomerId,
+                        OrderId = order.Id,
+                        ShopId = order.ShopId,
+                        Object = $"Change Status Order From {s} to {status} sucessfully",
+                        Status = NotificationStatus.UnRead,
+                        Title = GetTitleNotification(status),
+                        Destination = NotificationDestination.FORSTAFF
+                    };
+                    notifications.Add(notificatio2);
                 }
+                await _unitOfWork.NotificationRepository.AddRangeAsync(notifications);
                 await _hubContext.Clients.User(order.CustomerId.ToString()).SendAsync("ReceiveNotification", notification.Object);
                 await _hubContext.Clients.User(order.ShopId.ToString()).SendAsync("ReceiveNotification", notification.Object);
                 
@@ -421,7 +441,7 @@ namespace BMS.BLL.Services
                 };
                 await _unitOfWork.CouponUsageRepository.AddAsync(couponUsage);
             }
-
+            List<Notification> notifications = new List<Notification>();
             Notification notification = new Notification
             {
                 UserId = order.CustomerId,
@@ -432,14 +452,30 @@ namespace BMS.BLL.Services
                 Title = NotificationTitle.BOOKING_ORDER,
                 Destination = NotificationDestination.FORUSER
             };
-
-            await _unitOfWork.NotificationRepository.AddAsync(notification);
-
-            notification.Destination = NotificationDestination.FORSHOP;
-            await _unitOfWork.NotificationRepository.AddAsync(notification);
-
-            notification.Destination = NotificationDestination.FORSTAFF;
-            await _unitOfWork.NotificationRepository.AddAsync(notification);
+            notifications.Add(notification);
+            Notification notification1 = new Notification
+            {
+                UserId = order.CustomerId,
+                OrderId = order.Id,
+                ShopId = order.ShopId,
+                Object = "Create Order",
+                Status = NotificationStatus.UnRead,
+                Title = NotificationTitle.BOOKING_ORDER,
+                Destination = NotificationDestination.FORSHOP
+            };
+            notifications.Add(notification1);
+            Notification notification2 = new Notification
+            {
+                UserId = order.CustomerId,
+                OrderId = order.Id,
+                ShopId = order.ShopId,
+                Object = "Create Order",
+                Status = NotificationStatus.UnRead,
+                Title = NotificationTitle.BOOKING_ORDER,
+                Destination = NotificationDestination.FORSTAFF
+            };
+            notifications.Add(notification2);
+            await _unitOfWork.NotificationRepository.AddRangeAsync(notifications);
             await _unitOfWork.CartDetailRepository.DeleteRangeAsync(cart.CartDetails);
             var cartGroupUsers = (await _unitOfWork.CartGroupUserRepository.GetAllAsyncAsQueryable()).Where(x => x.CartId == cart.Id).AsEnumerable();
             await _unitOfWork.CartGroupUserRepository.DeleteRangeAsync(cartGroupUsers);
