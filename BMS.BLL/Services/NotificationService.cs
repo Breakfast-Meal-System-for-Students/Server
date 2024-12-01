@@ -6,6 +6,7 @@ using BMS.BLL.Models.Responses.Admin;
 using BMS.BLL.Models.Responses.Notification;
 using BMS.BLL.Services.BaseServices;
 using BMS.BLL.Services.IServices;
+using BMS.BLL.Utilities;
 using BMS.Core.Domains.Entities;
 using BMS.Core.Domains.Enums;
 using BMS.Core.Exceptions;
@@ -60,7 +61,7 @@ namespace BMS.BLL.Services
             foreach (var notification in notifications)
             {
                 notification.IsDeleted = true;
-                notification.DeletedDate = DateTime.UtcNow;
+                notification.DeletedDate = DateTimeHelper.GetCurrentTime();
             }
             await _unitOfWork.CommitAsync();
             return new ServiceActionResult() { Detail = "Clear Notification successfully" };
@@ -73,7 +74,7 @@ namespace BMS.BLL.Services
             foreach(var notification in notifications)
             {
                 notification.IsDeleted = true;
-                notification.DeletedDate = DateTime.UtcNow;
+                notification.DeletedDate = DateTimeHelper.GetCurrentTime();
             }
             await _unitOfWork.CommitAsync();
             return new ServiceActionResult() { Detail = "Clear Notification successfully" };
@@ -205,11 +206,11 @@ namespace BMS.BLL.Services
         public async Task<ServiceActionResult> ReadAllNotificationForUser(Guid userId)
         {
             var notifications = (await _unitOfWork.NotificationRepository.GetAllAsyncAsQueryable())
-                    .Where(x => x.UserId == userId && x.Destination == NotificationDestination.FORUSER).ToList();
+                    .Where(x => x.UserId == userId && x.Destination == NotificationDestination.FORUSER && x.Status == NotificationStatus.UnRead).ToList();
             foreach (var notification in notifications)
             {
                 notification.Status = NotificationStatus.Readed;
-                notification.LastUpdateDate = DateTime.UtcNow;
+                notification.LastUpdateDate = DateTimeHelper.GetCurrentTime();
             }
             await _unitOfWork.CommitAsync();
             return new ServiceActionResult() { Detail = "Read All Notification successfully" };
@@ -218,11 +219,11 @@ namespace BMS.BLL.Services
         public async Task<ServiceActionResult> ReadAllNotificationForShop(Guid shopId)
         {
             var notifications = (await _unitOfWork.NotificationRepository.GetAllAsyncAsQueryable())
-                    .Where(x => x.ShopId == shopId && x.Destination == NotificationDestination.FORSHOP).ToList();
+                    .Where(x => x.ShopId == shopId && x.Destination == NotificationDestination.FORSHOP && x.Status == NotificationStatus.UnRead).ToList();
             foreach (var notification in notifications)
             {
                 notification.Status = NotificationStatus.Readed;
-                notification.LastUpdateDate = DateTime.UtcNow;
+                notification.LastUpdateDate = DateTimeHelper.GetCurrentTime();
             }
             await _unitOfWork.CommitAsync();
             return new ServiceActionResult() { Detail = "Read All Notification successfully" };

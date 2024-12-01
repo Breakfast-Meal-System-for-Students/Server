@@ -17,8 +17,8 @@ namespace BMS.Core.Domains.Entities
 
         public string? Phone { get; set; } = null!;
       //  public string? Password { get; set; } = null!;
-        public DateTime CreateDate { get; set; } = DateTime.UtcNow;
-        public DateTime LastUpdateDate { get; set; } = DateTime.UtcNow;
+        public DateTime CreateDate { get; set; } = DateTime.UtcNow.AddHours(7);
+        public DateTime LastUpdateDate { get; set; } = DateTime.UtcNow.AddHours(7);
 
         public ICollection<UserRole>? UserRoles { get; set; }
 

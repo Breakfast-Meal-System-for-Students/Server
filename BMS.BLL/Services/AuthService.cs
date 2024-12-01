@@ -3,6 +3,7 @@ using BMS.BLL.Models;
 using BMS.BLL.Models.Requests.User;
 using BMS.BLL.Services.BaseServices;
 using BMS.BLL.Services.IServices;
+using BMS.BLL.Utilities;
 using BMS.Core.Domains.Constants;
 using BMS.Core.Domains.Entities;
 using BMS.Core.Exceptions;
@@ -61,7 +62,7 @@ namespace BMS.BLL.Services
                 };
             } else
             {
-                if (otp.EndDate < DateTime.UtcNow)
+                if (otp.EndDate < DateTimeHelper.GetCurrentTime())
                 {
                     return new ServiceActionResult(true)
                     {
@@ -166,7 +167,7 @@ namespace BMS.BLL.Services
             }
             string otp = GenerateOTP(6);
             var dbOTPs = (await _unitOfWork.OTPRepository.GetAllAsyncAsQueryable()).Where(x => x.UserId == user.Id).ToList();
-            while(dbOTPs.Any(x => x.Otp == otp && x.EndDate > DateTime.UtcNow))
+            while(dbOTPs.Any(x => x.Otp == otp && x.EndDate > DateTimeHelper.GetCurrentTime()))
             {
                 otp = GenerateOTP(6);
             }
@@ -174,10 +175,10 @@ namespace BMS.BLL.Services
             OTP o = new OTP()
             {
                 Otp = otp,
-                EndDate = DateTime.UtcNow.AddMinutes(1),
+                EndDate = DateTimeHelper.GetCurrentTime().AddMinutes(1),
                 UserId = user.Id,
             };
-            await _unitOfWork.OTPRepository.DeleteRangeAsync((dbOTPs.Where(x => x.EndDate < DateTime.UtcNow)));
+            await _unitOfWork.OTPRepository.DeleteRangeAsync((dbOTPs.Where(x => x.EndDate < DateTimeHelper.GetCurrentTime())));
             await _unitOfWork.OTPRepository.AddAsync(o);
             return new ServiceActionResult(true)
             {

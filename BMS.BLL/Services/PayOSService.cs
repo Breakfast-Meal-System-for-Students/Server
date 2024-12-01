@@ -4,6 +4,7 @@ using BMS.BLL.Models;
 using BMS.BLL.Models.Requests.PayOs;
 using BMS.BLL.Services.BaseServices;
 using BMS.BLL.Services.IServices;
+using BMS.BLL.Utilities;
 using BMS.Core.Domains.Entities;
 using BMS.Core.Domains.Enums;
 using BMS.Core.Exceptions;
@@ -105,7 +106,7 @@ namespace BMS.BLL.Services
                     Price = Convert.ToDouble(webhookBody.data.amount),
                     Method = TransactionMethod.PayOs.ToString(),
                     Status = TransactionStatus.PAID,
-                    CreateDate = DateTime.UtcNow,
+                    CreateDate = DateTimeHelper.GetCurrentTime(),
                 };
 
                 await _unitOfWork.TransactionRepository.AddAsync(transaction);
@@ -164,7 +165,7 @@ namespace BMS.BLL.Services
                     Price = Convert.ToDouble(webhookBody.data.amount),
                     Method = TransactionMethod.VnPay.ToString(),
                     Status = TransactionStatus.ERROR,
-                    CreateDate = DateTime.UtcNow,
+                    CreateDate = DateTimeHelper.GetCurrentTime(),
                 };
                 await _unitOfWork.TransactionRepository.AddAsync(transaction);
                 return new ServiceActionResult(false)

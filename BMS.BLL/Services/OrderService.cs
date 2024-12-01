@@ -11,6 +11,7 @@ using BMS.BLL.Models.Responses.Cart;
 using BMS.BLL.Models.Responses.Users;
 using BMS.BLL.Services.BaseServices;
 using BMS.BLL.Services.IServices;
+using BMS.BLL.Utilities;
 using BMS.Core.Domains.Constants;
 using BMS.Core.Domains.Entities;
 using BMS.Core.Domains.Enums;
@@ -135,7 +136,7 @@ namespace BMS.BLL.Services
                     }
                 }
                 order.Status = status.ToString();
-                order.LastUpdateDate = DateTime.UtcNow;
+                order.LastUpdateDate = DateTimeHelper.GetCurrentTime();
                 await _unitOfWork.OrderRepository.UpdateAsync(order);
                 await _unitOfWork.CommitAsync();
                 List<Notification> notifications = new List<Notification>();
@@ -420,7 +421,7 @@ namespace BMS.BLL.Services
                 order.TotalPrice -= discount;
             }
 
-            string qrContent = DateTime.UtcNow.Ticks.ToString();
+            string qrContent = DateTimeHelper.GetCurrentTime().Ticks.ToString();
             order.QRCode = _qrCodeService.GenerateQRCode(qrContent);
 
             while (await CheckQRCodeExist(order.QRCode))
@@ -660,7 +661,7 @@ namespace BMS.BLL.Services
             var order = await _unitOfWork.OrderRepository.FindAsync(id) ?? throw new ArgumentNullException("Order is not exist");
             order.Status = status;
      
-            order.LastUpdateDate = DateTime.UtcNow;
+            order.LastUpdateDate = DateTimeHelper.GetCurrentTime();
            
             await _unitOfWork.CommitAsync();
 
@@ -721,7 +722,7 @@ namespace BMS.BLL.Services
 
         public async Task<List<Order>> GetOrdersForNotificaton()
         {
-            var orders = (await _unitOfWork.OrderRepository.GetAllAsyncAsQueryable()).Where(x => x.OrderDate < DateTime.UtcNow.AddMinutes(30) && x.OrderDate > DateTime.UtcNow.AddMinutes(-30) && x.Status.Equals(OrderStatus.CHECKING.ToString())).ToList();
+            var orders = (await _unitOfWork.OrderRepository.GetAllAsyncAsQueryable()).Where(x => x.OrderDate < DateTimeHelper.GetCurrentTime().AddMinutes(30) && x.OrderDate > DateTimeHelper.GetCurrentTime().AddMinutes(-30) && x.Status.Equals(OrderStatus.CHECKING.ToString())).ToList();
             return orders;
         }
 

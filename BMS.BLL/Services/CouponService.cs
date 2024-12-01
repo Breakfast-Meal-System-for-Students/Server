@@ -15,6 +15,7 @@ using System.Threading.Tasks;
 using BMS.Core.Domains.Enums;
 using BMS.BLL.Models.Responses.Shop;
 using Microsoft.AspNetCore.Identity;
+using BMS.BLL.Utilities;
 
 namespace BMS.BLL.Services
 {
@@ -56,8 +57,8 @@ namespace BMS.BLL.Services
         }
         public async Task<ServiceActionResult> AddCoupon(CreateCouponRequest request)
         {
-            if(request.StartDate < DateTime.UtcNow) request.StartDate = DateTime.UtcNow;
-            if(request.EndDate < DateTime.UtcNow) request.EndDate = DateTime.UtcNow;
+            if(request.StartDate < DateTimeHelper.GetCurrentTime()) request.StartDate = DateTimeHelper.GetCurrentTime();
+            if(request.EndDate < DateTimeHelper.GetCurrentTime()) request.EndDate = DateTimeHelper.GetCurrentTime();
             if(request.StartDate > request.EndDate)
             {
                 return new ServiceActionResult(false)
@@ -120,8 +121,8 @@ namespace BMS.BLL.Services
 
         public async Task<ServiceActionResult> UpdateCoupon(Guid id, UpdateCouponRequest request)
         {
-            if (request.StartDate < DateTime.UtcNow) request.StartDate = DateTime.UtcNow;
-            if (request.EndDate < DateTime.UtcNow) request.EndDate = DateTime.UtcNow;
+            if (request.StartDate < DateTimeHelper.GetCurrentTime()) request.StartDate = DateTimeHelper.GetCurrentTime();
+            if (request.EndDate < DateTimeHelper.GetCurrentTime()) request.EndDate = DateTimeHelper.GetCurrentTime();
             if (request.StartDate > request.EndDate)
             {
                 return new ServiceActionResult(false)
@@ -168,7 +169,7 @@ namespace BMS.BLL.Services
             var Coupon = await _unitOfWork.CouponRepository.FindAsync(id) ?? throw new ArgumentNullException("Coupon is not exist");
      
 
-            Coupon.LastUpdateDate = DateTime.UtcNow;
+            Coupon.LastUpdateDate = DateTimeHelper.GetCurrentTime();
             Coupon.Name = request.Name;
             Coupon.MaxDiscount = request.MaxDiscount;
             Coupon.StartDate = request.StartDate;

@@ -16,6 +16,7 @@ using BMS.BLL.Models.Requests.Product;
 using Microsoft.EntityFrameworkCore;
 using BMS.BLL.Models.Responses.Package;
 using BMS.BLL.Models.Responses.AI;
+using BMS.BLL.Utilities;
 
 namespace BMS.BLL.Services
 {
@@ -123,7 +124,7 @@ namespace BMS.BLL.Services
             product.Price = request.Price;
             product.Description = request.Description;
             product.Name = request.Name;
-            product.LastUpdateDate = DateTime.UtcNow;
+            product.LastUpdateDate = DateTimeHelper.GetCurrentTime();
             /*if(request.Inventory.GetValueOrDefault() <= 0)
             {
                 product.Inventory = 9999;

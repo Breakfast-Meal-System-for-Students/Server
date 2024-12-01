@@ -1,4 +1,5 @@
 ﻿using BMS.BLL.Services.IServices;
+using BMS.BLL.Utilities;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using System;
@@ -25,7 +26,7 @@ namespace BMS.BLL.Services
             var cookieOptions = new CookieOptions
             {
                 HttpOnly = true,
-                Expires = DateTime.UtcNow.AddDays(1),
+                Expires = DateTimeHelper.GetCurrentTime().AddDays(1),
                 Secure = true,
                 IsEssential = true,
                 SameSite = SameSiteMode.None

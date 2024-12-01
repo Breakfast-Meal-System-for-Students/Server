@@ -8,6 +8,7 @@ using BMS.BLL.Models.Responses.Shop;
 using BMS.BLL.Models.Responses.Users;
 using BMS.BLL.Services.BaseServices;
 using BMS.BLL.Services.IServices;
+using BMS.BLL.Utilities;
 using BMS.Core.Domains.Entities;
 using BMS.Core.Helpers;
 using BMS.DAL;
@@ -205,7 +206,7 @@ namespace BMS.BLL.Services
                 if (cart.IsGroup == false)
                 {
                     cart.IsGroup = true;
-                    cart.LastUpdateDate = DateTime.UtcNow;
+                    cart.LastUpdateDate = DateTimeHelper.GetCurrentTime();
                     await _unitOfWork.CartRepository.UpdateAsync(cart);
                 }
 
@@ -323,7 +324,7 @@ namespace BMS.BLL.Services
                     var cartDetail = (await _unitOfWork.CartDetailRepository.FindAsyncAsQueryable(filter1)).FirstOrDefault();
                     cartDetail.Quantity = request.Quantity;
                     cartDetail.Price = request.Price;
-                    cartDetail.LastUpdateDate = DateTime.UtcNow;
+                    cartDetail.LastUpdateDate = DateTimeHelper.GetCurrentTime();
                     await _unitOfWork.CartDetailRepository.UpdateAsync(cartDetail);
 
                 }

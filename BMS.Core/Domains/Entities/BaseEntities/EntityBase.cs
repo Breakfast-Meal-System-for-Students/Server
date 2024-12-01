@@ -18,8 +18,8 @@ namespace BMS.Core.Domains.Entities.BaseEntities
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public virtual TKey Id { get; set; }
-        public DateTime CreateDate { get; set; } = DateTime.UtcNow;
-        public DateTime LastUpdateDate { get; set; } = DateTime.UtcNow;
+        public DateTime CreateDate { get; set; } = DateTime.UtcNow.AddHours(7);
+        public DateTime LastUpdateDate { get; set; } = DateTime.UtcNow.AddHours(7);
     }
 
     public interface ISoftDelete

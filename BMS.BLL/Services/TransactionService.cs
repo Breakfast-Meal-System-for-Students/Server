@@ -4,6 +4,7 @@ using BMS.BLL.Models.Requests.Admin;
 using BMS.BLL.Models.Responses.Admin;
 using BMS.BLL.Services.BaseServices;
 using BMS.BLL.Services.IServices;
+using BMS.BLL.Utilities;
 using BMS.Core.Domains.Constants;
 using BMS.Core.Domains.Entities;
 using BMS.Core.Domains.Enums;
@@ -383,12 +384,12 @@ namespace BMS.BLL.Services
                 if(transactionMethod != 0)
                 {
                     transaction.Method = transactionMethod.ToString();
-                    transaction.LastUpdateDate = DateTime.UtcNow;
+                    transaction.LastUpdateDate = DateTimeHelper.GetCurrentTime();
                 }
                 if(transactionStatus != 0)
                 {
                     transaction.Status = transactionStatus;
-                    transaction.LastUpdateDate = DateTime.UtcNow;
+                    transaction.LastUpdateDate = DateTimeHelper.GetCurrentTime();
                 }
 
                 await _unitOfWork.TransactionRepository.UpdateAsync(transaction);

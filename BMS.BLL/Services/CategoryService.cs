@@ -18,6 +18,7 @@ using BMS.BLL.Models.Requests.Category;
 using BMS.BLL.Models.Responses.Category;
 using static System.Runtime.InteropServices.JavaScript.JSType;
 using Azure.Core;
+using BMS.BLL.Utilities;
 
 namespace BMS.BLL.Services
 {
@@ -75,7 +76,7 @@ namespace BMS.BLL.Services
                 var imageUrl = await _fileStorageService.UploadFileBlobAsync(request.Image);
                 category.Image = imageUrl;
             }
-            category.LastUpdateDate = DateTime.UtcNow;
+            category.LastUpdateDate = DateTimeHelper.GetCurrentTime();
             category.Name = request.Name;
             await _unitOfWork.CommitAsync();
 

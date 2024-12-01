@@ -1,4 +1,5 @@
-﻿using BMS.Core.Domains.Entities;
+﻿using BMS.BLL.Utilities;
+using BMS.Core.Domains.Entities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -15,8 +16,8 @@ namespace BMS.BLL.Models.Responses.Users
 
         public string? Phone { get; set; } = null!;
         //  public string? Password { get; set; } = null!;
-        public DateTime CreateDate { get; set; } = DateTime.UtcNow;
-        public DateTime LastUpdateDate { get; set; } = DateTime.UtcNow;
+        public DateTime CreateDate { get; set; } = DateTimeHelper.GetCurrentTime();
+        public DateTime LastUpdateDate { get; set; } = DateTimeHelper.GetCurrentTime();
 
         public Guid? ShopId { get; set; }
         public IList<string>? Role { get; set; } = null!;

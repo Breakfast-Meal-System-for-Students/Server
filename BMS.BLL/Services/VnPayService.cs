@@ -6,6 +6,7 @@ using BMS.BLL.Models.Requests.VnPay;
 using BMS.BLL.Models.Responses.VnPay;
 using BMS.BLL.Services.BaseServices;
 using BMS.BLL.Services.IServices;
+using BMS.BLL.Utilities;
 using BMS.Core.Domains.Entities;
 using BMS.Core.Domains.Enums;
 using BMS.Core.Exceptions;
@@ -54,7 +55,7 @@ namespace BMS.BLL.Services
                     Detail = "Order is Cancel"
                 };
             }
-            var tick = DateTime.UtcNow.Ticks.ToString();
+            var tick = DateTimeHelper.GetCurrentTime().Ticks.ToString();
 
             var vnpay = new VnPayLibrary();
 
@@ -62,7 +63,7 @@ namespace BMS.BLL.Services
             vnpay.AddRequestData(VnPayConstansts.COMMAND, _vnPaySettings.Command);
             vnpay.AddRequestData(VnPayConstansts.TMN_CODE, _vnPaySettings.TmnCode);
             vnpay.AddRequestData(VnPayConstansts.AMOUNT, (vnPayRequest.Amount * 100).ToString());
-            vnpay.AddRequestData(VnPayConstansts.CREATE_DATE, DateTime.UtcNow.ToString("yyyyMMddHHmmss"));
+            vnpay.AddRequestData(VnPayConstansts.CREATE_DATE, DateTimeHelper.GetCurrentTime().ToString("yyyyMMddHHmmss"));
             vnpay.AddRequestData(VnPayConstansts.CURR_CODE, _vnPaySettings.CurrencyCode);
             vnpay.AddRequestData(VnPayConstansts.IP_ADDRESS, Utils.GetIpAddress(context));
             vnpay.AddRequestData(VnPayConstansts.LOCALE, _vnPaySettings.Locale);
@@ -96,7 +97,7 @@ namespace BMS.BLL.Services
                     Detail = "Package is not valid or delete"
                 };
             }
-            var packageDB = (await _unitOfWork.Package_ShopRepository.GetAllAsyncAsQueryable()).Include(x => x.Package).Where(x => x.ShopId == request.ShopId && x.PackageId == request.PackageId && x.CreateDate.AddDays(x.Package.Duration) > DateTime.UtcNow).ToList();
+            var packageDB = (await _unitOfWork.Package_ShopRepository.GetAllAsyncAsQueryable()).Include(x => x.Package).Where(x => x.ShopId == request.ShopId && x.PackageId == request.PackageId && x.CreateDate.AddDays(x.Package.Duration) > DateTimeHelper.GetCurrentTime()).ToList();
             if (packageDB != null && packageDB.Any())
             {
                 return new ServiceActionResult(false)
@@ -104,7 +105,7 @@ namespace BMS.BLL.Services
                     Detail = "The Package is being used in Shop. You can not buy the same Package."
                 };
             }
-            var tick = DateTime.UtcNow.Ticks.ToString();
+            var tick = DateTimeHelper.GetCurrentTime().Ticks.ToString();
 
             var vnpay = new VnPayLibrary();
 
@@ -112,7 +113,7 @@ namespace BMS.BLL.Services
             vnpay.AddRequestData(VnPayConstansts.COMMAND, _vnPaySettings.Command);
             vnpay.AddRequestData(VnPayConstansts.TMN_CODE, _vnPaySettings.TmnCode);
             vnpay.AddRequestData(VnPayConstansts.AMOUNT, (request.Amount * 100).ToString());
-            vnpay.AddRequestData(VnPayConstansts.CREATE_DATE, DateTime.UtcNow.ToString("yyyyMMddHHmmss"));
+            vnpay.AddRequestData(VnPayConstansts.CREATE_DATE, DateTimeHelper.GetCurrentTime().ToString("yyyyMMddHHmmss"));
             vnpay.AddRequestData(VnPayConstansts.CURR_CODE, _vnPaySettings.CurrencyCode);
             vnpay.AddRequestData(VnPayConstansts.IP_ADDRESS, Utils.GetIpAddress(context));
             vnpay.AddRequestData(VnPayConstansts.LOCALE, _vnPaySettings.Locale);
@@ -178,7 +179,7 @@ namespace BMS.BLL.Services
                         Price = Convert.ToDouble(response.vnp_Amount),
                         Method = TransactionMethod.VnPay.ToString(),
                         Status = TransactionStatus.PAID,
-                        CreateDate = DateTime.UtcNow,
+                        CreateDate = DateTimeHelper.GetCurrentTime(),
                     };
 
                     await _unitOfWork.TransactionRepository.AddAsync(transaction);
@@ -238,7 +239,7 @@ namespace BMS.BLL.Services
                         Price = Convert.ToDouble(response.vnp_Amount),
                         Method = TransactionMethod.VnPay.ToString(),
                         Status = TransactionStatus.ERROR,
-                        CreateDate = DateTime.UtcNow
+                        CreateDate = DateTimeHelper.GetCurrentTime()
                     };
                     await _unitOfWork.TransactionRepository.AddAsync(transaction);
                     return new ServiceActionResult(true)

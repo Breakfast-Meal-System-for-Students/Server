@@ -1,5 +1,6 @@
 ﻿using Azure.Core;
 using BMS.BLL.Services.IServices;
+using BMS.BLL.Utilities;
 using BMS.Core.Domains.Entities;
 using BMS.Core.Exceptions;
 using BMS.Core.Settings;
@@ -44,7 +45,7 @@ namespace BMS.BLL.Services
             var tokenDescriptor = new SecurityTokenDescriptor
             {
                 Subject = new ClaimsIdentity(claims),
-                Expires = DateTime.UtcNow.AddDays(1),
+                Expires = DateTimeHelper.GetCurrentTime().AddDays(1),
                 SigningCredentials = creds
             };
 
@@ -66,7 +67,7 @@ namespace BMS.BLL.Services
                     new Claim("CartID", cartId.ToString()),
                     new Claim("Type", "SharedCartAccess")
                 }),
-                Expires = DateTime.UtcNow.AddHours(1),
+                Expires = DateTimeHelper.GetCurrentTime().AddHours(1),
                 SigningCredentials = new SigningCredentials(_key, SecurityAlgorithms.HmacSha512Signature)
 
         };
