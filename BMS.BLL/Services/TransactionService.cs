@@ -383,12 +383,12 @@ namespace BMS.BLL.Services
                 if(transactionMethod != 0)
                 {
                     transaction.Method = transactionMethod.ToString();
-                    transaction.LastUpdateDate = DateTime.Now;
+                    transaction.LastUpdateDate = DateTime.UtcNow;
                 }
                 if(transactionStatus != 0)
                 {
                     transaction.Status = transactionStatus;
-                    transaction.LastUpdateDate = DateTime.Now;
+                    transaction.LastUpdateDate = DateTime.UtcNow;
                 }
 
                 await _unitOfWork.TransactionRepository.UpdateAsync(transaction);

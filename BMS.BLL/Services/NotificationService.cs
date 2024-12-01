@@ -60,7 +60,7 @@ namespace BMS.BLL.Services
             foreach (var notification in notifications)
             {
                 notification.IsDeleted = true;
-                notification.DeletedDate = DateTime.Now;
+                notification.DeletedDate = DateTime.UtcNow;
             }
             await _unitOfWork.CommitAsync();
             return new ServiceActionResult() { Detail = "Clear Notification successfully" };
@@ -73,7 +73,7 @@ namespace BMS.BLL.Services
             foreach(var notification in notifications)
             {
                 notification.IsDeleted = true;
-                notification.DeletedDate = DateTime.Now;
+                notification.DeletedDate = DateTime.UtcNow;
             }
             await _unitOfWork.CommitAsync();
             return new ServiceActionResult() { Detail = "Clear Notification successfully" };
@@ -209,7 +209,7 @@ namespace BMS.BLL.Services
             foreach (var notification in notifications)
             {
                 notification.Status = NotificationStatus.Readed;
-                notification.LastUpdateDate = DateTime.Now;
+                notification.LastUpdateDate = DateTime.UtcNow;
             }
             await _unitOfWork.CommitAsync();
             return new ServiceActionResult() { Detail = "Read All Notification successfully" };
@@ -222,7 +222,7 @@ namespace BMS.BLL.Services
             foreach (var notification in notifications)
             {
                 notification.Status = NotificationStatus.Readed;
-                notification.LastUpdateDate = DateTime.Now;
+                notification.LastUpdateDate = DateTime.UtcNow;
             }
             await _unitOfWork.CommitAsync();
             return new ServiceActionResult() { Detail = "Read All Notification successfully" };

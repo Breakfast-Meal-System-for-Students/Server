@@ -79,14 +79,14 @@ namespace BMS.BLL.Services
                         Detail = "Order is Completed, so that you can not change this"
                     };
                 }
-                if (s.Equals(OrderStatus.CANCEL)) 
+                if (s.Equals(OrderStatus.CANCEL))
                 {
                     return new ServiceActionResult(false)
                     {
                         Detail = "Order is Canceled, so that you can not change this"
                     };
                 }
-                if(Enum.Equals(status, s))
+                if (Enum.Equals(status, s))
                 {
                     return new ServiceActionResult(false)
                     {
@@ -100,7 +100,7 @@ namespace BMS.BLL.Services
                         Detail = $"Order is already in {s}, so that you can not change back to {status}"
                     };
                 }
-                if(status == OrderStatus.TAKENOVER && s != OrderStatus.PREPARED)
+                if (status == OrderStatus.TAKENOVER && s != OrderStatus.PREPARED)
                 {
                     return new ServiceActionResult(false)
                     {
@@ -135,7 +135,7 @@ namespace BMS.BLL.Services
                     }
                 }
                 order.Status = status.ToString();
-                order.LastUpdateDate = DateTime.Now;
+                order.LastUpdateDate = DateTime.UtcNow;
                 await _unitOfWork.OrderRepository.UpdateAsync(order);
                 await _unitOfWork.CommitAsync();
                 List<Notification> notifications = new List<Notification>();
@@ -154,7 +154,7 @@ namespace BMS.BLL.Services
                     notifications.Add(notification);
                 }
 
-                if (status.Equals(OrderStatus.TAKENOVER))
+                if (status.Equals(OrderStatus.TAKENOVER) || status.Equals(OrderStatus.COMPLETE))
                 {
                     Notification notification1 = new Notification
                     {
@@ -660,7 +660,7 @@ namespace BMS.BLL.Services
             var order = await _unitOfWork.OrderRepository.FindAsync(id) ?? throw new ArgumentNullException("Order is not exist");
             order.Status = status;
      
-            order.LastUpdateDate = DateTime.Now;
+            order.LastUpdateDate = DateTime.UtcNow;
            
             await _unitOfWork.CommitAsync();
 
@@ -721,7 +721,7 @@ namespace BMS.BLL.Services
 
         public async Task<List<Order>> GetOrdersForNotificaton()
         {
-            var orders = (await _unitOfWork.OrderRepository.GetAllAsyncAsQueryable()).Where(x => x.OrderDate < DateTime.Now.AddMinutes(30) && x.OrderDate > DateTime.Now.AddMinutes(-30) && x.Status.Equals(OrderStatus.CHECKING.ToString())).ToList();
+            var orders = (await _unitOfWork.OrderRepository.GetAllAsyncAsQueryable()).Where(x => x.OrderDate < DateTime.UtcNow.AddMinutes(30) && x.OrderDate > DateTime.UtcNow.AddMinutes(-30) && x.Status.Equals(OrderStatus.CHECKING.ToString())).ToList();
             return orders;
         }
 

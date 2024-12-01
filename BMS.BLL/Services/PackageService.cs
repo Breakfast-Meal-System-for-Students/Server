@@ -137,7 +137,7 @@ namespace BMS.BLL.Services
             var Package = await _unitOfWork.PackageRepository.FindAsync(id) ?? throw new ArgumentNullException("Package is not exist");
 
 
-            Package.LastUpdateDate = DateTime.Now;
+            Package.LastUpdateDate = DateTime.UtcNow;
             Package.Name = request.Name;
             Package.Description = request.Description;
             Package.Price   = request.Price;
@@ -177,7 +177,7 @@ namespace BMS.BLL.Services
                 };
             }
             IQueryable<Package> packages = (await _unitOfWork.PackageRepository.GetAllAsyncAsQueryable()).Include(a => a.Package_Shop)
-                            .Where(x => x.Package_Shop.Any(y => y.ShopId == shopId && y.CreateDate.AddDays(x.Duration) > DateTime.Now) && x.IsDeleted == false);
+                            .Where(x => x.Package_Shop.Any(y => y.ShopId == shopId && y.CreateDate.AddDays(x.Duration) > DateTime.UtcNow) && x.IsDeleted == false);
             if (!string.IsNullOrEmpty(request.Search))
             {
                 packages = packages.Where(m => m.Name.Contains(request.Search));
@@ -204,7 +204,7 @@ namespace BMS.BLL.Services
                 };
             }
             IQueryable<Package> packages = (await _unitOfWork.PackageRepository.GetAllAsyncAsQueryable()).Include(a => a.Package_Shop)
-                            .Where(x => x.Package_Shop.Any(y => y.ShopId == shopId && y.CreateDate.AddDays(x.Duration) < DateTime.Now));
+                            .Where(x => x.Package_Shop.Any(y => y.ShopId == shopId && y.CreateDate.AddDays(x.Duration) < DateTime.UtcNow));
             if (!string.IsNullOrEmpty(request.Search))
             {
                 packages = packages.Where(m => m.Name.Contains(request.Search));
@@ -238,7 +238,7 @@ namespace BMS.BLL.Services
                     Detail = "Package is not valid or delete"
                 };
             }
-            var packageDB = (await _unitOfWork.Package_ShopRepository.GetAllAsyncAsQueryable()).Include(x => x.Package).Where(x => x.ShopId == shopId && x.PackageId == packageId && x.CreateDate.AddDays(x.Package.Duration) > DateTime.Now).ToList();
+            var packageDB = (await _unitOfWork.Package_ShopRepository.GetAllAsyncAsQueryable()).Include(x => x.Package).Where(x => x.ShopId == shopId && x.PackageId == packageId && x.CreateDate.AddDays(x.Package.Duration) > DateTime.UtcNow).ToList();
             if(packageDB != null && packageDB.Any())
             {
                 return new ServiceActionResult(false)

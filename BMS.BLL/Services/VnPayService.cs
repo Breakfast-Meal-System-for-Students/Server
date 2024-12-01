@@ -54,7 +54,7 @@ namespace BMS.BLL.Services
                     Detail = "Order is Cancel"
                 };
             }
-            var tick = DateTime.Now.Ticks.ToString();
+            var tick = DateTime.UtcNow.Ticks.ToString();
 
             var vnpay = new VnPayLibrary();
 
@@ -96,7 +96,7 @@ namespace BMS.BLL.Services
                     Detail = "Package is not valid or delete"
                 };
             }
-            var packageDB = (await _unitOfWork.Package_ShopRepository.GetAllAsyncAsQueryable()).Include(x => x.Package).Where(x => x.ShopId == request.ShopId && x.PackageId == request.PackageId && x.CreateDate.AddDays(x.Package.Duration) > DateTime.Now).ToList();
+            var packageDB = (await _unitOfWork.Package_ShopRepository.GetAllAsyncAsQueryable()).Include(x => x.Package).Where(x => x.ShopId == request.ShopId && x.PackageId == request.PackageId && x.CreateDate.AddDays(x.Package.Duration) > DateTime.UtcNow).ToList();
             if (packageDB != null && packageDB.Any())
             {
                 return new ServiceActionResult(false)
@@ -104,7 +104,7 @@ namespace BMS.BLL.Services
                     Detail = "The Package is being used in Shop. You can not buy the same Package."
                 };
             }
-            var tick = DateTime.Now.Ticks.ToString();
+            var tick = DateTime.UtcNow.Ticks.ToString();
 
             var vnpay = new VnPayLibrary();
 
@@ -178,7 +178,7 @@ namespace BMS.BLL.Services
                         Price = Convert.ToDouble(response.vnp_Amount),
                         Method = TransactionMethod.VnPay.ToString(),
                         Status = TransactionStatus.PAID,
-                        CreateDate = DateTime.Now,
+                        CreateDate = DateTime.UtcNow,
                     };
 
                     await _unitOfWork.TransactionRepository.AddAsync(transaction);
@@ -238,7 +238,7 @@ namespace BMS.BLL.Services
                         Price = Convert.ToDouble(response.vnp_Amount),
                         Method = TransactionMethod.VnPay.ToString(),
                         Status = TransactionStatus.ERROR,
-                        CreateDate = DateTime.Now
+                        CreateDate = DateTime.UtcNow
                     };
                     await _unitOfWork.TransactionRepository.AddAsync(transaction);
                     return new ServiceActionResult(true)

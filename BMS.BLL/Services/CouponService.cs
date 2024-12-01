@@ -56,8 +56,8 @@ namespace BMS.BLL.Services
         }
         public async Task<ServiceActionResult> AddCoupon(CreateCouponRequest request)
         {
-            if(request.StartDate < DateTime.Now) request.StartDate = DateTime.Now;
-            if(request.EndDate < DateTime.Now) request.EndDate = DateTime.Now;
+            if(request.StartDate < DateTime.UtcNow) request.StartDate = DateTime.UtcNow;
+            if(request.EndDate < DateTime.UtcNow) request.EndDate = DateTime.UtcNow;
             if(request.StartDate > request.EndDate)
             {
                 return new ServiceActionResult(false)
@@ -120,8 +120,8 @@ namespace BMS.BLL.Services
 
         public async Task<ServiceActionResult> UpdateCoupon(Guid id, UpdateCouponRequest request)
         {
-            if (request.StartDate < DateTime.Now) request.StartDate = DateTime.Now;
-            if (request.EndDate < DateTime.Now) request.EndDate = DateTime.Now;
+            if (request.StartDate < DateTime.UtcNow) request.StartDate = DateTime.UtcNow;
+            if (request.EndDate < DateTime.UtcNow) request.EndDate = DateTime.UtcNow;
             if (request.StartDate > request.EndDate)
             {
                 return new ServiceActionResult(false)

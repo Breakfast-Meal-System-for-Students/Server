@@ -15,8 +15,8 @@ namespace BMS.BLL.Models.Responses.Users
 
         public string? Phone { get; set; } = null!;
         //  public string? Password { get; set; } = null!;
-        public DateTime CreateDate { get; set; } = DateTime.Now;
-        public DateTime LastUpdateDate { get; set; } = DateTime.Now;
+        public DateTime CreateDate { get; set; } = DateTime.UtcNow;
+        public DateTime LastUpdateDate { get; set; } = DateTime.UtcNow;
 
         public Guid? ShopId { get; set; }
         public IList<string>? Role { get; set; } = null!;

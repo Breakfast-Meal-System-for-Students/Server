@@ -67,7 +67,7 @@ namespace BMS.BLL.Services
         public async Task<ServiceActionResult> UpdateShop(Guid id, UpdateShopRequest request)
         {
             var Shop = await _unitOfWork.ShopRepository.FindAsync(id) ?? throw new ArgumentNullException("Shop is not exist");
-            Shop.LastUpdateDate = DateTime.Now;
+            Shop.LastUpdateDate = DateTime.UtcNow;
             Shop.Name = request.Name;
             Shop.Description = request.Description;
             Shop.Address = request.Address;
@@ -97,7 +97,7 @@ namespace BMS.BLL.Services
         public async Task<ServiceActionResult> UpdateShopByStaff(Guid id, UpdateShopRequestByStaff request)
         {
             var Shop = await _unitOfWork.ShopRepository.FindAsync(id) ?? throw new ArgumentNullException("Shop is not exist");
-            Shop.LastUpdateDate = DateTime.Now;
+            Shop.LastUpdateDate = DateTime.UtcNow;
             Shop.Name = request.Name;
             Shop.Description = request.Description;
             Shop.Address = request.Address;
@@ -151,7 +151,7 @@ namespace BMS.BLL.Services
             IQueryable<Shop> ShopQueryable = (await _unitOfWork.ShopRepository.GetAllAsyncAsQueryable()).Include(a => a.Package_Shop).ThenInclude(b => b.Package)
                                         .Where(x => x.Status == ShopStatus.ACCEPTED && (x.Package_Shop.Any()
                                         ? x.Package_Shop.Max(x => x.Package != null ? x.CreateDate.AddDays(x.Package.Duration) : DateTime.MinValue)
-                                        : DateTime.MinValue) > DateTime.Now);
+                                        : DateTime.MinValue) > DateTime.UtcNow);
 
             if (!string.IsNullOrEmpty(request.Search))
             {

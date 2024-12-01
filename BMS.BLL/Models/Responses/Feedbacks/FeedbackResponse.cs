@@ -12,8 +12,8 @@ namespace BMS.BLL.Models.Responses.Feedbacks
         public Guid Id { get; set; }
         public string Description { get; set; } = null!;
         public int Rate { get; set; }
-        public DateTime CreateDate { get; set; } = DateTime.Now;
-        public DateTime LastUpdateDate { get; set; } = DateTime.Now;
+        public DateTime CreateDate { get; set; } = DateTime.UtcNow;
+        public DateTime LastUpdateDate { get; set; } = DateTime.UtcNow;
 
 
     }

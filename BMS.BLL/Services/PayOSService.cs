@@ -105,7 +105,7 @@ namespace BMS.BLL.Services
                     Price = Convert.ToDouble(webhookBody.data.amount),
                     Method = TransactionMethod.PayOs.ToString(),
                     Status = TransactionStatus.PAID,
-                    CreateDate = DateTime.Now,
+                    CreateDate = DateTime.UtcNow,
                 };
 
                 await _unitOfWork.TransactionRepository.AddAsync(transaction);
@@ -164,7 +164,7 @@ namespace BMS.BLL.Services
                     Price = Convert.ToDouble(webhookBody.data.amount),
                     Method = TransactionMethod.VnPay.ToString(),
                     Status = TransactionStatus.ERROR,
-                    CreateDate = DateTime.Now,
+                    CreateDate = DateTime.UtcNow,
                 };
                 await _unitOfWork.TransactionRepository.AddAsync(transaction);
                 return new ServiceActionResult(false)

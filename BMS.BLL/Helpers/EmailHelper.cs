@@ -60,7 +60,7 @@ namespace BMS.BLL.Helpers
                         {content}
                     </div>
                     <div class='footer'>
-                        <p>&copy; {DateTime.Now.Year} BMS. All rights reserved.</p>
+                        <p>&copy; {DateTime.UtcNow.Year} BMS. All rights reserved.</p>
                     </div>
                 </div>
             </body>

@@ -25,7 +25,7 @@ namespace BMS.BLL.Services
             var cookieOptions = new CookieOptions
             {
                 HttpOnly = true,
-                Expires = DateTime.Now.AddDays(1),
+                Expires = DateTime.UtcNow.AddDays(1),
                 Secure = true,
                 IsEssential = true,
                 SameSite = SameSiteMode.None

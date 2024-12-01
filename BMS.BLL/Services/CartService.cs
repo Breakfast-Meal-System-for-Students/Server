@@ -205,7 +205,7 @@ namespace BMS.BLL.Services
                 if (cart.IsGroup == false)
                 {
                     cart.IsGroup = true;
-                    cart.LastUpdateDate = DateTime.Now;
+                    cart.LastUpdateDate = DateTime.UtcNow;
                     await _unitOfWork.CartRepository.UpdateAsync(cart);
                 }
 
@@ -323,7 +323,7 @@ namespace BMS.BLL.Services
                     var cartDetail = (await _unitOfWork.CartDetailRepository.FindAsyncAsQueryable(filter1)).FirstOrDefault();
                     cartDetail.Quantity = request.Quantity;
                     cartDetail.Price = request.Price;
-                    cartDetail.LastUpdateDate = DateTime.Now;
+                    cartDetail.LastUpdateDate = DateTime.UtcNow;
                     await _unitOfWork.CartDetailRepository.UpdateAsync(cartDetail);
 
                 }

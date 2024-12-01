@@ -239,7 +239,7 @@ namespace BMS.DAL.Repositories
             if (entity is ISoftDelete softDeleteEntity)
             {
                 softDeleteEntity.IsDeleted = true;
-                softDeleteEntity.DeletedDate = DateTime.Now;
+                softDeleteEntity.DeletedDate = DateTime.UtcNow;
 
                 DbContext.Update(entity);
 
