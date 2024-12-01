@@ -35,7 +35,7 @@ namespace BMS.BLL.Services
         private readonly IGoogleMapService _googleMapService;
         private readonly IFileStorageService _fileStorageService;
         public ShopApplicationService(IUnitOfWork unitOfWork,
-            IMapper mapper,  UserManager<User> userManager, IEmailService emailService, RoleManager<Role> roleManager, IOpeningHoursService openingHoursService, IGoogleMapService googleMapService, IFileStorageService fileStorageService) : base(unitOfWork, mapper)
+            IMapper mapper, UserManager<User> userManager, IEmailService emailService, RoleManager<Role> roleManager, IOpeningHoursService openingHoursService, IGoogleMapService googleMapService, IFileStorageService fileStorageService) : base(unitOfWork, mapper)
         {
             _unitOfWork = unitOfWork;
             _mapper = mapper;
@@ -63,18 +63,24 @@ namespace BMS.BLL.Services
                 };
             }
             var shopApplication = _mapper.Map<Shop>(applicationRequest);
-            // Analys lat and lng
-             try
+            // Analys lat and lng (if cannot convert address --> save address)
+            try
             {
-                
                 Models.Responses.Map.Location location = await _googleMapService.GetCoordinatesFromAddress(shopApplication.Address);
                 if (location != null)
                 {
                     shopApplication.lat = location.Lat;
                     shopApplication.lng = location.Lng;
                 }
-                
-                if(applicationRequest.Image != null)
+            }
+            catch (Exception ex)
+            {
+
+            }
+            try
+            {
+
+                if (applicationRequest.Image != null)
                 {
                     var imageUrl = await _fileStorageService.UploadFileBlobAsync(applicationRequest.Image);
                     shopApplication.Image = imageUrl;
@@ -102,7 +108,7 @@ namespace BMS.BLL.Services
 
             if (!string.IsNullOrEmpty(queryParameters.Search))
             {
-                applicationQuery = applicationQuery.Where(m => m.Name.Contains(queryParameters.Search)  || m.Description.Equals(queryParameters.Search));
+                applicationQuery = applicationQuery.Where(m => m.Name.Contains(queryParameters.Search) || m.Description.Equals(queryParameters.Search));
             }
 
             applicationQuery = queryParameters.IsDesc ? applicationQuery.OrderByDescending(a => a.CreateDate) : applicationQuery.OrderBy(a => a.CreateDate);
@@ -140,7 +146,7 @@ namespace BMS.BLL.Services
             {
                 var account = await RegisterShopAsync(application);
                 application.Status = ShopStatus.ACCEPTED;
-          
+
                 await _unitOfWork.CommitAsync();
                 await _emailService.SendEmailAsync(application.Email, "YOU HAVE NEW INFORMATION FROM BMS", EmailHelper.GetAcceptedEmailBody("thunghiem3340@gmail.com", application.Email, account.Password), true);
             }
@@ -192,8 +198,8 @@ namespace BMS.BLL.Services
                 ShopId = application.Id,
                 Phone = application.PhoneNumber,
             };
-    
-        //  public string? Password { get; set; } = null!;
+
+            //  public string? Password { get; set; } = null!;
             var password = AccountCreationHelper.GenerateRandomPassword();
 
             var result = await _userManager.CreateAsync(userEntity, password);
