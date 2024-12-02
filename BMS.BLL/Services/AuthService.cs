@@ -108,8 +108,15 @@ namespace BMS.BLL.Services
 
             var isEmailActivated = await _userManager.IsEmailConfirmedAsync(user);
             if (!isEmailActivated)
+            {
+                if (user.CreateDate.AddHours(0.5) < DateTimeHelper.GetCurrentTime())
+                {
+                    var token1 = await _userManager.GenerateEmailConfirmationTokenAsync(user);
+                    await _emailService.SendEmailConfirmationMoblieAsync(user, token1);
+                    throw new UnactivatedEmailException($"User with email {userToLoginDTO.Email} unconfirmed. We have sent email to confirm again");
+                }
                 throw new UnactivatedEmailException($"User with email {userToLoginDTO.Email} unconfirmed.");
-
+            }
             var result = await _signInManager.CheckPasswordSignInAsync(user, userToLoginDTO.Password, false);
             if (!result.Succeeded)
                 throw new InvalidPasswordException($"Invalid password");

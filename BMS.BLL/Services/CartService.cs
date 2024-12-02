@@ -92,6 +92,7 @@ namespace BMS.BLL.Services
                 if (cartDetailInDB != null && cartDetailInDB.Note.Equals(cartDetails.Note))
                 {
                     cartDetailInDB.Quantity += cartDetails.Quantity;
+                    cartDetailInDB.Price += cartDetails.Price;
                     await _unitOfWork.CartDetailRepository.UpdateAsync(cartDetailInDB);
                 } else
                 {
@@ -189,7 +190,7 @@ namespace BMS.BLL.Services
                 throw new ArgumentNullException("Shop does not exist or has been deleted");
             }
             Expression<Func<Cart, bool>> filter = cart => (cart.CustomerId == userId && cart.ShopId == shopId);
-            var cart = (await _unitOfWork.CartRepository.FindAsyncAsQueryable(filter)).FirstOrDefault();
+            var cart = (await _unitOfWork.CartRepository.GetAllAsyncAsQueryable()).Where(filter).Include(x => x.CartDetails).FirstOrDefault();
             if (cart == null)
             {
                 Cart newCart = new Cart();
@@ -201,7 +202,8 @@ namespace BMS.BLL.Services
                 {
                     Data = await GenerateShareLink(newCart.Id)
                 };
-            } else
+            } 
+            else
             {
                 if (cart.IsGroup == false)
                 {
@@ -209,7 +211,33 @@ namespace BMS.BLL.Services
                     cart.LastUpdateDate = DateTimeHelper.GetCurrentTime();
                     await _unitOfWork.CartRepository.UpdateAsync(cart);
                 }
-
+                var cartGroupUser = (await _unitOfWork.CartGroupUserRepository.GetAllAsyncAsQueryable()).Where(x => x.CartId == cart.Id && x.UserId == userId).FirstOrDefault();
+                if (cartGroupUser != null)
+                {
+                    foreach (var cartDetail in cart.CartDetails)
+                    {
+                        if (cartDetail.CartGroupUserId == null)
+                        {
+                            cartDetail.CartGroupUserId = cartGroupUser.Id;
+                        }
+                    }
+                }
+                else
+                {
+                    CartGroupUser newCartGroupUser = new CartGroupUser()
+                    {
+                        UserId = userId,
+                        CartId = cart.Id,
+                    };
+                    await _unitOfWork.CartGroupUserRepository.AddAsync(newCartGroupUser);
+                    foreach (var cartDetail in cart.CartDetails)
+                    {
+                        if (cartDetail.CartGroupUserId == null)
+                        {
+                            cartDetail.CartGroupUserId = newCartGroupUser.Id;
+                        }
+                    }
+                }
                 return new ServiceActionResult()
                 {
                     Data = await GenerateShareLink(cart.Id)
