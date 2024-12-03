@@ -21,7 +21,7 @@ namespace BMS.API.Controllers
         }
 
 
-        [HttpDelete("{id}")]
+        [HttpDelete]
 
         public async Task<IActionResult> DeleteRegisterCategory([FromBody] CreateRegisterCategoryRequest category)
         {
