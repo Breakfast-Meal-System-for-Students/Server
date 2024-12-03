@@ -23,11 +23,11 @@ namespace BMS.API.Controllers
 
         [HttpDelete("{id}")]
 
-        public async Task<IActionResult> DeleteRegisterCategory(Guid id)
+        public async Task<IActionResult> DeleteRegisterCategory([FromBody] CreateRegisterCategoryRequest category)
         {
 
             return await ExecuteServiceLogic(
-                               async () => await _registerCategoryService.DeleteReCategory(id).ConfigureAwait(false)
+                               async () => await _registerCategoryService.DeleteReCategory(category).ConfigureAwait(false)
                                           ).ConfigureAwait(false);
         }
 
