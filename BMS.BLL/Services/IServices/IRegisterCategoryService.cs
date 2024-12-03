@@ -16,7 +16,7 @@ namespace BMS.BLL.Services.IServices
         Task<ServiceActionResult> GetProductByCategory(Guid categoryId, RegisterCategoryRequest queryParameters);
         Task<ServiceActionResult> AddReCategory(CreateRegisterCategoryRequest request);
 
-        Task<ServiceActionResult> DeleteReCategory(Guid id);
+        Task<ServiceActionResult> DeleteReCategory(CreateRegisterCategoryRequest request);
 
     }
 }

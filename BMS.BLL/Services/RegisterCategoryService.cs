@@ -90,6 +90,14 @@ namespace BMS.BLL.Services
                     Detail = "Category is not Exists Or Deleted"
                 };
             }
+            var registerCategory = (await _unitOfWork.RegisterCategoryRepository.GetAllAsyncAsQueryable()).Where(x => x.CategoryId == request.CategoryId && x.ProductId == request.ProductId).FirstOrDefault();
+            if (registerCategory != null)
+            {
+                return new ServiceActionResult(false)
+                {
+                    Detail = $"The Product {product.Name} have been registered in the Category {category.Name}."
+                };
+            }
             var reCategoryEntity = _mapper.Map<RegisterCategory>(request);
             
             await _unitOfWork.RegisterCategoryRepository.AddAsync(reCategoryEntity);
@@ -101,10 +109,22 @@ namespace BMS.BLL.Services
 
 
 
-        public async Task<ServiceActionResult> DeleteReCategory(Guid id)
+        public async Task<ServiceActionResult> DeleteReCategory(CreateRegisterCategoryRequest request)
         {
-            await _unitOfWork.RegisterCategoryRepository.DeleteAsync(id);
-            return new ServiceActionResult();
+            var registerCategory = (await _unitOfWork.RegisterCategoryRepository.GetAllAsyncAsQueryable()).Where(x => x.CategoryId == request.CategoryId && x.ProductId == request.ProductId).FirstOrDefault();
+            if (registerCategory != null)
+            {
+                await _unitOfWork.RegisterCategoryRepository.DeleteAsync(registerCategory.Id);
+                return new ServiceActionResult();
+            }
+            else
+            {
+                return new ServiceActionResult(false)
+                {
+                    Detail = "The Product have not been registered tin this Category yet."
+                };
+            }
+                
         }
 
     }
