@@ -54,7 +54,7 @@ namespace BMS.BLL.Services
 
             if (queryParameters.IsAICanDetect != null)
             {
-                ProductQueryable = ProductQueryable.Where(m => m.isOutOfStock == queryParameters.IsOutOfStock);
+                ProductQueryable = ProductQueryable.Where(m => m.isAICanDetect == queryParameters.IsAICanDetect);
             }
 
             ProductQueryable = queryParameters.IsDesc ? ProductQueryable.OrderByDescending(a => a.CreateDate) : ProductQueryable.OrderBy(a => a.CreateDate);
