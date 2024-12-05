@@ -1,4 +1,5 @@
 ﻿using BMS.BLL.Models.Requests.Basic;
+using BMS.Core.Domains.Enums;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,5 +13,6 @@ namespace BMS.BLL.Models.Requests.Product
         public string? Search { get; set; }
         public bool IsDesc { get; set; } = false;
         public bool? IsOutOfStock { get; set; } = null;
+        public AIDetectStatus? IsAICanDetect { get; set; } = null;
     }
 }

@@ -42,9 +42,15 @@ namespace BMS.API.Controllers
         [HttpGet("confirm-email")]
         public async Task<IActionResult> ConfirmEmail(string userId, string token)
         {
-            return await ExecuteServiceLogic(
-                async () => await _authService.ConfirmEmail(userId, token).ConfigureAwait(false)
-            ).ConfigureAwait(false);
+            var result = await _authService.ConfirmEmail(userId, token).ConfigureAwait(false);
+            if (result.IsSuccess)
+            {
+                return Content("<html><body><h1>Email is confirmed!</h1><p>The Email Is Confirmed. Thank you for confirming your email.</p></body></html>", "text/html");
+            }
+            else
+            {
+                return Content("<html><body><h1>Invalid or Expired Token</h1><p>Please request a new email confirmation.</p></body></html>", "text/html");
+            }
         }
 
         [HttpPost("logout")]

@@ -6,6 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using BMS.BLL.Models.Requests.Product;
+using BMS.Core.Domains.Enums;
 
 namespace BMS.BLL.Services.IServices
 {
@@ -14,7 +15,7 @@ namespace BMS.BLL.Services.IServices
     {
         Task<ServiceActionResult> GetAllProduct(ProductRequest queryParameters);
         Task<ServiceActionResult> AddProduct(CreateProductRequest request);
-
+        Task<ServiceActionResult> AddProductToStaff(CreateProductRequest request);
         Task<ServiceActionResult> UpdateProduct(Guid id, UpdateProductRequest request);
         Task<ServiceActionResult> DeleteProduct(Guid id);
         Task<ServiceActionResult> GetProduct(Guid id);
@@ -22,5 +23,6 @@ namespace BMS.BLL.Services.IServices
         Task<ServiceActionResult> GetAllProductByShopId(Guid id, ProductRequest queryParameters);
         Task<int> GetInventoryOfProductInDay(Guid productId, DateTime orderDate);
         Task<ServiceActionResult> ChangeOutOfStock(Guid productId);
+        Task<ServiceActionResult> ChangeAICanDetect(Guid productId, AIDetectStatus status);
     }
 }

@@ -40,6 +40,15 @@ namespace BMS.API.Controllers
                                async () => await _productService.AddProduct(Product).ConfigureAwait(false)
                                           ).ConfigureAwait(false);
         }
+
+        [HttpPost("AddProductToStaff")]
+        public async Task<IActionResult> AddProductToStaff([FromForm] CreateProductRequest Product)
+        {
+            return await ExecuteServiceLogic(
+                               async () => await _productService.AddProductToStaff(Product).ConfigureAwait(false)
+                                          ).ConfigureAwait(false);
+        }
+
         [HttpGet]
         public async Task<IActionResult> GetAllProduct([FromQuery] ProductRequest pagingRequest)
         {
@@ -77,6 +86,15 @@ namespace BMS.API.Controllers
         {
             return await ExecuteServiceLogic(
                 async () => await _productService.ChangeOutOfStock(productId).ConfigureAwait(false)
+            ).ConfigureAwait(false);
+        }
+
+        [HttpPut(("ChangeAICanDetect"))]
+        [Authorize(Roles = UserRoleConstants.STAFF)]
+        public async Task<IActionResult> ChangeAICanDetect([FromForm] ChangeAIDetectRequest request)
+        {
+            return await ExecuteServiceLogic(
+                async () => await _productService.ChangeAICanDetect(request.ProductId, request.Status).ConfigureAwait(false)
             ).ConfigureAwait(false);
         }
     }

@@ -103,6 +103,25 @@ namespace BMS.BLL.Helpers
                     Best regards,";
         }
 
+        public static string GetEmailToSendPWToStaff(string platformEmail, string account, string password)
+        {
+            return $@"Welcome to the BMS Team! 🎉<br>
+
+                    We are pleased to inform you that your staff account has been created successfully. Below are your login credentials for the BMS platform:<br>
+                    <strong>Account:</strong> {account}<br>
+                    <strong>Password:</strong> {password}<br>
+
+                    Please make sure to log in and change your password as soon as possible to ensure the security of your account. Choose a strong and unique password to keep your information safe.<br>
+
+                    If you encounter any issues or need assistance, feel free to contact our support team at {platformEmail}.<br>
+
+                    Thank you for being part of the BMS team, and we look forward to working with you! 🌟<br>
+
+                    Best regards,<br>
+                    BMS Admin Team";
+
+        }
+
         public static string GetConfirmEmailBody(string link, string userName, string platformEmail)
         {
             return $@"Dear {userName},

@@ -1,4 +1,5 @@
 ﻿using BMS.Core.Domains.Entities.BaseEntities;
+using BMS.Core.Domains.Enums;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -20,6 +21,7 @@ namespace BMS.Core.Domains.Entities
         public double PrepareTime {  get; set; }
         public int? Inventory { get; set; }
         public bool isOutOfStock { get; set; }
+        public AIDetectStatus isAICanDetect {  get; set; }
         public ICollection<Image>? Images { get; set; } = new List<Image>();
         public ICollection<OrderItem>? OrderItems { get; set; } = new List<OrderItem>();
 

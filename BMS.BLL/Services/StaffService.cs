@@ -50,9 +50,19 @@ namespace BMS.BLL.Services
                 bool isInShopRole = roles.Contains(UserRoleConstants.STAFF);
                 if (isInShopRole)
                 {
-                    throw new BusinessRuleException($"{request.Email} is already used by a Staff in System");
+                    return new ServiceActionResult(false)
+                    {
+                        Detail = $"{request.Email} is already used by a Staff in System"
+                    };
                 }
-                if (!await _roleManager.RoleExistsAsync(UserRoleConstants.STAFF))
+                else
+                {
+                    return new ServiceActionResult(false)
+                    {
+                        Detail = $"{request.Email} is already used in System. Please Input another Email"
+                    };
+                }
+                /*if (!await _roleManager.RoleExistsAsync(UserRoleConstants.STAFF))
                 {
                     await _roleManager.CreateAsync(new Role { Name = UserRoleConstants.STAFF });
                 }
@@ -63,7 +73,7 @@ namespace BMS.BLL.Services
                     var error = roleResultIn.Errors.First().Description;
                     throw new AddRoleException(error);
                 }
-                return new ServiceActionResult(true, "Add Role Staff For User Complete");
+                return new ServiceActionResult(true, "Add Role Staff For User Complete");*/
             }
             var staff = _mapper.Map<User>(request);
 
@@ -82,7 +92,7 @@ namespace BMS.BLL.Services
                     await _userManager.DeleteAsync(staff);
                     throw new AddRoleException("Can not create account with role");
                 }
-                await _emailService.SendEmailAsync(request.Email, "YOU HAVE NEW INFORMATION FROM BMS", EmailHelper.GetAcceptedEmailBody("thunghiem3340@gmail.com", request.Email, password), true);
+                await _emailService.SendEmailAsync(request.Email, "YOU HAVE NEW INFORMATION FROM BMS", EmailHelper.GetEmailToSendPWToStaff("thunghiem3340@gmail.com", request.Email, password), true);
                 return new ServiceActionResult();
             }
             catch
