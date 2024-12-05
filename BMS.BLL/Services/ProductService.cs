@@ -229,7 +229,7 @@ namespace BMS.BLL.Services
         public async Task<ServiceActionResult> GetAllProductByShopId(Guid id,ProductRequest queryParameters)
         {
 
-            IQueryable<Product> ProductQueryable = (await _unitOfWork.ProductRepository.GetAllAsyncAsQueryable()).Where(a => a.IsDeleted == false & a.ShopId == id).Include(a => a.Images);
+            IQueryable<Product> ProductQueryable = (await _unitOfWork.ProductRepository.GetAllAsyncAsQueryable()).Where(a => a.IsDeleted == false && a.ShopId == id && a.isAICanDetect == AIDetectStatus.ACCEPTED).Include(a => a.Images);
 
 
 
@@ -242,10 +242,10 @@ namespace BMS.BLL.Services
             {
                 ProductQueryable = ProductQueryable.Where(m => m.isOutOfStock == queryParameters.IsOutOfStock);
             }
-            if (queryParameters.IsAICanDetect != null)
+            /*if (queryParameters.IsAICanDetect != null)
             {
                 ProductQueryable = ProductQueryable.Where(m => m.isOutOfStock == queryParameters.IsOutOfStock);
-            }
+            }*/
             ProductQueryable = queryParameters.IsDesc ? ProductQueryable.OrderByDescending(a => a.CreateDate) : ProductQueryable.OrderBy(a => a.CreateDate);
 
             var paginationResult = PaginationHelper
