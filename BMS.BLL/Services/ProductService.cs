@@ -49,7 +49,7 @@ namespace BMS.BLL.Services
 
             if (queryParameters.IsOutOfStock != null)
             {
-                ProductQueryable = ProductQueryable.Where(m => m.isOutOfStock == queryParameters.IsOutOfStock);
+                ProductQueryable = ProductQueryable.Where(m => m.isOutOfStock == queryParameters.IsOutOfStock); 
             }
 
             if (queryParameters.IsAICanDetect != null)
@@ -120,17 +120,11 @@ namespace BMS.BLL.Services
         public async Task<ServiceActionResult> AddProductToStaff(CreateProductRequest request)
         {
             var productEntity = _mapper.Map<Product>(request);
-            productEntity.isAICanDetect = AIDetectStatus.ACCEPTED;
-            ImageAIResponse temp = new ImageAIResponse();
+            productEntity.isAICanDetect = AIDetectStatus.PENDING;
             if (request.Images != null && request.Images.Any())
             {
                 foreach (var imageFile in request.Images)
                 {
-                    temp = await _productAIDetectService.DetectImageProductAsync(imageFile, productEntity.Name);
-                    if (temp != null && temp.Result.Equals("0"))
-                    {
-                        productEntity.isAICanDetect = AIDetectStatus.PENDING;
-                    }
                     var imageUrl = await _fileStorageService.UploadFileBlobAsync(imageFile);
                     var imageEntity = new Image
                     {
