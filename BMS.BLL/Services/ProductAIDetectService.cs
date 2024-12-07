@@ -201,7 +201,7 @@ namespace BMS.BLL.Services
             try
             {
                 // Tạo câu truy vấn yêu cầu AI phân tích feedback
-                string instruction = "Analyze the feedback content to detect inappropriate or offensive language in English or Vietnamese. If the feedback contains inappropriate or offensive words, return result = 0. If the feedback is appropriate, return result = 1. Use the following format exactly: ```json: {\"result\": \"1 or 0\", \"reason\": \"this is the reason\"}. For example: {\"result\": \"0\", \"reason\": \"Feedback contains offensive language.\"}.";
+                string instruction = "Analyze the feedback:( "+ feedback + ") content to detect inappropriate or offensive language in English or Vietnamese. If the feedback contains inappropriate or offensive words, return result = 0. If the feedback is appropriate, return result = 1. Use the following format exactly: json: {\"result\": \"1 or 0\", \"reason\": \"this is the reason\"}. For example: {\"result\": \"0\", \"reason\": \"Feedback contains offensive language.\"}.";
 
                 // Chuẩn bị nội dung JSON cho yêu cầu AI
                 var requestBody = new
@@ -217,8 +217,7 @@ namespace BMS.BLL.Services
                 {
                     parts = new object[]
                     {
-                        new { text = instruction },
-                        new { text = feedback }
+                        new { text = instruction }
                     }
                 }
             }
@@ -248,9 +247,14 @@ namespace BMS.BLL.Services
                 }
 
                 var responseContent = await response.Content.ReadAsStringAsync();
+                // Parse JSON để trích xuất text
+                var jsonObject = JsonNode.Parse(responseContent);
+                var text = jsonObject?["candidates"]?[0]?["content"]?["parts"]?[0]?["text"]?.ToString();
 
+                if (string.IsNullOrEmpty(text))
+                    throw new Exception("Failed to extract 'text' from Gemini AI response.");
                 // Chuyển đổi phản hồi từ AI sang đối tượng JSON
-                return GetResultAndReasonFromJson(responseContent);
+                return GetResultAndReasonFromJson(text);
             }
             catch (Exception ex)
             {
