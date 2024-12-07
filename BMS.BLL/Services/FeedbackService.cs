@@ -1,8 +1,10 @@
 ﻿using AutoMapper;
+using BMS.BLL.AI;
 using BMS.BLL.Helpers;
 using BMS.BLL.Models;
 using BMS.BLL.Models.Requests.Basic;
 using BMS.BLL.Models.Requests.Feedbacks;
+using BMS.BLL.Models.Responses.AI;
 using BMS.BLL.Models.Responses.Feedbacks;
 using BMS.BLL.Models.Responses.Shop;
 using BMS.BLL.Services.BaseServices;
@@ -25,11 +27,13 @@ namespace BMS.BLL.Services
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
+        private readonly IProductAIDetectService _productAIDetectService;
 
-        public FeedbackService(IUnitOfWork unitOfWork, IMapper mapper) : base(unitOfWork, mapper)
+        public FeedbackService(IUnitOfWork unitOfWork, IMapper mapper, IProductAIDetectService productAIDetectService) : base(unitOfWork, mapper)
         {
             _unitOfWork = unitOfWork;
             _mapper = mapper;
+            _productAIDetectService = productAIDetectService;
         }
 
         public async Task<ServiceActionResult> AddFeedback(FeedbackRequest request)
@@ -40,6 +44,17 @@ namespace BMS.BLL.Services
                 return new ServiceActionResult
                 {
                     Detail = "Shop is not valid or delete"
+                };
+            }
+            ImageAIResponse temp = new ImageAIResponse();
+            temp = await _productAIDetectService.AnalyzeFeedbackAsync(request.Description);
+            if (temp != null && temp.Result.Equals("0"))
+            {
+                return new ServiceActionResult(false)
+                {
+                    Detail = temp.Reason,
+                    IsSuccess = false,
+
                 };
             }
             int count = (await _unitOfWork.FeedbackRepository.GetAllAsyncAsQueryable()).Where(x => x.ShopId == request.ShopId && x.Status == FeedbackStatus.APPROVED).Count();

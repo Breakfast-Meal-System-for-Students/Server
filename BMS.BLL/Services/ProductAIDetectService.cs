@@ -191,6 +191,72 @@ namespace BMS.BLL.Services
                 throw new Exception($"Error parsing JSON: {ex.Message}");
             }
 
-        } 
+        }
+        // Xử lý feedback và xác định nội dung không phù hợp
+        public async Task<ImageAIResponse> AnalyzeFeedbackAsync(string feedback)
+        {
+            if (string.IsNullOrWhiteSpace(feedback))
+                throw new ArgumentException("Invalid feedback content.");
+
+            try
+            {
+                // Tạo câu truy vấn yêu cầu AI phân tích feedback
+                string instruction = "Analyze the feedback content to detect inappropriate or offensive language in English or Vietnamese. If the feedback contains inappropriate or offensive words, return result = 0. If the feedback is appropriate, return result = 1. Use the following format exactly: ```json: {\"result\": \"1 or 0\", \"reason\": \"this is the reason\"}. For example: {\"result\": \"0\", \"reason\": \"Feedback contains offensive language.\"}.";
+
+                // Chuẩn bị nội dung JSON cho yêu cầu AI
+                var requestBody = new
+                {
+                    model = "gemini-1.5-flash",
+                    generation_config = new
+                    {
+                        response_mime_type = "application/json"
+                    },
+                    contents = new[]
+                    {
+                new
+                {
+                    parts = new object[]
+                    {
+                        new { text = instruction },
+                        new { text = feedback }
+                    }
+                }
+            }
+                };
+
+                var jsonContent = JsonSerializer.Serialize(requestBody);
+
+                // Lấy thông tin endpoint và API key
+                var endpoint = _configuration["GeminiAI:Endpoint"];
+                var apiKey = _configuration["GeminiAI:ApiKey"];
+
+                // Tạo HTTP client và gửi request
+                var client = _httpClientFactory.CreateClient();
+                var request = new HttpRequestMessage
+                {
+                    Method = HttpMethod.Post,
+                    RequestUri = new Uri($"{endpoint}?key={apiKey}"),
+                    Content = new StringContent(jsonContent, Encoding.UTF8, "application/json")
+                };
+
+                var response = await client.SendAsync(request);
+
+                if (!response.IsSuccessStatusCode)
+                {
+                    var errorContent = await response.Content.ReadAsStringAsync();
+                    throw new Exception($"Error from Gemini AI: {errorContent}");
+                }
+
+                var responseContent = await response.Content.ReadAsStringAsync();
+
+                // Chuyển đổi phản hồi từ AI sang đối tượng JSON
+                return GetResultAndReasonFromJson(responseContent);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception($"Error processing feedback: {ex.Message}", ex);
+            }
+        }
+
     }
 }

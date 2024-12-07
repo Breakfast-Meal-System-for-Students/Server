@@ -38,5 +38,23 @@ namespace BMS.API.Controllers
             }
         }
 
+        [HttpPost("DetectFeedback")]
+        public async Task<IActionResult> DetectFeedback(string feedback)
+        {
+            try
+            {
+                var result = await _productAIDetectService.AnalyzeFeedbackAsync(feedback);
+                return Ok(result);
+            }
+            catch (ArgumentException ex)
+            {
+                return BadRequest(ex.Message);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Internal server error: {ex.Message}");
+            }
+        }
+
     }
 }
