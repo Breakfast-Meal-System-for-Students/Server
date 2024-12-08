@@ -16,6 +16,12 @@ namespace BMS.BLL.Utilities
             //return TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, AppTimeZone);
             return DateTime.UtcNow.AddHours(7);
         }
+
+        public static DateTime GetVietNameseTime(DateTime time)
+        {
+            //return TimeZoneInfo.ConvertTimeFromUtc(time, AppTimeZone);
+            return time.AddHours(7);
+        }
     }
 
 }

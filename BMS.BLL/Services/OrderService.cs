@@ -379,7 +379,7 @@ namespace BMS.BLL.Services
                 ShopId = cart.ShopId,
                 CustomerId = cart.CustomerId,
                 TotalPrice = cart.CartDetails.Sum(x => x.Quantity * x.Price),
-                OrderDate = request.OrderDate
+                OrderDate = request.OrderDate == null ? null : DateTimeHelper.GetVietNameseTime(request.OrderDate.GetValueOrDefault())
             };
 
             double discount = 0;
@@ -646,6 +646,37 @@ namespace BMS.BLL.Services
                 }
             }
             if(request.Status != 0)
+            {
+                orders = orders.Where(x => x.Status.Equals(request.Status.ToString()));
+            }
+            return new ServiceActionResult()
+            {
+                Data = orders.Count()
+            };
+        }
+
+        public async Task<ServiceActionResult> GetTotalOrderInShop(Guid shopId, TotalOrdersRequest request)
+        {
+            var orders = (await _unitOfWork.OrderRepository.GetAllAsyncAsQueryable()).Where(x => x.ShopId == shopId);
+            if (request.Year != 0)
+            {
+                if (request.Month != 0)
+                {
+                    if (request.Day != 0)
+                    {
+                        orders = orders.Where(x => x.CreateDate.Year == request.Year && x.CreateDate.Month == request.Month && x.CreateDate.Day == request.Day);
+                    }
+                    else
+                    {
+                        orders = orders.Where(x => x.CreateDate.Year == request.Year && x.CreateDate.Month == request.Month);
+                    }
+                }
+                else
+                {
+                    orders = orders.Where(x => x.CreateDate.Year == request.Year);
+                }
+            }
+            if (request.Status != 0)
             {
                 orders = orders.Where(x => x.Status.Equals(request.Status.ToString()));
             }

@@ -20,7 +20,7 @@ namespace BMS.BLL.Services.IServices
         Task<ServiceActionResult> GetOrderByShop(Guid id, SearchOrderRequest request);
         Task<ServiceActionResult> ChangeOrderStatus(Guid id, OrderStatus status, Guid userId);
         Task<ServiceActionResult> GetTotalOrder(TotalOrdersRequest request);
-
+        Task<ServiceActionResult> GetTotalOrderInShop(Guid shopId,TotalOrdersRequest request);
         Task<ServiceActionResult> CreateOrder(CreateOrderRequest request);
         Task<ServiceActionResult> GetStatusOrder(Guid orderId);
         Task<ServiceActionResult> UpdateStatusOrder(Guid id, string status);

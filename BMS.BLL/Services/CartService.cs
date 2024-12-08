@@ -50,6 +50,13 @@ namespace BMS.BLL.Services
                     Detail = "Product is not in This Shop"
                 };
             }
+            else if(productInShop.isOutOfStock)
+            {
+                return new ServiceActionResult(false)
+                {
+                    Detail = "Product is out of stock"
+                };
+            }
             /*else
             {
 
@@ -133,6 +140,13 @@ namespace BMS.BLL.Services
                     return new ServiceActionResult(false)
                     {
                         Detail = "Product is not in This Shop"
+                    };
+                }
+                else if (productInShop.isOutOfStock)
+                {
+                    return new ServiceActionResult(false)
+                    {
+                        Detail = "Product is out of stock"
                     };
                 }
                 /*else

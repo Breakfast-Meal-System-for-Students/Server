@@ -93,6 +93,15 @@ namespace BMS.API.Controllers
             ).ConfigureAwait(false);
         }
 
+        [HttpGet("GetTotalOrderInShop/{shopId}")]
+        //[Authorize(Roles = UserRoleConstants.ADMIN)]
+        public async Task<IActionResult> GetTotalOrderInShop(Guid shopId, [FromQuery] TotalOrdersRequest request)
+        {
+            return await ExecuteServiceLogic(
+                async () => await _orderService.GetTotalOrderInShop(shopId, request).ConfigureAwait(false)
+            ).ConfigureAwait(false);
+        }
+
         [HttpPost("ChangeOrderStatus")]
         [Authorize]
         public async Task<IActionResult> ChangeOrderStatus([FromForm]ChangeOrderStatusRequest request)
