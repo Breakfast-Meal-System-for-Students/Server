@@ -75,8 +75,10 @@ namespace BMS.BLL.Services
                 productEntity.Inventory = 9999;
             }*/
 
+            productEntity.isAICanDetect = AIDetectStatus.ACCEPTED;
+            await _unitOfWork.ProductRepository.AddAsync(productEntity);
+
             ImageAIResponse temp = new ImageAIResponse();
-            // Handle image upload and create Image entities
             if (request.Images != null && request.Images.Any())
             {
                 foreach (var imageFile in request.Images)
@@ -98,7 +100,7 @@ namespace BMS.BLL.Services
                     var imageEntity = new Image
                     {
                         Url = imageUrl,
-                        Id = productEntity.Id // Associate the image with the product
+                        ProductId = productEntity.Id // Associate the image with the product
                     };
 
                     // Add the image entity to the Product's Images collection
@@ -106,9 +108,6 @@ namespace BMS.BLL.Services
                 }
                 await _unitOfWork.ImageRepository.AddRangeAsync(productEntity.Images);
             }
-            productEntity.isAICanDetect = AIDetectStatus.ACCEPTED;
-            // Add the Product to the repository
-            await _unitOfWork.ProductRepository.AddAsync(productEntity);
 
             // Commit the transaction
             await _unitOfWork.CommitAsync();
@@ -166,7 +165,6 @@ namespace BMS.BLL.Services
             // Handle image updates
             if (request.Images != null && request.Images.Any())
             {
-                // Clear existing images if necessary (optional, based on your use case)
                 product.Images.Clear();
                 var images = (await _unitOfWork.ImageRepository.GetAllAsyncAsQueryable()).Where(x => x.ProductId == product.Id).AsNoTracking().ToList();
                 if (images != null && images.Any())
@@ -182,10 +180,9 @@ namespace BMS.BLL.Services
                     var imageEntity = new Image
                     {
                         Url = imageUrl,
-                        Id = product.Id // Associate image with the product
+                        ProductId = product.Id 
                     };
 
-                    // Add the new image to the product's Images collection
                     product.Images.Add(imageEntity);
                 }
                 if (product.Images != null && product.Images.Any())

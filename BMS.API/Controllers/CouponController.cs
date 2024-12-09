@@ -3,6 +3,7 @@ using BMS.BLL.Models.Requests.Coupon;
 using BMS.BLL.Services;
 using BMS.BLL.Services.BaseServices;
 using BMS.BLL.Services.IServices;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace BMS.API.Controllers
@@ -25,7 +26,7 @@ namespace BMS.API.Controllers
 
 
         [HttpDelete("{id}")]
-
+        [Authorize]
         public async Task<IActionResult> DeleteCoupon(Guid id)
         {
 
@@ -35,6 +36,7 @@ namespace BMS.API.Controllers
         }
 
         [HttpPost]
+        [Authorize]
         public async Task<IActionResult> CreateCoupon([FromBody] CreateCouponRequest Coupon)
         {
             return await ExecuteServiceLogic(
@@ -42,6 +44,7 @@ namespace BMS.API.Controllers
                                           ).ConfigureAwait(false);
         }
         [HttpGet("get-all-coupon")]
+        [Authorize]
         public async Task<IActionResult> GetAllCoupon([FromQuery] CouponRequest pagingRequest)
         {
             return await ExecuteServiceLogic(
@@ -49,6 +52,7 @@ namespace BMS.API.Controllers
                                           ).ConfigureAwait(false);
         }
         [HttpGet("get-all-coupon-for-shop")]
+        [Authorize]
         public async Task<IActionResult> GetAllCouponForShop(Guid shopId,[FromQuery] CouponRequest pagingRequest)
         {
             return await ExecuteServiceLogic(
@@ -56,6 +60,7 @@ namespace BMS.API.Controllers
                                           ).ConfigureAwait(false);
         }
         [HttpPut("{id}")]
+        [Authorize]
         public async Task<IActionResult> UpdateCoupon(Guid Id, [FromBody] UpdateCouponRequest Coupon)
         {
             return await ExecuteServiceLogic(
@@ -63,6 +68,7 @@ namespace BMS.API.Controllers
                                           ).ConfigureAwait(false);
         }
         [HttpGet("{id}")]
+        [Authorize]
         public async Task<IActionResult> GetCoupon(Guid id)
         {
             return await ExecuteServiceLogic(

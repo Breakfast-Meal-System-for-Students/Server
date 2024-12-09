@@ -32,6 +32,7 @@ namespace BMS.API.Controllers
         }
 
         [HttpGet("{id}")]
+        [Authorize]
         public async Task<IActionResult> GetUserDetails(Guid id)
         {
             return await ExecuteServiceLogic(

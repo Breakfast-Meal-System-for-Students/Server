@@ -3,6 +3,7 @@ using BMS.BLL.Models.Requests.Category;
 using BMS.BLL.Models.Requests.RegisterCategory;
 using BMS.BLL.Services.BaseServices;
 using BMS.BLL.Services.IServices;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace BMS.API.Controllers
@@ -22,7 +23,7 @@ namespace BMS.API.Controllers
 
 
         [HttpDelete]
-
+        [Authorize]
         public async Task<IActionResult> DeleteRegisterCategory([FromBody] CreateRegisterCategoryRequest category)
         {
 
@@ -32,6 +33,7 @@ namespace BMS.API.Controllers
         }
 
         [HttpPost]
+        [Authorize]
         public async Task<IActionResult> CreateRegisterCategory([FromBody] CreateRegisterCategoryRequest category)
         {
             return await ExecuteServiceLogic(
@@ -39,6 +41,7 @@ namespace BMS.API.Controllers
                                           ).ConfigureAwait(false);
         }
         [HttpGet("GetAllCategorybyProductId")]
+        [Authorize]
         public async Task<IActionResult> GetAllCategorybyProductId(Guid productId, [FromQuery] RegisterCategoryRequest pagingRequest)
         {
             return await ExecuteServiceLogic(
@@ -47,6 +50,7 @@ namespace BMS.API.Controllers
         }
 
         [HttpGet("GetAllProductByCategory")]
+        [Authorize]
         public async Task<IActionResult> GetAllProductByCategory(Guid categoryId, [FromQuery] RegisterCategoryRequest pagingRequest)
         {
             return await ExecuteServiceLogic(
