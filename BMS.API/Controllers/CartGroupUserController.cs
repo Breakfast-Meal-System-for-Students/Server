@@ -19,7 +19,7 @@ namespace BMS.API.Controllers
         }
 
         [HttpGet("GetAllUserInGroupCart")]
-        [Authorize]
+        //[Authorize]
         //[Authorize(Roles = UserRoleConstants.USER)]
         public async Task<IActionResult> GetAllUserInGroupCart([FromQuery]Guid cartId, [FromQuery]PagingRequest request)
         {

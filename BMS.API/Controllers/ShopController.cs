@@ -23,7 +23,7 @@ namespace BMS.API.Controllers
 
 
         [HttpDelete("{id}")]
-        [Authorize]
+
         public async Task<IActionResult> DeleteShop(Guid id)
         {
 
@@ -33,7 +33,6 @@ namespace BMS.API.Controllers
         }
 
         [HttpGet]
-        [Authorize]
         public async Task<IActionResult> GetAllShop([FromQuery] ShopRequest pagingRequest)
         {
             return await ExecuteServiceLogic(
@@ -42,7 +41,6 @@ namespace BMS.API.Controllers
         }
 
         [HttpPut("{id}")]
-        [Authorize]
         public async Task<IActionResult> UpdateShop(Guid Id, [FromForm] UpdateShopRequest Shop)
         {
             return await ExecuteServiceLogic(
@@ -51,7 +49,6 @@ namespace BMS.API.Controllers
         }
 
         [HttpPut("UpdateShopByStaff/{id}")]
-        [Authorize]
         public async Task<IActionResult> UpdateShopByStaff(Guid Id, [FromForm] UpdateShopRequestByStaff Shop)
         {
             return await ExecuteServiceLogic(
@@ -60,7 +57,6 @@ namespace BMS.API.Controllers
         }
 
         [HttpGet("{id}")]
-        [Authorize]
         public async Task<IActionResult> GetShop(Guid id)
         {
             return await ExecuteServiceLogic(
@@ -69,7 +65,6 @@ namespace BMS.API.Controllers
         }
 
         [HttpGet("GetAllShopForMobile")]
-        [Authorize]
         public async Task<IActionResult> GetAllShopForMobile([FromQuery] ShopRequest pagingRequest)
         {
             return await ExecuteServiceLogic(

@@ -16,6 +16,7 @@ using BMS.Core.Domains.Enums;
 using BMS.BLL.Models.Responses.Shop;
 using Microsoft.AspNetCore.Identity;
 using BMS.BLL.Utilities;
+using Azure.Core;
 
 namespace BMS.BLL.Services
 {
@@ -239,6 +240,50 @@ namespace BMS.BLL.Services
 
 
             return new ServiceActionResult() { Data = paginationResult };
+        }
+
+        public async Task<ServiceActionResult> GetDiscountAmount(Guid voucherId, float amount)
+        {
+            var coupon = await _unitOfWork.CouponRepository.FindAsync(voucherId);
+            if (coupon == null || coupon.IsDeleted)
+            {
+                return new ServiceActionResult(false) { Detail = "Coupon does not exist or is deleted" };
+            }
+            /*if (coupon.ShopId != order.ShopId)
+            {
+                return new ServiceActionResult(false) { Detail = "Coupon is not used in this shop" };
+            }
+            if (coupon.StartDate >= order.CreateDate)
+            {
+                return new ServiceActionResult(false) { Detail = "The Date of Coupon is not yet start" };
+            }
+            else if (coupon.EndDate <= order.CreateDate)
+            {
+                return new ServiceActionResult(false) { Detail = "The Date of Coupon is Finish" };
+            }*/
+            else if (amount < coupon.MinPrice)
+            {
+                return new ServiceActionResult(false) { Detail = "Total Price of Order is not enough to use this voucher" };
+            }
+
+            var discount = coupon.isPercentDiscount
+                ? Math.Min(amount * coupon.PercentDiscount, coupon.MaxDiscount)
+                : coupon.MinDiscount;
+            if (discount > 0)
+            {
+                if (amount - discount <= 0)
+                {
+                    return new ServiceActionResult(false) { Detail = "Total Price of Order is < 0" };
+                }
+                return new ServiceActionResult(true)
+                {
+                    Data = amount - discount
+                };
+            }
+            return new ServiceActionResult(true)
+            {
+                Data = amount
+            };
         }
     }
 }

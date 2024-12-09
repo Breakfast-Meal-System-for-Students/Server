@@ -24,7 +24,6 @@ namespace BMS.API.Controllers
 
 
         [HttpDelete("{id}")]
-        [Authorize]
 
         public async Task<IActionResult> DeleteProduct(Guid id)
         {
@@ -35,7 +34,6 @@ namespace BMS.API.Controllers
         }
 
         [HttpPost]
-        [Authorize]
         public async Task<IActionResult> CreateProduct([FromForm] CreateProductRequest Product)
         {
             return await ExecuteServiceLogic(
@@ -44,7 +42,6 @@ namespace BMS.API.Controllers
         }
 
         [HttpPost("AddProductToStaff")]
-        [Authorize]
         public async Task<IActionResult> AddProductToStaff([FromForm] CreateProductRequest Product)
         {
             return await ExecuteServiceLogic(
@@ -53,7 +50,6 @@ namespace BMS.API.Controllers
         }
 
         [HttpGet]
-        [Authorize]
         public async Task<IActionResult> GetAllProduct([FromQuery] ProductRequest pagingRequest)
         {
             return await ExecuteServiceLogic(
@@ -61,7 +57,6 @@ namespace BMS.API.Controllers
                                           ).ConfigureAwait(false);
         }
         [HttpPut("{id}")]
-        [Authorize]
         public async Task<IActionResult> UpdateProduct(Guid Id,[FromForm] UpdateProductRequest Product)
         {
             return await ExecuteServiceLogic(
@@ -70,7 +65,6 @@ namespace BMS.API.Controllers
         }
 
         [HttpGet("{id}")]
-        [Authorize]
         public async Task<IActionResult> GetProduct(Guid id)
         {
             return await ExecuteServiceLogic(
@@ -79,7 +73,6 @@ namespace BMS.API.Controllers
         }
         
         [HttpGet(("all-product-by-shop-id"))]
-        [Authorize]
         public async Task<IActionResult> GetAllProductByShopid(Guid id, [FromQuery] ProductRequest pagingRequest)
         {
             return await ExecuteServiceLogic(

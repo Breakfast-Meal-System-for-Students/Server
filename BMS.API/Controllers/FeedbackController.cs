@@ -26,7 +26,6 @@ namespace BMS.API.Controllers
 
 
         [HttpPost("send-feedback")]
-        [Authorize]
         public async Task<IActionResult> CreateFeedback(FeedbackRequest request)
         {
             return await ExecuteServiceLogic(
@@ -35,7 +34,6 @@ namespace BMS.API.Controllers
         }
 
         [HttpGet("{shopId}")]
-        [Authorize]
         public async Task<IActionResult> GetFeedbacksOfAMentor(Guid shopId, [FromQuery] GetFeedbackInShop request)
         {
             return await ExecuteServiceLogic(
@@ -43,7 +41,6 @@ namespace BMS.API.Controllers
                                           ).ConfigureAwait(false);
         }
         [HttpGet]
-        [Authorize]
         public async Task<IActionResult> GetFeedbacksForStaff([FromQuery] FeedbackForStaffRequest pagingRequest)
         {
             return await ExecuteServiceLogic(
@@ -51,7 +48,6 @@ namespace BMS.API.Controllers
                                           ).ConfigureAwait(false);
         }
         [HttpPut("{Id}")]
-        [Authorize]
         public async Task<IActionResult> ReviewFeedback([FromBody] ReviewFeedbackRequest request)
         {
             return await ExecuteServiceLogic(
@@ -60,7 +56,6 @@ namespace BMS.API.Controllers
         }
 
         [HttpGet("CheckOrderIsFeedbacked")]
-        [Authorize]
         public async Task<IActionResult> CheckOrderIsFeedbacked(Guid orderId)
         {
             return await ExecuteServiceLogic(

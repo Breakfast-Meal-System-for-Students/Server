@@ -4,7 +4,6 @@ using BMS.BLL.Models.Requests.Category;
 using BMS.BLL.Models.Requests.Feedbacks;
 using BMS.BLL.Services.BaseServices;
 using BMS.BLL.Services.IServices;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace BMS.API.Controllers
@@ -27,7 +26,7 @@ namespace BMS.API.Controllers
 
 
         [HttpDelete("{id}")]
-        [Authorize]
+
         public async Task<IActionResult> DeleteCategory(Guid id)
         {
 
@@ -37,7 +36,6 @@ namespace BMS.API.Controllers
         }
 
         [HttpPost]
-        [Authorize]
         public async Task<IActionResult> CreateCategory([FromForm] CreateCategoryRequest category)
         {
             return await ExecuteServiceLogic(
@@ -45,7 +43,6 @@ namespace BMS.API.Controllers
                                           ).ConfigureAwait(false);
         }
         [HttpGet]
-        [Authorize]
         public async Task<IActionResult> GetAllCategory([FromQuery] CategoryRequest pagingRequest)
         {
             return await ExecuteServiceLogic(
@@ -54,7 +51,6 @@ namespace BMS.API.Controllers
         }
 
         [HttpGet("{id}")]
-        [Authorize]
         public async Task<IActionResult> GetCategoryById(Guid Id)
         {
             return await ExecuteServiceLogic(
@@ -62,7 +58,6 @@ namespace BMS.API.Controllers
                                           ).ConfigureAwait(false);
         }
         [HttpPut]
-        [Authorize]
         public async Task<IActionResult> UpdateCategory([FromForm] UpdateCategoryRequest category)
         {
             return await ExecuteServiceLogic(

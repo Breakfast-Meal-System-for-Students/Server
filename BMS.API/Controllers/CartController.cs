@@ -37,8 +37,8 @@ namespace BMS.API.Controllers
         }
 
         [HttpGet("GetAllCartForUser")]
-        //[Authorize]
-        [Authorize(Roles = UserRoleConstants.USER)]
+        [Authorize]
+        //[Authorize(Roles = UserRoleConstants.USER)]
         public async Task<IActionResult> GetAllCartForUser([FromQuery]PagingRequest request)
         {
             return await ExecuteServiceLogic(
@@ -47,8 +47,8 @@ namespace BMS.API.Controllers
         }
 
         [HttpGet("GetAllCartItemInCart")]
-        //[Authorize]
-        [Authorize(Roles = UserRoleConstants.USER)]
+        [Authorize]
+        //[Authorize(Roles = UserRoleConstants.USER)]
         public async Task<IActionResult> GetAllCartItemInCart(Guid cartId, [FromQuery]PagingRequest request)
         {
             return await ExecuteServiceLogic(
@@ -57,8 +57,8 @@ namespace BMS.API.Controllers
         }
 
         [HttpDelete("DeleteCart")]
-        //[Authorize]
-        [Authorize(Roles = UserRoleConstants.USER)]
+        [Authorize]
+        //[Authorize(Roles = UserRoleConstants.USER)]
         public async Task<IActionResult> DeleteCart([FromQuery]Guid cartId)
         {
             var result = await _cartService.DeleteCart(cartId).ConfigureAwait(false);
@@ -74,8 +74,8 @@ namespace BMS.API.Controllers
         }
 
         [HttpDelete("DeleteCartItem")]
-        //[Authorize]
-        [Authorize(Roles = UserRoleConstants.USER)]
+        [Authorize]
+        //[Authorize(Roles = UserRoleConstants.USER)]
         public async Task<IActionResult> DeleteCartItem([FromQuery]Guid cartItemId)
         {
             var result = await _cartService.DeleteCartItem(cartItemId).ConfigureAwait(false);
@@ -91,8 +91,8 @@ namespace BMS.API.Controllers
         }
 
         [HttpPost("AddCartDetail")]
-        //[Authorize]
-        [Authorize(Roles = UserRoleConstants.USER)]
+        [Authorize]
+        //[Authorize(Roles = UserRoleConstants.USER)]
         public async Task<IActionResult> AddCartDetail([FromBody]CartDetailRequest request)
         {
             var result = await _cartService.AddCartDetail(_userClaims.UserId, request.ShopId, request).ConfigureAwait(false);
@@ -107,8 +107,8 @@ namespace BMS.API.Controllers
         }
 
         [HttpPost("AddCartDetailForGroup")]
-        //[Authorize]
-        [Authorize(Roles = UserRoleConstants.USER)]
+        [Authorize]
+        //[Authorize(Roles = UserRoleConstants.USER)]
         public async Task<IActionResult> AddCartDetailForGroup([FromBody] CartGroupDetailRequest request)
         {
             var result = await _cartService.AddCartDetailForGroup(_userClaims.UserId, request.CartId, request).ConfigureAwait(false);
@@ -123,8 +123,8 @@ namespace BMS.API.Controllers
         }
 
         [HttpPost("UpdateCartDetail")]
-        //[Authorize]
-        [Authorize(Roles = UserRoleConstants.USER)]
+        [Authorize]
+        //[Authorize(Roles = UserRoleConstants.USER)]
         public async Task<IActionResult> UpdateCartDetail([FromBody]CartDetailRequest request)
         {
 
@@ -140,8 +140,8 @@ namespace BMS.API.Controllers
         }
 
         [HttpGet("GetCartDetail")]
-        //[Authorize]
-        [Authorize(Roles = UserRoleConstants.USER)]
+        [Authorize]
+        //[Authorize(Roles = UserRoleConstants.USER)]
         public async Task<IActionResult> GetCartDetail([FromQuery] Guid cartDetailId)
         {
             return await ExecuteServiceLogic(
@@ -150,8 +150,8 @@ namespace BMS.API.Controllers
         }
 
         [HttpGet("GetCartInShopForUser")]
-        //[Authorize]
-        [Authorize(Roles = UserRoleConstants.USER)]
+        [Authorize]
+        //[Authorize(Roles = UserRoleConstants.USER)]
         public async Task<IActionResult> GetCartInShopForUser([FromQuery] Guid shopId)
         {
             return await ExecuteServiceLogic(
@@ -160,8 +160,8 @@ namespace BMS.API.Controllers
         }
 
         [HttpGet("GetCartByID/{cartId}")]
-        //[Authorize]
-        [Authorize(Roles = UserRoleConstants.USER)]
+        [Authorize]
+        //[Authorize(Roles = UserRoleConstants.USER)]
         public async Task<IActionResult> GetCartByID(Guid cartId)
         {
             return await ExecuteServiceLogic(
@@ -187,8 +187,8 @@ namespace BMS.API.Controllers
 
 
         [HttpPost("ChangeCartToGroup")]
-        //[Authorize]
-        [Authorize(Roles = UserRoleConstants.USER)]
+        [Authorize]
+        //[Authorize(Roles = UserRoleConstants.USER)]
         public async Task<IActionResult> ChangeCartToGroup([FromForm]Guid shopId)
         {
             return await ExecuteServiceLogic(
@@ -197,8 +197,8 @@ namespace BMS.API.Controllers
         }
 
         [HttpGet("CountCartItemInShop")]
-        //[Authorize]
-        [Authorize(Roles = UserRoleConstants.USER)]
+        [Authorize]
+        //[Authorize(Roles = UserRoleConstants.USER)]
         public async Task<IActionResult> CountCartItemInShop([FromQuery] Guid shopId)
         {
             return await ExecuteServiceLogic(
