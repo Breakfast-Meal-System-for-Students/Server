@@ -313,7 +313,7 @@ namespace BMS.BLL.Services
 
         public async Task<ServiceActionResult> GetCartByID(Guid cartId)
         {
-            var cart = (await _unitOfWork.CartRepository.GetAllAsyncAsQueryable()).Where(x => x.Id == cartId).Include(y => y.CartDetails).ThenInclude(a => a.Product)
+            var cart = (await _unitOfWork.CartRepository.GetAllAsyncAsQueryable()).Where(x => x.Id == cartId).Include(y => y.CartDetails).ThenInclude(a => a.Product).ThenInclude(b => b.Images)
                                                                                           .Include(y => y.CartDetails).Include(z => z.CartGroupUsers).ThenInclude(a => a.User).FirstOrDefault();
             if (cart == null)
             {
