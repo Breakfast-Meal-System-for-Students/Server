@@ -1,4 +1,5 @@
 ﻿using BMS.Core.Domains.Entities;
+using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -23,5 +24,7 @@ namespace BMS.BLL.Models.Responses.Admin
         public string? ShopImage { get; set; } = null!;
         public ICollection<OrderItemResponse> OrderItems { get; set; } = new List<OrderItemResponse>();
         public bool IsGroup { get; set; }
+        public bool canCancel {  get; set; }
+        public bool canFeedback { get; set; }
     }
 }

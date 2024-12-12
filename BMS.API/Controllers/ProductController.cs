@@ -97,5 +97,13 @@ namespace BMS.API.Controllers
                 async () => await _productService.ChangeAICanDetect(request.ProductId, request.Status).ConfigureAwait(false)
             ).ConfigureAwait(false);
         }
+
+        [HttpGet(("GetProductBestSellerInShop"))]
+        public async Task<IActionResult> GetProductBestSellerInShop(Guid shopId, [FromQuery] ProductBestSellerRequest request)
+        {
+            return await ExecuteServiceLogic(
+                async () => await _productService.GetProductBestSellerInShop(shopId, request).ConfigureAwait(false)
+            ).ConfigureAwait(false);
+        }
     }
 }

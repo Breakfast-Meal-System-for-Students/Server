@@ -44,7 +44,7 @@ namespace BMS.BLL.Services
 
             if (!string.IsNullOrEmpty(queryParameters.Search))
             {
-                ProductQueryable = ProductQueryable.Where(m => m.Description.Contains(queryParameters.Search));
+                ProductQueryable = ProductQueryable.Where(m => m.Description.Contains(queryParameters.Search) || m.Name.Contains(queryParameters.Search));
             }
 
             if (queryParameters.IsOutOfStock != null)
@@ -280,6 +280,47 @@ namespace BMS.BLL.Services
             {
                 Detail = $"Change AIDetect To {status} successfully"
             };
+        }
+
+        public async Task<ServiceActionResult> GetProductBestSellerInShop(Guid shopId, ProductBestSellerRequest request)
+        {
+            IQueryable<OrderItem> productQuery = (await _unitOfWork.OrderItemRepository.GetAllAsyncAsQueryable())
+                                       .Include(b => b.Product).Include(a => a.Order).Where(x => x.Order.ShopId == shopId);
+            if (request.Year != 0)
+            {
+                if (request.Month != 0)
+                {
+                    if (request.Day != 0)
+                    {
+                        productQuery = productQuery.Where(x => x.CreateDate.Year == request.Year && x.CreateDate.Month == request.Month && x.CreateDate.Day == request.Day);
+                    }
+                    else
+                    {
+                        productQuery = productQuery.Where(x => x.CreateDate.Year == request.Year && x.CreateDate.Month == request.Month);
+                    }
+                }
+                else
+                {
+                    productQuery = productQuery.Where(x => x.CreateDate.Year == request.Year);
+                }
+            }
+            
+
+            var productBestSeller = productQuery
+                .GroupBy(product => product.ProductId)
+                .Select(group => new
+                {
+                    ProductId = group.Key,
+                    ProductName = group.FirstOrDefault().Product.Name,
+                    ProductImage = group.FirstOrDefault().Product.Images,
+                    TotalSold = group
+                        .Sum(orderitem => orderitem.Quantity)
+                })
+                .OrderByDescending(x => x.TotalSold);
+
+            var paginationResult = PaginationHelper.BuildPaginatedResult(productBestSeller, request.PageSize, request.PageIndex);
+
+            return new ServiceActionResult(true) { Data = paginationResult };
         }
     }
 }

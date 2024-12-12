@@ -540,6 +540,16 @@ namespace BMS.BLL.Services
             {
                 var returnOrder = _mapper.Map<OrderResponse>(order);
 
+                if ((returnOrder.Status == OrderStatus.ORDERED.ToString() || returnOrder.Status == OrderStatus.CHECKING.ToString())
+                    && !bool.Parse((await CheckOrderIsPayed(returnOrder.Id)).Data.ToString()))
+                {
+                    returnOrder.canCancel = true;
+                }
+                if (returnOrder.Status == OrderStatus.COMPLETE.ToString()
+                    && !(await CheckOrderIsFeedbacked(returnOrder.Id)))
+                {
+                    returnOrder.canFeedback = true;
+                }
                 return new ServiceActionResult(true) { Data = returnOrder };
             }
             else
@@ -591,6 +601,20 @@ namespace BMS.BLL.Services
             var paginationResult = PaginationHelper
             .BuildPaginatedResult<Order, OrderResponse>(_mapper, orderQuery, request.PageSize, request.PageIndex);
 
+            foreach (var order in (List<OrderResponse>)paginationResult.Data)
+            {
+                if ((order.Status == OrderStatus.ORDERED.ToString() || order.Status == OrderStatus.CHECKING.ToString())
+                    && !bool.Parse((await CheckOrderIsPayed(order.Id)).Data.ToString()))
+                {
+                    order.canCancel = true;
+                }
+                if (order.Status == OrderStatus.COMPLETE.ToString()
+                    && !(await CheckOrderIsFeedbacked(order.Id)))
+                {
+                    order.canFeedback = true;
+                }
+            }
+
             return new ServiceActionResult(true) { Data = paginationResult };
         }
 
@@ -607,6 +631,20 @@ namespace BMS.BLL.Services
 
             var paginationResult = PaginationHelper
             .BuildPaginatedResult<Order, OrderResponse>(_mapper, orderQuery, request.PageSize, request.PageIndex);
+
+            foreach (var order in (List<OrderResponse>)paginationResult.Data)
+            {
+                if ((order.Status == OrderStatus.ORDERED.ToString() || order.Status == OrderStatus.CHECKING.ToString())
+                    && !bool.Parse((await CheckOrderIsPayed(order.Id)).Data.ToString()))
+                {
+                    order.canCancel = true;
+                }
+                if (order.Status == OrderStatus.COMPLETE.ToString()
+                    && !(await CheckOrderIsFeedbacked(order.Id)))
+                {
+                    order.canFeedback = true;
+                }
+            }
 
             return new ServiceActionResult(true) { Data = paginationResult };
         }
@@ -777,6 +815,19 @@ namespace BMS.BLL.Services
         {
             var orders = (await _unitOfWork.OrderRepository.GetAllAsyncAsQueryable()).Where(x => x.ShopId == shopId).ToList();
             return new ServiceActionResult();
+        }
+
+        public async Task<bool> CheckOrderIsFeedbacked(Guid orderId)
+        {
+            var feedback = (await _unitOfWork.FeedbackRepository.GetAllAsyncAsQueryable()).Where(x => x.OrderId == orderId).Count();
+            if (feedback > 0)
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
         }
     }
 }
