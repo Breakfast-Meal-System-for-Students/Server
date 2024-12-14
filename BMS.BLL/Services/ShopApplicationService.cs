@@ -148,7 +148,7 @@ namespace BMS.BLL.Services
                 application.Status = ShopStatus.ACCEPTED;
 
                 await _unitOfWork.CommitAsync();
-                await _emailService.SendEmailAsync(application.Email, "YOU HAVE NEW INFORMATION FROM BMS", EmailHelper.GetAcceptedEmailBody("thunghiem3340@gmail.com", application.Email, account.Password), true);
+                await _emailService.SendEmailAsync(application.Email, "YOU HAVE NEW INFORMATION FROM BMS", EmailHelper.GetAcceptedEmailBody("breakfastmealsystem@gmail.com", application.Email, account.Password), true);
             }
             else if (status.Equals(ShopStatus.DENIED.ToString(), StringComparison.OrdinalIgnoreCase))
             {

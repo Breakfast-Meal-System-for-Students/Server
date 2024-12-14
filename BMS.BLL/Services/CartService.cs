@@ -99,7 +99,7 @@ namespace BMS.BLL.Services
                 if (cartDetailInDB != null && cartDetailInDB.Note.Equals(cartDetails.Note))
                 {
                     cartDetailInDB.Quantity += cartDetails.Quantity;
-                    cartDetailInDB.Price += cartDetails.Price;
+                    //cartDetailInDB.Price += cartDetails.Price;
                     await _unitOfWork.CartDetailRepository.UpdateAsync(cartDetailInDB);
                 } else
                 {
