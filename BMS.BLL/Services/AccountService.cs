@@ -75,8 +75,21 @@ namespace BMS.BLL.Services
 
         public async Task<ServiceActionResult> UpdateDetails(UpdateUserRequest request, Guid userId)
         {
+            if (request.Phone != null && (request.Phone.Length > 11 || request.Phone.Length < 10))
+            {
+                return new ServiceActionResult(false)
+                {
+                    Detail = "Phone Number is in 10 or 11 number"
+                };
+            } ;
             var user = await _unitOfWork.UserRepository.FindAsync(userId);
-            ArgumentNullException.ThrowIfNull(nameof(user));
+            if(user == null)
+            {
+                return new ServiceActionResult(false)
+                {
+                    Detail = "User not found"
+                };
+            }
 
             _mapper.Map(request, user);
 

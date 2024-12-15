@@ -12,7 +12,7 @@ namespace BMS.BLL.Models.Requests.Admin
     {
         [Range(1, 12)]
         public int? Month { get; set; } = 0;
-        [Range(2000, 2024)]
+        [Range(2000, 2025)]
         public int? Year { get; set; } = 0;
     }
 }

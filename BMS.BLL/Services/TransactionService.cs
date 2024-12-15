@@ -77,80 +77,62 @@ namespace BMS.BLL.Services
 
         public async Task<ServiceActionResult> GetTopShopHaveHighTransaction(TopShopOrUserRequest request)
         {
-            IQueryable<Shop> shopQuery = (await _unitOfWork.ShopRepository.GetAllAsyncAsQueryable())
-                                        .Include(a => a.Orders)
-                                        .ThenInclude(b => b.Transactions);
+            var shopQuery = (await _unitOfWork.ShopRepository.GetAllAsyncAsQueryable())
+                            .Include(shop => shop.Orders)
+                            .ThenInclude(order => order.Transactions);
 
-            if (request.Year != 0)
+            var filteredShops = shopQuery.Select(shop => new
             {
-                if (request.Month != 0)
-                {
-                    shopQuery = shopQuery.Where(x => x.Orders
-                        .All(order => order.Transactions
-                            .All(y => y.CreateDate.Year == request.Year
-                                      && y.CreateDate.Month == request.Month
-                                      && y.Status == TransactionStatus.PAID)));
-                }
-                else
-                {
-                    shopQuery = shopQuery.Where(x => x.Orders
-                        .All(order => order.Transactions
-                            .All(y => y.CreateDate.Year == request.Year
-                                      && y.Status == TransactionStatus.PAID)));
-                }
-            }
+                ShopId = shop.Id,
+                ShopName = shop.Name,
+                ShopImage = shop.Image,
+                TotalTransactionAmount = shop.Orders
+                    .SelectMany(order => order.Transactions)
+                    .Where(transaction =>
+                        transaction.Status == TransactionStatus.PAID &&
+                        (request.Year == 0 || transaction.CreateDate.Year == request.Year) &&
+                        (request.Month == 0 || transaction.CreateDate.Month == request.Month))
+                    .Sum(transaction => transaction.Price)
+            });
 
-            // Nhóm theo ID và tính tổng giao dịch
-            var shopTransactions = shopQuery
-                .GroupBy(shop => shop.Id)
-                .Select(group => new
-                {
-                    ShopId = group.Key,
-                    ShopName = group.FirstOrDefault().Name,
-                    ShopImage = group.FirstOrDefault().Image,
-                    TotalTransactionAmount = group
-                        .SelectMany(shop => shop.Orders)
-                        .SelectMany(order => order.Transactions)
-                        .Where(transaction => transaction.Status == TransactionStatus.PAID)  // Chỉ lấy những giao dịch đã thanh toán
-                        .Sum(transaction => transaction.Price)
-                })
-                .OrderByDescending(x => x.TotalTransactionAmount); // Sắp xếp theo tổng giao dịch giảm dần
+            var shopTransactions = filteredShops
+                .Where(s => s.TotalTransactionAmount > 0)
+                .OrderByDescending(s => s.TotalTransactionAmount);
 
-            // Phân trang kết quả
-            var paginationResult = PaginationHelper.BuildPaginatedResult(shopTransactions, request.PageSize, request.PageIndex);
+            var paginatedResult = PaginationHelper.BuildPaginatedResult(shopTransactions, request.PageSize, request.PageIndex);
 
-            return new ServiceActionResult(true) { Data = paginationResult };
+            return new ServiceActionResult(true) { Data = paginatedResult };
         }
+
+
 
         public async Task<ServiceActionResult> GetTopUserHaveHighTransaction(TopShopOrUserRequest request)
         {
             IQueryable<User> users = (await _unitOfWork.UserRepository.GetAllAsyncAsQueryable())
                                     .Include(shop => shop.Orders)
                                     .ThenInclude(order => order.Transactions);
-            if (request.Year != 0)
-            {
-                if (request.Month != 0)
-                {
-                    users = users.Where(x => x.Orders.All(x => x.Transactions.All(y => y.CreateDate.Year == request.Year && y.CreateDate.Month == request.Month && y.Status == TransactionStatus.PAID)));
-                }
-                else
-                {
-                    users = users.Where(x => x.Orders.All(x => x.Transactions.All(y => y.CreateDate.Year == request.Year && y.Status == TransactionStatus.PAID)));
-                }
-            }
 
-            var usersTransaction = users
-                        .GroupBy(user => user.Id)
-                        .Select(group => new
-                        {
-                            Id = group.Key,
-                            Name = group.FirstOrDefault().FirstName + group.FirstOrDefault().LastName,
-                            Image = group.FirstOrDefault().Avatar,
-                            TotalTransactionAmount = group
-                                .SelectMany(shop => shop.Orders)
-                                .SelectMany(order => order.Transactions)
-                                .Sum(transaction => transaction.Price)
-                        }).OrderByDescending(x => x.TotalTransactionAmount);
+            var filteredUsers = users.Select(user => new
+            {
+                User = user,
+                Transactions = user.Orders
+                    .SelectMany(order => order.Transactions)
+                    .Where(transaction =>
+                        transaction.Status == TransactionStatus.PAID &&
+                        (request.Year == 0 || transaction.CreateDate.Year == request.Year) &&
+                        (request.Month == 0 || transaction.CreateDate.Month == request.Month))
+            });
+
+            var usersTransaction = filteredUsers
+                .Select(u => new
+                {
+                    Id = u.User.Id,
+                    Name = $"{u.User.FirstName} {u.User.LastName}",
+                    Image = u.User.Avatar,
+                    TotalTransactionAmount = u.Transactions.Sum(transaction => transaction.Price)
+                })
+                .OrderByDescending(x => x.TotalTransactionAmount);
+
             var paginationResult = PaginationHelper.BuildPaginatedResult(usersTransaction, request.PageSize, request.PageIndex);
 
             return new ServiceActionResult(true) { Data = paginationResult };

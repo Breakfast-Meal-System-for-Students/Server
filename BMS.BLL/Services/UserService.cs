@@ -66,7 +66,7 @@ namespace BMS.BLL.Services
 
         public async Task<ServiceActionResult> CountNewUser(TotalUserRequest request)
         {
-            var users = (await _unitOfWork.UserRepository.GetAllAsyncAsQueryable());
+            var users = (await _unitOfWork.UserRepository.GetAllAsyncAsQueryable()).Include(a => a.UserRoles).ThenInclude(b => b.Role).Where(x => x.UserRoles.Any(a => a.Role.Name.Contains(UserRoleConstants.USER)));
             if (request.Year != 0)
             {
                 if (request.Month != 0)
@@ -95,7 +95,7 @@ namespace BMS.BLL.Services
         {
             return new ServiceActionResult()
             {
-                Data = (await _unitOfWork.UserRepository.GetAllAsyncAsQueryable()).Include(a => a.UserRoles).ThenInclude(b => b.Role).Where(x => x.UserRoles.Any(a => a.Role.Name.Contains(UserRoleConstants.USER))).Count()
+                Data = (await _unitOfWork.UserRepository.GetAllAsyncAsQueryable()).Include(a => a.UserRoles).ThenInclude(b => b.Role).Where(x => x.UserRoles.Any(a => a.Role.Name.Contains(UserRoleConstants.USER) || a.Role.Name.Contains(UserRoleConstants.SHOP))).Count()
             };
         }
 

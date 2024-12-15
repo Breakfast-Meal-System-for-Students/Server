@@ -80,11 +80,26 @@ namespace BMS.BLL.Services
                     Detail = "Price is must be more than 50000"
                 };
             }
+            else if (request.Price > 10000000)
+            {
+                return new ServiceActionResult(false)
+                {
+                    Detail = "Price is must be less than 10000000"
+                };
+            }
+
             if (request.Duration <= 1)
             {
                 return new ServiceActionResult(false)
                 {
                     Detail = "Duration is must be more than 1"
+                };
+            }
+            else if (request.Duration > 10000000)
+            {
+                return new ServiceActionResult(false)
+                {
+                    Detail = "Duration is must be less than 400"
                 };
             }
 
@@ -126,12 +141,26 @@ namespace BMS.BLL.Services
                 {
                     Detail = "Price is must be more than 50000"
                 };
+            } else if (request.Price > 10000000)
+            {
+                return new ServiceActionResult(false)
+                {
+                    Detail = "Price is must be less than 10000000"
+                };
             }
+
             if (request.Duration <= 1)
             {
                 return new ServiceActionResult(false)
                 {
                     Detail = "Duration is must be more than 1"
+                };
+            }
+            else if (request.Duration > 10000000)
+            {
+                return new ServiceActionResult(false)
+                {
+                    Detail = "Duration is must be less than 400"
                 };
             }
 
