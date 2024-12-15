@@ -23,7 +23,7 @@ namespace BMS.API.Controllers
 
 
         [HttpDelete("{id}")]
-
+        [Authorize(Roles = UserRoleConstants.ADMIN + "," + UserRoleConstants.STAFF)]
         public async Task<IActionResult> DeleteShop(Guid id)
         {
 

@@ -21,7 +21,7 @@ namespace BMS.API.Controllers
         }
 
         [HttpDelete]
-        [Authorize(Roles = UserRoleConstants.ADMIN)]
+        [Authorize(Roles = UserRoleConstants.ADMIN + "," + UserRoleConstants.STAFF)]
         public async Task<IActionResult> DeleteUser(Guid id)
         {
             return await ExecuteServiceLogic(
