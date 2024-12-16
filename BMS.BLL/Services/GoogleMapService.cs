@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Azure.Core;
 using Azure.Storage.Blobs;
 using BMS.BLL.Models;
 using BMS.BLL.Models.Requests.Map;
@@ -6,7 +7,9 @@ using BMS.BLL.Models.Responses.Map;
 using BMS.BLL.Models.Responses.Roles;
 using BMS.BLL.Services.BaseServices;
 using BMS.BLL.Services.IServices;
+using BMS.BLL.Utilities;
 using BMS.Core.Domains.Entities;
+using BMS.Core.Domains.Enums;
 using BMS.DAL;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -307,11 +310,25 @@ namespace BMS.BLL.Services
             double maxLat = Math.Max(local1.Lat, local2.Lat) + 0.045;
             double maxLng = Math.Max(local1.Lng, local2.Lng)+ 0.045;
 
-            IQueryable<Shop> shops = (await _unitOfWork.ShopRepository.GetAllAsyncAsQueryable()).Where(a=> (a.lat > minLat && a.lat < maxLat) && (a.lng > minLng && a.lng < maxLng));
+            IQueryable<Shop> shops = (await _unitOfWork.ShopRepository.GetAllAsyncAsQueryable())
+                    .Include(a => a.Package_Shop)
+                      .ThenInclude(b => b.Package)
+                    .Where(x =>
+                    x.Status == ShopStatus.ACCEPTED &&
+                  (x.Package_Shop.Any()
+                  ? x.Package_Shop.Max(p => p.Package != null
+                 ? p.CreateDate.AddDays(p.Package.Duration)
+                 : DateTime.MinValue)
+             : DateTime.MinValue) > DateTimeHelper.GetCurrentTime() &&
+                   (x.lat > minLat && x.lat < maxLat) &&
+                  (x.lng > minLng && x.lng < maxLng)
+                  );
+
             if (!string.IsNullOrEmpty(search))
             {
-                shops = shops.Where(a => a.Name.Contains(search));
+                shops = shops.Where(x => x.Name.Contains(search));
             }
+
             // var shops = await GetShopWithGeo(local1.Lat, local1.Lng, local2.Lat, local2.Lng);
 
             // Tạo chuỗi destinations từ tất cả các cửa hàng
