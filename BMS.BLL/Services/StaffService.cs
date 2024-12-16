@@ -111,7 +111,7 @@ namespace BMS.BLL.Services
 
         public async Task<ServiceActionResult> GetListStaff(SearchStaffRequest request)
         {
-            IQueryable<User> staffQuery = (await _unitOfWork.UserRepository.GetAllAsyncAsQueryable()).Include(a => a.UserRoles).ThenInclude(b => b.Role).Where(x => x.UserRoles.Any(a => a.Role.Name.Contains(UserRoleConstants.STAFF)));
+            IQueryable<User> staffQuery = (await _unitOfWork.UserRepository.GetAllAsyncAsQueryable()).Include(a => a.UserRoles).ThenInclude(b => b.Role).Where(x => x.UserRoles.Any(a => a.Role.Name.Contains(UserRoleConstants.STAFF)) && x.IsDeleted == false);
 
             /*var canParsed = Enum.TryParse(queryParameters.Status, true, out ShopStatus status);
             if (canParsed)

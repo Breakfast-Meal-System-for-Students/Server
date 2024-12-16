@@ -226,7 +226,7 @@ namespace BMS.BLL.Services
 
             if (!string.IsNullOrEmpty(queryParameters.Search))
             {
-                ProductQueryable = ProductQueryable.Where(m => m.Description.Contains(queryParameters.Search));
+                ProductQueryable = ProductQueryable.Where(m => m.Description.Contains(queryParameters.Search) || m.Name.Contains(queryParameters.Search));
             }
 
             if (queryParameters.IsOutOfStock != null)
