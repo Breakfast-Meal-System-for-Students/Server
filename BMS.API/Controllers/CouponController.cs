@@ -57,6 +57,15 @@ namespace BMS.API.Controllers
                                async () => await _couponService.GetAllCouponForShop(shopId,pagingRequest).ConfigureAwait(false)
                                           ).ConfigureAwait(false);
         }
+
+        [HttpGet("GetAllCouponForShopInWeb")]
+        public async Task<IActionResult> GetAllCouponForShopInWeb(Guid shopId, [FromQuery] CouponRequest pagingRequest)
+        {
+            return await ExecuteServiceLogic(
+                               async () => await _couponService.GetAllCouponForShopInWeb(shopId, pagingRequest).ConfigureAwait(false)
+                                          ).ConfigureAwait(false);
+        }
+
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateCoupon(Guid Id, [FromBody] UpdateCouponRequest Coupon)
         {
