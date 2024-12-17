@@ -78,6 +78,7 @@ namespace BMS.BLL.Services
                 feedbackQueryable = feedbackQueryable.Where(m => m.Rate == request.Rating);
             }
 
+            feedbackQueryable = feedbackQueryable.OrderByDescending(x => x.CreateDate);
             var paginatedFeedback = PaginationHelper.BuildPaginatedResult<Feedback, FeedbackForStaffResponse>(_mapper, feedbackQueryable, request.PageSize, request.PageIndex);
 
             return new ServiceActionResult() { Data = paginatedFeedback };
