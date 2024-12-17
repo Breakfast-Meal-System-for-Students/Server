@@ -397,15 +397,15 @@ namespace BMS.BLL.Services
                 }
                 if (coupon.StartDate >= order.CreateDate)
                 {
-                    return new ServiceActionResult(false) { Detail = "The Date of Coupon is not yet start" };
+                    return new ServiceActionResult(false) { Detail = $"The Date of Coupon is not yet start.The voucher can be used from {coupon.StartDate}" };
                 }
                 else if (coupon.EndDate <= order.CreateDate)
                 {
-                    return new ServiceActionResult(false) { Detail = "The Date of Coupon is Finish" };
+                    return new ServiceActionResult(false) { Detail = $"The Date of Coupon is Finish on {coupon.EndDate}" };
                 }
                 else if (order.TotalPrice < coupon.MinDiscount)
                 {
-                    return new ServiceActionResult(false) { Detail = "Total Price of Order is not enough to use this voucher" };
+                    return new ServiceActionResult(false) { Detail = $"Total Price of Order is {order.TotalPrice} is must be more than or equal to {coupon.MinDiscount}" };
                 }
 
                 discount = coupon.isPercentDiscount

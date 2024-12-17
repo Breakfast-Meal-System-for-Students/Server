@@ -67,11 +67,11 @@ namespace BMS.BLL.Services
                     Detail = "The EndDate must be later than the StartDate"
                 };
             }
-            if(request.MinPrice < 0)
+            if(request.MinDiscount < 0)
             {
                 return new ServiceActionResult(false)
                 {
-                    Detail = "The MinPrice must be >= 0"
+                    Detail = "The MinDiscount must be >= 0"
                 };
             }
 
@@ -80,6 +80,14 @@ namespace BMS.BLL.Services
                 return new ServiceActionResult(false)
                 {
                     Detail = "The MaxDiscount must be > 0"
+                };
+            }
+
+            if (request.MinDiscount > request.MaxDiscount)
+            {
+                return new ServiceActionResult(false)
+                {
+                    Detail = "The MaxDiscount must be more than MinDiscount"
                 };
             }
 
@@ -95,11 +103,11 @@ namespace BMS.BLL.Services
             }
             else
             {
-                if (request.MinDiscount <= 0)
+                if (request.MinPrice <= 0)
                 {
                     return new ServiceActionResult(false)
                     {
-                        Detail = "The MinDiscount must be > 0"
+                        Detail = "The MinPrice must be > 0"
                     };
                 }
             }
@@ -131,11 +139,11 @@ namespace BMS.BLL.Services
                     Detail = "The EndDate must be later than the StartDate"
                 };
             }
-            if (request.MinPrice < 0)
+            if (request.MinDiscount < 0)
             {
                 return new ServiceActionResult(false)
                 {
-                    Detail = "The MinPrice must be >= 0"
+                    Detail = "The MinDiscount must be >= 0"
                 };
             }
 
@@ -147,23 +155,31 @@ namespace BMS.BLL.Services
                 };
             }
 
+            if (request.MinDiscount > request.MaxDiscount)
+            {
+                return new ServiceActionResult(false)
+                {
+                    Detail = "The MaxDiscount must be more than MinDiscount"
+                };
+            }
+
             if (request.isPercentDiscount)
             {
                 if (request.PercentDiscount <= 0)
                 {
                     return new ServiceActionResult(false)
                     {
-                        Detail = "The MaxDiscount must be > 0"
+                        Detail = "The PercentDiscount must be > 0"
                     };
                 }
             }
             else
             {
-                if (request.MinDiscount <= 0)
+                if (request.MinPrice <= 0)
                 {
                     return new ServiceActionResult(false)
                     {
-                        Detail = "The MinDiscount must be > 0"
+                        Detail = "The MinPrice must be > 0"
                     };
                 }
             }
