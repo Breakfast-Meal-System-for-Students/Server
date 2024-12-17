@@ -403,21 +403,21 @@ namespace BMS.BLL.Services
                 {
                     return new ServiceActionResult(false) { Detail = "The Date of Coupon is Finish" };
                 }
-                else if (order.TotalPrice < coupon.MinPrice)
+                else if (order.TotalPrice < coupon.MinDiscount)
                 {
                     return new ServiceActionResult(false) { Detail = "Total Price of Order is not enough to use this voucher" };
                 }
 
                 discount = coupon.isPercentDiscount
-                    ? Math.Min(order.TotalPrice * coupon.PercentDiscount, coupon.MaxDiscount)
-                    : coupon.MinDiscount;
+                    ? Math.Min(order.TotalPrice * coupon.PercentDiscount / 100, coupon.MaxDiscount)
+                    : coupon.MinPrice;
             }
 
             if (discount > 0)
             {
                 if (order.TotalPrice - discount <= 0)
                 {
-                    return new ServiceActionResult(false) { Detail = "Total Price of Order is < 0" };
+                    return new ServiceActionResult(false) { Detail = "Total Price of Order is <= 0" };
                 }
                 order.TotalPrice -= discount;
             }
