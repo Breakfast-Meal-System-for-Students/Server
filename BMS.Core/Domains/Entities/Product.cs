@@ -27,6 +27,7 @@ namespace BMS.Core.Domains.Entities
 
         public ICollection<CartDetail>? CartDetails { get; set; } = new List<CartDetail>();
 
+        public bool? IsCombo { get; set; } = false; // Default value here
         public ICollection<RegisterCategory>? RegisterCategorys { get; set; } = new List<RegisterCategory>();
         // Implement ISoftDelete properties
         public bool IsDeleted { get; set; } = false; // Default value here

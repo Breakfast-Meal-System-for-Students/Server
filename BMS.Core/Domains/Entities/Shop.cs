@@ -2,14 +2,12 @@
 using BMS.Core.Domains.Enums;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace BMS.Core.Domains.Entities
 {
     public class Shop : EntityBase<Guid>, ISoftDelete
     {
+        // Properties
         public string Email { get; set; } = null!;
         public string? PhoneNumber { get; set; } = null!;
         public string Name { get; set; } = null!;
@@ -21,9 +19,14 @@ namespace BMS.Core.Domains.Entities
         public double? lng { get; set; }
         public ShopStatus Status { get; set; } = ShopStatus.PENDING;
 
+        // Relationships
         public Guid? UserId { get; set; }
         public User? User { get; set; } = null!;
 
+        public Guid? UniversityId { get; set; } // Reference to University
+        public University? University { get; set; } = null!; // Navigation property
+
+        // Navigation Properties
         public ICollection<Product>? Products { get; set; } = new List<Product>();
         public ICollection<Coupon>? Coupons { get; set; } = new List<Coupon>();
         public ICollection<Order>? Orders { get; set; } = new List<Order>();
@@ -32,12 +35,10 @@ namespace BMS.Core.Domains.Entities
         public ICollection<Feedback>? Feedbacks { get; set; } = new List<Feedback>();
         public ICollection<Notification>? Notifications { get; set; } = new List<Notification>();
         public ICollection<OpeningHours>? OpeningHours { get; set; } = new List<OpeningHours>();
-
         public ICollection<ShopWeeklyReport>? ShopWeeklyReports { get; set; } = new List<ShopWeeklyReport>();
-        //    public ICollection<RegisterCategory>? RegisterCategorys { get; set; } = new List<RegisterCategory>();
         public ICollection<Favourite> Favourites { get; set; } = new List<Favourite>();
-        public bool IsDeleted { get; set; } = false; // Default value here
+
+        public bool IsDeleted { get; set; } = false;
         public DateTime? DeletedDate { get; set; }
     }
-
 }

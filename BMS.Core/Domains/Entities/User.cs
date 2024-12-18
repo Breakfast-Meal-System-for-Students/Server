@@ -1,4 +1,5 @@
 ﻿using BMS.Core.Domains.Entities.BaseEntities;
+using BMS.Core.Domains.Enums;
 using Microsoft.AspNetCore.Identity;
 using System;
 using System.Collections.Generic;
@@ -15,6 +16,9 @@ namespace BMS.Core.Domains.Entities
         public string? LastName { get; set; } = null!;
         public string? Avatar { get; set; }
 
+        public string? IdStudent { get; set; }
+
+        public StudentStatus? StatusStudent { get; set; }
         public string? Phone { get; set; } = null!;
       //  public string? Password { get; set; } = null!;
         public DateTime CreateDate { get; set; } = DateTime.UtcNow.AddHours(7);
