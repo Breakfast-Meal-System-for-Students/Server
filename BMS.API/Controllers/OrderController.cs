@@ -165,5 +165,14 @@ namespace BMS.API.Controllers
                 async () => await _orderService.CheckQRCodeOfUser(QRcode, _userClaims.UserId).ConfigureAwait(false)
             ).ConfigureAwait(false);
         }
+
+        [HttpPost("CancelListOrder")]
+        [Authorize(Roles = UserRoleConstants.ADMIN + "," + UserRoleConstants.STAFF + "," + UserRoleConstants.SHOP)]
+        public async Task<IActionResult> CancelListOrder([FromForm] List<Guid> orderIds)
+        {
+            return await ExecuteServiceLogic(
+                async () => await _orderService.CancelListOrder(orderIds).ConfigureAwait(false)
+            ).ConfigureAwait(false);
+        }
     }
 }

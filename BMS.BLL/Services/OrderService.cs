@@ -829,5 +829,26 @@ namespace BMS.BLL.Services
                 return false;
             }
         }
+
+        public async Task<ServiceActionResult> CancelListOrder(List<Guid> orderIds)
+        {
+            var orders = (await _unitOfWork.OrderRepository.GetAllAsyncAsQueryable()).Where(x => orderIds.Contains(x.Id)).ToList();
+            if (orders == null) 
+            {
+                return new ServiceActionResult(false)
+                {
+                    Detail = "Not have Orders"
+                };
+            }
+            foreach (Order order in orders)
+            {
+                order.Status = OrderStatus.CANCEL.ToString();
+            }
+            await _unitOfWork.OrderRepository.UpdateRangeAsync(orders);
+            return new ServiceActionResult(true)
+            {
+                Detail = "Cancel list of orders successfully"
+            };
+        }
     }
 }

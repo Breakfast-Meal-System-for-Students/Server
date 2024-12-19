@@ -261,7 +261,34 @@ namespace BMS.BLL.Services
         {
             var product = (await _unitOfWork.ProductRepository.GetAllAsyncAsQueryable())
                           .Where(a => a.IsDeleted == false && a.Id == productId)
-                          .FirstOrDefault()?? throw new ArgumentNullException("Product does not exist or has been deleted");
+                          .FirstOrDefault();
+            if(product == null)
+            {
+                return new ServiceActionResult(false)
+                {
+                    Detail = "Product does not exist or has been deleted"
+                };
+            }
+            if (product.isOutOfStock == false)
+            {
+                var numberOfOrders = (await _unitOfWork.OrderRepository.GetAllAsyncAsQueryable()).Include(a => a.OrderItems)
+                    .Where(x => x.OrderItems.Any(y => y.ProductId == productId) && (x.Status.Equals(OrderStatus.ORDERED.ToString()) || x.Status.Equals(OrderStatus.CHECKING.ToString()))
+                    && x.OrderDate > DateTimeHelper.GetCurrentTime())
+                    .Select(x => x.Id).ToList();
+
+                if (numberOfOrders != null || numberOfOrders.Count != 0)
+                {
+                    return new ServiceActionResult(false)
+                    {
+                        Data = new
+                        {
+                            listOrderId = numberOfOrders,
+                            count = numberOfOrders.Count
+                        },
+                        Detail = $"You are having {numberOfOrders.Count} in {OrderStatus.ORDERED.ToString()} or {OrderStatus.CHECKING.ToString()} now. We will cancel them. The rest orders in another status can not be cancel. Are you sure about changing this product to out of stock ?"
+                    };
+                }
+            }
             product.isOutOfStock = product.isOutOfStock ? false : true;
             return new ServiceActionResult(true)
             {
