@@ -64,6 +64,7 @@ namespace BMS.BLL
             services.AddScoped<IFavouriteService, FavouriteService>();
             services.AddScoped<IRecommendationService, RecommendationService>();
             services.AddScoped<IProductAIDetectService, ProductAIDetectService>();
+            services.AddScoped<IUniversityService, UniversityService>();
             #endregion
 
             #region

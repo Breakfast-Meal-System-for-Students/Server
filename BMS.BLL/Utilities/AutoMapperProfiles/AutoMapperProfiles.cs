@@ -34,6 +34,8 @@ using BMS.BLL.Models.Responses.ShopWeeklyReport;
 using BMS.BLL.Models.Responses.OpeningHour;
 using BMS.BLL.Models.Requests.OpeningHour;
 using BMS.BLL.Models.Responses.Favourite;
+using BMS.BLL.Models.Requests.University;
+using BMS.BLL.Models.Responses.University;
 
 
 namespace BMS.BLL.Utilities.AutoMapperProfiles
@@ -185,8 +187,14 @@ namespace BMS.BLL.Utilities.AutoMapperProfiles
                 CreateMap<Package, PackageResponse>()
                     .ForMember(dest => dest.ExpiredDate, opt => opt.MapFrom(src => src.Package_Shop.Where(x => x.PackageId == src.Id).OrderByDescending(y => y.CreateDate).FirstOrDefault().CreateDate.AddDays(src.Duration)));
                 #endregion
+                #region university
+                CreateMap<University, UpdateUniversityRequest>();
+                CreateMap<CreateUniversityRequest, University>();
+
+                CreateMap<University, UniversityResponse>();
+                #endregion
                 #region image
-              
+
 
                 CreateMap<Image, ImageResponse>();
                 #endregion

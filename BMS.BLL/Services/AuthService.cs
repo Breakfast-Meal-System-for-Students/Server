@@ -193,7 +193,7 @@ namespace BMS.BLL.Services
                 return new ServiceActionResult(false, error.Description);
             }
        
-               string roleName = UserRoleConstants.STAFF;
+               string roleName = UserRoleConstants.USER;
         
             if (!await _roleManager.RoleExistsAsync(roleName))
             {
@@ -224,7 +224,7 @@ namespace BMS.BLL.Services
                 return new ServiceActionResult(false, error.Description);
             }
 
-            string roleName = UserRoleConstants.STAFF;
+            string roleName = UserRoleConstants.USER;
 
             if (!await _roleManager.RoleExistsAsync(roleName))
             {
