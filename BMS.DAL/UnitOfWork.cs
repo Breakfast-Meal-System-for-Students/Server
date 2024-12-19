@@ -34,6 +34,8 @@ namespace BMS.DAL
         public IImageRepository ImageRepository => new ImageRepository(_dbContext);
         public IFavouriteRepository FavoriteRepository => new FavouriteRepository(_dbContext);
         public IOTPRepository OTPRepository => new OTPRepository(_dbContext);
+        public IUniversityRepository UniversityRepository => new UniversityRepository(_dbContext);
+        public IStudentApplicationRepository StudentApplicationRepository => new StudentApplicationRepository(_dbContext);
         public DbContext _dbContext { get; }
 
         public UnitOfWork(DbContext dbContext)

@@ -50,6 +50,12 @@ namespace BMS.BLL.Utilities.AutoMapperProfiles
                 CreateMap<RegisterUser, User>()
                    .ForMember(dest => dest.UserName, opt => opt.MapFrom(src => src.Email))
                    .ForMember(dest => dest.PasswordHash, opt => opt.Ignore());
+                CreateMap<RegisterStudent, User>()
+                .ForMember(dest => dest.UserName, opt => opt.MapFrom(src => src.Email))
+                .ForMember(dest => dest.PasswordHash, opt => opt.Ignore());
+                CreateMap<RegisterStudentNoMailEdu, User>()
+                 .ForMember(dest => dest.UserName, opt => opt.MapFrom(src => src.Email))
+                 .ForMember(dest => dest.PasswordHash, opt => opt.Ignore());
 
 
                 CreateMap<UpdateUserRequest, User>();
