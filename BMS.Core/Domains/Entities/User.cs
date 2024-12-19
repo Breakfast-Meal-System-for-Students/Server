@@ -16,8 +16,11 @@ namespace BMS.Core.Domains.Entities
         public string? LastName { get; set; } = null!;
         public string? Avatar { get; set; }
 
-        public string? IdStudent { get; set; }
+        public Guid? StudentApplicationId { get; set; }
 
+        public Guid? UniversityId { get; set; }
+
+        public string? StudentIdCard { get; set; }
         public StudentStatus? StatusStudent { get; set; }
         public string? Phone { get; set; } = null!;
       //  public string? Password { get; set; } = null!;

@@ -165,6 +165,85 @@ namespace BMS.BLL.Services
         }
 
 
+        public async Task<ServiceActionResult> RegisterStudentAsync(RegisterStudent userToRegisterDTO)
+        {
+            //        // Danh sách các tên miền của các trường đại học
+            //        var allowedDomains = new List<string>
+            //{
+            //    "@truong1.edu.vn",
+            //    "@truong2.edu.vn",
+            //    "@truong3.edu.vn" // Thêm các tên miền khác tại đây
+            //};
+
+            //        // Kiểm tra nếu email không thuộc bất kỳ tên miền nào trong danh sách
+            //        if (!allowedDomains.Any(domain => userToRegisterDTO.Email.EndsWith(domain, StringComparison.OrdinalIgnoreCase)))
+            //        {
+            //            return new ServiceActionResult(false, "Chỉ các email thuộc trường đại học được phép đăng ký.");
+            //        }
+            if (!userToRegisterDTO.Email.Contains("edu", StringComparison.OrdinalIgnoreCase))
+            {
+                return new ServiceActionResult(false, "This mail not mail edu");
+            }
+            var userEntity = _mapper.Map<User>(userToRegisterDTO);
+            
+            var result = await _userManager.CreateAsync(userEntity, userToRegisterDTO.Password);
+            if (!result.Succeeded)
+            {
+                var error = result.Errors.First();
+                return new ServiceActionResult(false, error.Description);
+            }
+       
+               string roleName = UserRoleConstants.STAFF;
+        
+            if (!await _roleManager.RoleExistsAsync(roleName))
+            {
+                await _roleManager.CreateAsync(new Role { Name = roleName });
+            }
+            var roleResult = await _userManager.AddToRoleAsync(userEntity, roleName);
+            if (!roleResult.Succeeded)
+            {
+                await _userManager.DeleteAsync(userEntity);
+                throw new AddRoleException("Can not create account with role");
+            }
+
+            var token = await _userManager.GenerateEmailConfirmationTokenAsync(userEntity);
+            await _emailService.SendEmailConfirmationMoblieAsync(userEntity, token);
+
+            return new ServiceActionResult(true);
+        }
+
+        public async Task<ServiceActionResult> RegisterStudentNoMailEduAsync(RegisterStudentNoMailEdu userToRegisterDTO)
+        {
+  
+            var userEntity = _mapper.Map<User>(userToRegisterDTO);
+
+            var result = await _userManager.CreateAsync(userEntity, userToRegisterDTO.Password);
+            if (!result.Succeeded)
+            {
+                var error = result.Errors.First();
+                return new ServiceActionResult(false, error.Description);
+            }
+
+            string roleName = UserRoleConstants.STAFF;
+
+            if (!await _roleManager.RoleExistsAsync(roleName))
+            {
+                await _roleManager.CreateAsync(new Role { Name = roleName });
+            }
+            var roleResult = await _userManager.AddToRoleAsync(userEntity, roleName);
+            if (!roleResult.Succeeded)
+            {
+                await _userManager.DeleteAsync(userEntity);
+                throw new AddRoleException("Can not create account with role");
+            }
+
+
+            //var token = await _userManager.GenerateEmailConfirmationTokenAsync(userEntity);
+           // await _emailService.SendEmailConfirmationMoblieAsync(userEntity, token);
+
+            return new ServiceActionResult(true);
+        }
+
         public async Task<ServiceActionResult> SendOTP(string email)
         {
             var user = await _userManager.FindByEmailAsync(email);

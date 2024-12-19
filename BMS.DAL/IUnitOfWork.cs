@@ -32,6 +32,8 @@ namespace BMS.DAL
         public IImageRepository ImageRepository { get; }
         public IFavouriteRepository FavoriteRepository { get; }
         public IOTPRepository OTPRepository { get; }
+        public IUniversityRepository UniversityRepository { get; }
+        public IStudentApplicationRepository StudentApplicationRepository { get; }
         void Commit();
         Task CommitAsync();
         void Rollback();
