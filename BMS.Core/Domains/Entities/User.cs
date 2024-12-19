@@ -32,6 +32,8 @@ namespace BMS.Core.Domains.Entities
 
         public Guid? ShopId { get; set; }
         public Shop? Shop { get; set; }
+        public Guid? WalletId { get; set; }
+        public Wallet? Wallet { get; set; }
         public ICollection<Notification>? Notifications { get; set; } = new List<Notification>();
         public ICollection<Feedback>? Feedbacks { get; set; } = new List<Feedback>();
         public ICollection<CouponUsage>? CouponUsages { get; set; } = new List<CouponUsage>();

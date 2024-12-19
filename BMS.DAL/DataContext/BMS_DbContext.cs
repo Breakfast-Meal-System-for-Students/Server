@@ -47,6 +47,7 @@ namespace BMS.DAL.DataContext
         public DbSet<StudentApplication> StudentApplications { get; set; }
         public DbSet<University> Universities { get; set; }
         public DbSet<Wallet> Wallets { get; set; }
+        public DbSet<WalletTransaction> WalletTransactions { get; set; }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
@@ -262,16 +263,36 @@ namespace BMS.DAL.DataContext
                 .WithMany(s => s.OTPs)
                 .HasForeignKey(oh => oh.UserId)
                 .OnDelete(DeleteBehavior.Cascade);
-        //    // seed dât
-        //    modelBuilder.Entity<Role>().HasData(
-        //  new Role { Id = Guid.NewGuid(), Name = "Admin", NormalizedName="Admin"},
-        //new Role { Id = Guid.NewGuid(), Name = "Staff", NormalizedName = "Staff" },
-        // new Role { Id = Guid.NewGuid(), Name = "User", NormalizedName = "User" },
-        //  new Role { Id = Guid.NewGuid(), Name = "Shop", NormalizedName = "Shop" });
+            modelBuilder.Entity<University>()
+                .HasMany(oh => oh.Shops)
+                .WithOne(s => s.University)
+                .HasForeignKey(oh => oh.UniversityId)
+                .OnDelete(DeleteBehavior.Cascade);
+            modelBuilder.Entity<University>()
+                .HasMany(oh => oh.StudentApplications)
+                .WithOne(s => s.University)
+                .HasForeignKey(oh => oh.UniversityId)
+                .OnDelete(DeleteBehavior.Cascade);
+            modelBuilder.Entity<Wallet>()
+                .HasOne(oh => oh.User)
+                .WithOne(s => s.Wallet)
+                .HasForeignKey<Wallet>(s => s.UserId)
+                .OnDelete(DeleteBehavior.Cascade);
+            modelBuilder.Entity<WalletTransaction>()
+                .HasOne(oh => oh.Wallet)
+                .WithMany(s => s.WalletTransactions)
+                .HasForeignKey(s => s.WalletID)
+                .OnDelete(DeleteBehavior.Cascade);
+            //    // seed dât
+            //    modelBuilder.Entity<Role>().HasData(
+            //  new Role { Id = Guid.NewGuid(), Name = "Admin", NormalizedName="Admin"},
+            //new Role { Id = Guid.NewGuid(), Name = "Staff", NormalizedName = "Staff" },
+            // new Role { Id = Guid.NewGuid(), Name = "User", NormalizedName = "User" },
+            //  new Role { Id = Guid.NewGuid(), Name = "Shop", NormalizedName = "Shop" });
 
-        //    modelBuilder.Entity<Category>().HasData(
-        //  new Category { Id = Guid.NewGuid(), Name = "Rice",Description= "Rice" },
-        //new Category { Id = Guid.NewGuid(), Name = "SuShi", Description = "SuShi" });
+            //    modelBuilder.Entity<Category>().HasData(
+            //  new Category { Id = Guid.NewGuid(), Name = "Rice",Description= "Rice" },
+            //new Category { Id = Guid.NewGuid(), Name = "SuShi", Description = "SuShi" });
 
         }
     }

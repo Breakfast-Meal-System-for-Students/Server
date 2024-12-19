@@ -13,5 +13,6 @@ namespace BMS.Core.Domains.Enums
         MoMo = 3,
         VnPay = 4,
         PayOs = 5,
+        BMSWallet = 6,
     }
 }

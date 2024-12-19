@@ -11,9 +11,6 @@ namespace BMS.Core.Domains.Entities
 {
     public class Transaction : EntityBase<Guid>
     {
-
-
-
         public Guid OrderId { get; set; } 
 
         public double Price { get; set; }
@@ -21,7 +18,6 @@ namespace BMS.Core.Domains.Entities
         public string Method { get; set; } = null!;
 
         public TransactionStatus Status { get; set; }
-
 
         public Order Order { get; set; }
     }

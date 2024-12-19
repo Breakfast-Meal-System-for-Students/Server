@@ -12,6 +12,7 @@ namespace BMS.Core.Domains.Entities
         public Guid UserId { get; set; } // Reference to the user
         public User User { get; set; } = null!; // Navigation property
 
+        public ICollection<WalletTransaction> WalletTransactions { get; set; } = new List<WalletTransaction>();
 
         // Soft delete properties
         public bool IsDeleted { get; set; } = false;

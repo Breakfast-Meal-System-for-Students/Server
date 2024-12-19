@@ -16,7 +16,7 @@ namespace BMS.Core.Domains.Entities
         public string Abbreviation { get; set; } = null!; // Short form of the university name
 
         // Relationships
-        public ICollection<Shop>? Shops { get; set; } = new List<Shop>(); /
+        public ICollection<Shop>? Shops { get; set; } = new List<Shop>();
         public ICollection<StudentApplication>? StudentApplications { get; set; } = new List<StudentApplication>(); // Applications related to this university
 
         // Soft delete properties
