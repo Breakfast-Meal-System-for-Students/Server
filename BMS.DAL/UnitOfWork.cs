@@ -36,6 +36,8 @@ namespace BMS.DAL
         public IOTPRepository OTPRepository => new OTPRepository(_dbContext);
         public IUniversityRepository UniversityRepository => new UniversityRepository(_dbContext);
         public IStudentApplicationRepository StudentApplicationRepository => new StudentApplicationRepository(_dbContext);
+        public IWalletRepository WalletRepository => new WalletRepository(_dbContext);
+        public IWalletTransactionRepository WalletTransactionRepository => new WalletTransactionRepository(_dbContext);
         public DbContext _dbContext { get; }
 
         public UnitOfWork(DbContext dbContext)

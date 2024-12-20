@@ -34,6 +34,8 @@ namespace BMS.DAL
         public IOTPRepository OTPRepository { get; }
         public IUniversityRepository UniversityRepository { get; }
         public IStudentApplicationRepository StudentApplicationRepository { get; }
+        public IWalletRepository WalletRepository { get; }
+        public IWalletTransactionRepository WalletTransactionRepository { get; }
         void Commit();
         Task CommitAsync();
         void Rollback();
