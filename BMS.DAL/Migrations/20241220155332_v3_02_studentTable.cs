@@ -3,6 +3,8 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
+#pragma warning disable CA1814 // Prefer jagged arrays over multidimensional
+
 namespace BMS.DAL.Migrations
 {
     /// <inheritdoc />
@@ -20,7 +22,15 @@ namespace BMS.DAL.Migrations
                 table: "StudentApplications");
 
             migrationBuilder.DropIndex(
+                name: "IX_StudentApplications_ImageId",
+                table: "StudentApplications");
+
+            migrationBuilder.DropIndex(
                 name: "IX_StudentApplications_UserId",
+                table: "StudentApplications");
+
+            migrationBuilder.DropColumn(
+                name: "ImageId",
                 table: "StudentApplications");
 
             migrationBuilder.RenameColumn(
@@ -32,16 +42,6 @@ namespace BMS.DAL.Migrations
                 name: "MSSV",
                 table: "StudentApplications",
                 newName: "ImageCardStudent");
-
-            migrationBuilder.RenameColumn(
-                name: "ImageId",
-                table: "StudentApplications",
-                newName: "UserId1");
-
-            migrationBuilder.RenameIndex(
-                name: "IX_StudentApplications_ImageId",
-                table: "StudentApplications",
-                newName: "IX_StudentApplications_UserId1");
 
             migrationBuilder.RenameColumn(
                 name: "IdStudent",
@@ -66,10 +66,21 @@ namespace BMS.DAL.Migrations
                 type: "uniqueidentifier",
                 nullable: true);
 
+            migrationBuilder.InsertData(
+                table: "AspNetRoles",
+                columns: new[] { "Id", "ConcurrencyStamp", "Name", "NormalizedName" },
+                values: new object[,]
+                {
+                    { new Guid("0408a1b2-c55a-4620-a414-ffa7849727ef"), null, "Shop", "Shop" },
+                    { new Guid("beae467e-3d84-4c35-9469-e18d1b0959d7"), null, "User", "User" },
+                    { new Guid("d1e2bed4-9a21-49ed-8b7a-11034e8527d7"), null, "Admin", "Admin" },
+                    { new Guid("e6881f62-34af-464e-af7c-6936897b3a49"), null, "Staff", "Staff" }
+                });
+
             migrationBuilder.AddForeignKey(
-                name: "FK_StudentApplications_AspNetUsers_UserId1",
+                name: "FK_StudentApplications_AspNetUsers_Id",
                 table: "StudentApplications",
-                column: "UserId1",
+                column: "Id",
                 principalTable: "AspNetUsers",
                 principalColumn: "Id",
                 onDelete: ReferentialAction.Cascade);
@@ -79,8 +90,28 @@ namespace BMS.DAL.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropForeignKey(
-                name: "FK_StudentApplications_AspNetUsers_UserId1",
+                name: "FK_StudentApplications_AspNetUsers_Id",
                 table: "StudentApplications");
+
+            migrationBuilder.DeleteData(
+                table: "AspNetRoles",
+                keyColumn: "Id",
+                keyValue: new Guid("0408a1b2-c55a-4620-a414-ffa7849727ef"));
+
+            migrationBuilder.DeleteData(
+                table: "AspNetRoles",
+                keyColumn: "Id",
+                keyValue: new Guid("beae467e-3d84-4c35-9469-e18d1b0959d7"));
+
+            migrationBuilder.DeleteData(
+                table: "AspNetRoles",
+                keyColumn: "Id",
+                keyValue: new Guid("d1e2bed4-9a21-49ed-8b7a-11034e8527d7"));
+
+            migrationBuilder.DeleteData(
+                table: "AspNetRoles",
+                keyColumn: "Id",
+                keyValue: new Guid("e6881f62-34af-464e-af7c-6936897b3a49"));
 
             migrationBuilder.DropColumn(
                 name: "StatusStudent",
@@ -95,11 +126,6 @@ namespace BMS.DAL.Migrations
                 table: "AspNetUsers");
 
             migrationBuilder.RenameColumn(
-                name: "UserId1",
-                table: "StudentApplications",
-                newName: "ImageId");
-
-            migrationBuilder.RenameColumn(
                 name: "StudentId",
                 table: "StudentApplications",
                 newName: "UniversityName");
@@ -109,15 +135,22 @@ namespace BMS.DAL.Migrations
                 table: "StudentApplications",
                 newName: "MSSV");
 
-            migrationBuilder.RenameIndex(
-                name: "IX_StudentApplications_UserId1",
-                table: "StudentApplications",
-                newName: "IX_StudentApplications_ImageId");
-
             migrationBuilder.RenameColumn(
                 name: "StudentIdCard",
                 table: "AspNetUsers",
                 newName: "IdStudent");
+
+            migrationBuilder.AddColumn<Guid>(
+                name: "ImageId",
+                table: "StudentApplications",
+                type: "uniqueidentifier",
+                nullable: false,
+                defaultValue: new Guid("00000000-0000-0000-0000-000000000000"));
+
+            migrationBuilder.CreateIndex(
+                name: "IX_StudentApplications_ImageId",
+                table: "StudentApplications",
+                column: "ImageId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_StudentApplications_UserId",

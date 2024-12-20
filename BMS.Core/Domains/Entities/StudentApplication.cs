@@ -15,7 +15,7 @@ namespace BMS.Core.Domains.Entities
         public Guid UniversityId { get; set; } 
         public University University { get; set; } = null!; 
 
-        public User User { get; set; } = null!;
+        public User? User { get; set; } = null!;
         public StudentStatus? StatusStudent { get; set; }
 
         // Implement ISoftDelete properties

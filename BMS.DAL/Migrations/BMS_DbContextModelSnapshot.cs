@@ -711,6 +711,32 @@ namespace BMS.DAL.Migrations
                         .HasFilter("[NormalizedName] IS NOT NULL");
 
                     b.ToTable("AspNetRoles", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            Id = new Guid("d1e2bed4-9a21-49ed-8b7a-11034e8527d7"),
+                            Name = "Admin",
+                            NormalizedName = "Admin"
+                        },
+                        new
+                        {
+                            Id = new Guid("e6881f62-34af-464e-af7c-6936897b3a49"),
+                            Name = "Staff",
+                            NormalizedName = "Staff"
+                        },
+                        new
+                        {
+                            Id = new Guid("beae467e-3d84-4c35-9469-e18d1b0959d7"),
+                            Name = "User",
+                            NormalizedName = "User"
+                        },
+                        new
+                        {
+                            Id = new Guid("0408a1b2-c55a-4620-a414-ffa7849727ef"),
+                            Name = "Shop",
+                            NormalizedName = "Shop"
+                        });
                 });
 
             modelBuilder.Entity("BMS.Core.Domains.Entities.Shop", b =>
@@ -842,14 +868,9 @@ namespace BMS.DAL.Migrations
                     b.Property<Guid>("UserId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid>("UserId1")
-                        .HasColumnType("uniqueidentifier");
-
                     b.HasKey("Id");
 
                     b.HasIndex("UniversityId");
-
-                    b.HasIndex("UserId1");
 
                     b.ToTable("StudentApplications");
                 });
@@ -1530,15 +1551,15 @@ namespace BMS.DAL.Migrations
 
             modelBuilder.Entity("BMS.Core.Domains.Entities.StudentApplication", b =>
                 {
-                    b.HasOne("BMS.Core.Domains.Entities.University", "University")
+                    b.HasOne("BMS.Core.Domains.Entities.User", "User")
                         .WithMany("StudentApplications")
-                        .HasForeignKey("UniversityId")
+                        .HasForeignKey("Id")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("BMS.Core.Domains.Entities.User", "User")
-                        .WithMany()
-                        .HasForeignKey("UserId1")
+                    b.HasOne("BMS.Core.Domains.Entities.University", "University")
+                        .WithMany("StudentApplications")
+                        .HasForeignKey("UniversityId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -1744,6 +1765,8 @@ namespace BMS.DAL.Migrations
                     b.Navigation("Orders");
 
                     b.Navigation("Shop");
+
+                    b.Navigation("StudentApplications");
 
                     b.Navigation("UserRoles");
 

@@ -273,6 +273,11 @@ namespace BMS.DAL.DataContext
                 .WithOne(s => s.University)
                 .HasForeignKey(oh => oh.UniversityId)
                 .OnDelete(DeleteBehavior.Cascade);
+            modelBuilder.Entity<StudentApplication>()
+          .HasOne(oh => oh.User)
+          .WithMany(s => s.StudentApplications)
+          .HasForeignKey(oh => oh.Id)
+          .OnDelete(DeleteBehavior.Cascade);
             modelBuilder.Entity<Wallet>()
                 .HasOne(oh => oh.User)
                 .WithOne(s => s.Wallet)
@@ -284,15 +289,13 @@ namespace BMS.DAL.DataContext
                 .HasForeignKey(s => s.WalletID)
                 .OnDelete(DeleteBehavior.Cascade);
             //    // seed dât
-            //    modelBuilder.Entity<Role>().HasData(
-            //  new Role { Id = Guid.NewGuid(), Name = "Admin", NormalizedName="Admin"},
-            //new Role { Id = Guid.NewGuid(), Name = "Staff", NormalizedName = "Staff" },
-            // new Role { Id = Guid.NewGuid(), Name = "User", NormalizedName = "User" },
-            //  new Role { Id = Guid.NewGuid(), Name = "Shop", NormalizedName = "Shop" });
+            modelBuilder.Entity<Role>().HasData(
+          new Role { Id = Guid.NewGuid(), Name = "Admin", NormalizedName = "Admin" },
+        new Role { Id = Guid.NewGuid(), Name = "Staff", NormalizedName = "Staff" },
+         new Role { Id = Guid.NewGuid(), Name = "User", NormalizedName = "User" },
+          new Role { Id = Guid.NewGuid(), Name = "Shop", NormalizedName = "Shop" });
 
-            //    modelBuilder.Entity<Category>().HasData(
-            //  new Category { Id = Guid.NewGuid(), Name = "Rice",Description= "Rice" },
-            //new Category { Id = Guid.NewGuid(), Name = "SuShi", Description = "SuShi" });
+            
 
         }
     }
