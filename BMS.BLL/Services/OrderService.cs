@@ -102,6 +102,13 @@ namespace BMS.BLL.Services
                         Detail = $"Order is already in {s}, so that you can not change back to {status}"
                     };
                 }
+                if (order.OrderDate > DateTimeHelper.GetCurrentTime().AddHours(1) && status <= OrderStatus.CHECKING)
+                {
+                    return new ServiceActionResult(false)
+                    {
+                        Detail = $"Since the order time of this order is {order.OrderDate}, you cannot change the order to status:  {status}. Please wait until to the order time to prepare this order for the best taste."
+                    };
+                }
                 if (status == OrderStatus.TAKENOVER && s != OrderStatus.PREPARED)
                 {
                     return new ServiceActionResult(false)
@@ -109,20 +116,21 @@ namespace BMS.BLL.Services
                         Detail = $"Order is already not in PREPARED, so that you can not change to {status}"
                     };
                 }
-                bool isPayed = bool.Parse((await CheckOrderIsPayed(id)).Data.ToString());
+                //bool isPayed = bool.Parse((await CheckOrderIsPayed(id)).Data.ToString());
                 if (status.Equals(OrderStatus.CANCEL))
                 {
-                    if (!(s <= OrderStatus.CHECKING && isPayed == false))
+                    if (!(s <= OrderStatus.CHECKING))
                     {
                         return new ServiceActionResult(false)
                         {
-                            Detail = $"Order is already in {s} or is payed. So that not Cancel"
+                            Detail = $"Order is already in {s}. So that not Cancel"
                         };
                     }
                 }
 
                 if (status.Equals(OrderStatus.COMPLETE))
                 {
+                    bool isPayed = bool.Parse((await CheckOrderIsPayed(id)).Data.ToString());
                     if (isPayed == false)
                     {
                         Transaction transaction = new Transaction()
@@ -540,8 +548,7 @@ namespace BMS.BLL.Services
             {
                 var returnOrder = _mapper.Map<OrderResponse>(order);
 
-                if ((returnOrder.Status == OrderStatus.ORDERED.ToString() || returnOrder.Status == OrderStatus.CHECKING.ToString())
-                    && !bool.Parse((await CheckOrderIsPayed(returnOrder.Id)).Data.ToString()))
+                if ((returnOrder.Status == OrderStatus.ORDERED.ToString() || returnOrder.Status == OrderStatus.CHECKING.ToString()))
                 {
                     returnOrder.canCancel = true;
                 }
@@ -603,8 +610,7 @@ namespace BMS.BLL.Services
 
             foreach (var order in (List<OrderResponse>)paginationResult.Data)
             {
-                if ((order.Status == OrderStatus.ORDERED.ToString() || order.Status == OrderStatus.CHECKING.ToString())
-                    && !bool.Parse((await CheckOrderIsPayed(order.Id)).Data.ToString()))
+                if ((order.Status == OrderStatus.ORDERED.ToString() || order.Status == OrderStatus.CHECKING.ToString()))
                 {
                     order.canCancel = true;
                 }
@@ -634,8 +640,7 @@ namespace BMS.BLL.Services
 
             foreach (var order in (List<OrderResponse>)paginationResult.Data)
             {
-                if ((order.Status == OrderStatus.ORDERED.ToString() || order.Status == OrderStatus.CHECKING.ToString())
-                    && !bool.Parse((await CheckOrderIsPayed(order.Id)).Data.ToString()))
+                if ((order.Status == OrderStatus.ORDERED.ToString() || order.Status == OrderStatus.CHECKING.ToString()))
                 {
                     order.canCancel = true;
                 }

@@ -378,9 +378,9 @@ namespace BMS.BLL.Services
             IQueryable<OrderItem> productQuery = (await _unitOfWork.OrderItemRepository.GetAllAsyncAsQueryable())
                                        .Include(b => b.Product).Include(a => a.Order).Where(x => x.Order.ShopId == shopId && x.Order.OrderDate >= request.DateFrom && x.Order.OrderDate <= request.DateTo);
 
-            if (request.Status != 0)
+            if (request.OrderStatus != 0)
             {
-                productQuery = productQuery.Where(m => m.Order.Status.Equals(request.Status.ToString()));
+                productQuery = productQuery.Where(m => m.Order.Status.Equals(request.OrderStatus.ToString()));
             }
 
             var productSell = productQuery

@@ -10,7 +10,7 @@ namespace BMS.BLL.Models.Requests.Product
 {
     public class GetProductToPreparingRequest : PagingRequest
     {
-        public OrderStatus Status { get; set; } = 0;
+        public OrderStatus OrderStatus { get; set; } = 0;
         public DateTime DateFrom { get; set; }
         public DateTime DateTo { get; set; }
         public bool IsDesc { get; set; } = false;
