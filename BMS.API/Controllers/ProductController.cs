@@ -105,5 +105,14 @@ namespace BMS.API.Controllers
                 async () => await _productService.GetProductBestSellerInShop(shopId, request).ConfigureAwait(false)
             ).ConfigureAwait(false);
         }
+
+        [HttpGet(("GetProductToPreparingForShopInTime/{shopId}"))]
+        [Authorize(Roles = UserRoleConstants.SHOP)]
+        public async Task<IActionResult> GetProductToPreparingForShopInTime(Guid shopId, [FromQuery] GetProductToPreparingRequest request)
+        {
+            return await ExecuteServiceLogic(
+                async () => await _productService.GetProductToPreparingForShopInTime(shopId, request).ConfigureAwait(false)
+            ).ConfigureAwait(false);
+        }
     }
 }

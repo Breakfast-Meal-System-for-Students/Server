@@ -349,5 +349,31 @@ namespace BMS.BLL.Services
 
             return new ServiceActionResult(true) { Data = paginationResult };
         }
+
+        public async Task<ServiceActionResult> GetProductToPreparingForShopInTime(Guid shopId, GetProductToPreparingRequest request)
+        {
+            IQueryable<OrderItem> productQuery = (await _unitOfWork.OrderItemRepository.GetAllAsyncAsQueryable())
+                                       .Include(b => b.Product).Include(a => a.Order).Where(x => x.Order.ShopId == shopId && x.Order.OrderDate >= request.DateFrom && x.Order.OrderDate <= request.DateTo);
+
+            if (request.Status != 0)
+            {
+                productQuery = productQuery.Where(m => m.Order.Status.Equals(request.Status.ToString()));
+            }
+
+            var productSell = productQuery
+                .GroupBy(product => new { product.ProductId, product.Note })
+                .Select(group => new
+                {
+                    ProductId = group.Key.ProductId,
+                    Note = group.Key.Note,
+                    ProductName = group.FirstOrDefault().Product.Name,
+                    ProductImage = group.FirstOrDefault().Product.Images,
+                    TotalSell = group.Sum(orderitem => orderitem.Quantity)
+                })
+                .OrderByDescending(x => x.TotalSell);
+            var paginationResult = PaginationHelper.BuildPaginatedResult(productSell, request.PageSize, request.PageIndex);
+
+            return new ServiceActionResult(true) { Data = paginationResult };
+        }
     }
 }

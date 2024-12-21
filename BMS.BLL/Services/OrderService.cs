@@ -850,5 +850,24 @@ namespace BMS.BLL.Services
                 Detail = "Cancel list of orders successfully"
             };
         }
+
+        public async Task<ServiceActionResult> GetOrdersInTimeForShop(Guid shopId, GetOrdersInTimeRequest request)
+        {
+            IQueryable<Order> orderQuery = (await _unitOfWork.OrderRepository.GetAllAsyncAsQueryable()).Include(a => a.OrderItems).ThenInclude(d => d.Product).ThenInclude(e => e.Images)
+                                            .Include(b => b.Customer).Include(c => c.Shop)
+                                            .Where(x => x.ShopId == shopId && x.OrderDate >= request.DateFrom && x.OrderDate <= request.DateTo);
+
+            if (request.Status != 0)
+            {
+                orderQuery = orderQuery.Where(m => m.Status.Equals(request.Status.ToString()));
+            }
+
+            orderQuery = request.IsDesc ? orderQuery.OrderByDescending(a => a.OrderDate) : orderQuery.OrderBy(a => a.OrderDate);
+
+            var paginationResult = PaginationHelper
+            .BuildPaginatedResult<Order, OrderResponse>(_mapper, orderQuery, request.PageSize, request.PageIndex);
+
+            return new ServiceActionResult(true) { Data = paginationResult };
+        }
     }
 }

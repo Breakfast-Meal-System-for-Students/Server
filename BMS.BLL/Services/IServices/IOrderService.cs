@@ -31,5 +31,6 @@ namespace BMS.BLL.Services.IServices
         Task<ServiceActionResult> DeleteAllOrderInShop(Guid shopId);
         Task TrainModelFromOrderHistory();
         Task<ServiceActionResult> CancelListOrder(List<Guid> orderIds);
+        Task<ServiceActionResult> GetOrdersInTimeForShop(Guid shopId, GetOrdersInTimeRequest request);
     }
 }

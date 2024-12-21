@@ -166,12 +166,21 @@ namespace BMS.API.Controllers
             ).ConfigureAwait(false);
         }
 
-        [HttpPost("CancelListOrder")]
+        [HttpPut("CancelListOrder")]
         [Authorize(Roles = UserRoleConstants.ADMIN + "," + UserRoleConstants.STAFF + "," + UserRoleConstants.SHOP)]
         public async Task<IActionResult> CancelListOrder([FromForm] List<Guid> orderIds)
         {
             return await ExecuteServiceLogic(
                 async () => await _orderService.CancelListOrder(orderIds).ConfigureAwait(false)
+            ).ConfigureAwait(false);
+        }
+
+        [HttpGet("GetOrdersInTimeForShop/{shopId}")]
+        [Authorize(Roles = UserRoleConstants.SHOP)]
+        public async Task<IActionResult> GetOrdersInTimeForShop(Guid shopId, [FromQuery] GetOrdersInTimeRequest request)
+        {
+            return await ExecuteServiceLogic(
+                async () => await _orderService.GetOrdersInTimeForShop(shopId, request).ConfigureAwait(false)
             ).ConfigureAwait(false);
         }
     }

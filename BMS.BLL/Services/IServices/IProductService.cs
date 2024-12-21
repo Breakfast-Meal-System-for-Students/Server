@@ -25,5 +25,6 @@ namespace BMS.BLL.Services.IServices
         Task<ServiceActionResult> ChangeOutOfStock(Guid productId);
         Task<ServiceActionResult> ChangeAICanDetect(Guid productId, AIDetectStatus status);
         Task<ServiceActionResult> GetProductBestSellerInShop(Guid shopId, ProductBestSellerRequest request);
+        Task<ServiceActionResult> GetProductToPreparingForShopInTime(Guid shopId, GetProductToPreparingRequest request);
     }
 }
