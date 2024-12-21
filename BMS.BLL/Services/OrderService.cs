@@ -833,18 +833,32 @@ namespace BMS.BLL.Services
         public async Task<ServiceActionResult> CancelListOrder(List<Guid> orderIds)
         {
             var orders = (await _unitOfWork.OrderRepository.GetAllAsyncAsQueryable()).Where(x => orderIds.Contains(x.Id)).ToList();
-            if (orders == null) 
+            if (orders == null || orders.Count == 0) 
             {
                 return new ServiceActionResult(false)
                 {
                     Detail = "Not have Orders"
                 };
             }
+            List<Notification> notificationList = new List<Notification>();
             foreach (Order order in orders)
             {
                 order.Status = OrderStatus.CANCEL.ToString();
+                notificationList.Add(
+                    new Notification {
+                        UserId = order.CustomerId,
+                        OrderId = order.Id,
+                        ShopId = order.ShopId,
+                        Object = $"The shop has canceled your order because it is out of stock.",
+                        Status = NotificationStatus.UnRead,
+                        Title = GetTitleNotification(OrderStatus.CANCEL),
+                        Destination = NotificationDestination.FORUSER
+                    }
+                );
             }
             await _unitOfWork.OrderRepository.UpdateRangeAsync(orders);
+            await _unitOfWork.CommitAsync();
+            await _unitOfWork.NotificationRepository.AddRangeAsync(notificationList);
             return new ServiceActionResult(true)
             {
                 Detail = "Cancel list of orders successfully"

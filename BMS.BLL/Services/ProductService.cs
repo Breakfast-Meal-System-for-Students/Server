@@ -202,6 +202,26 @@ namespace BMS.BLL.Services
 
         public async Task<ServiceActionResult> DeleteProduct(Guid id)
         {
+            var numberOfOrders = (await _unitOfWork.OrderRepository.GetAllAsyncAsQueryable()).Include(a => a.OrderItems)
+                    .Where(x => x.OrderItems.Any(y => y.ProductId == id) && (x.Status.Equals(OrderStatus.ORDERED.ToString()) || x.Status.Equals(OrderStatus.CHECKING.ToString()))
+                    && x.OrderDate > DateTimeHelper.GetCurrentTime().AddMinutes(-30))
+                    .Select(x => new { x.Id, x.CustomerId }).ToList();
+
+            if (numberOfOrders != null && numberOfOrders.Count != 0)
+            {
+                var listOrderId = numberOfOrders.Select(o => o.Id).Distinct().ToList();
+                var listCustomerId = numberOfOrders.Select(o => o.CustomerId).Distinct().ToList();
+                return new ServiceActionResult(false)
+                {
+                    Data = new
+                    {
+                        listOrderId = listOrderId,
+                        listCustomerId = listCustomerId,
+                        count = listOrderId.Count
+                    },
+                    Detail = $"You are having {numberOfOrders.Count} in {OrderStatus.ORDERED.ToString()} or {OrderStatus.CHECKING.ToString()} now. We will cancel them. The rest orders in another status can not be cancel. Are you sure about changing this product to out of stock ?"
+                };
+            }
             await _unitOfWork.ProductRepository.SoftDeleteByIdAsync(id);
             return new ServiceActionResult();
         }
@@ -273,17 +293,20 @@ namespace BMS.BLL.Services
             {
                 var numberOfOrders = (await _unitOfWork.OrderRepository.GetAllAsyncAsQueryable()).Include(a => a.OrderItems)
                     .Where(x => x.OrderItems.Any(y => y.ProductId == productId) && (x.Status.Equals(OrderStatus.ORDERED.ToString()) || x.Status.Equals(OrderStatus.CHECKING.ToString()))
-                    && x.OrderDate > DateTimeHelper.GetCurrentTime())
-                    .Select(x => x.Id).ToList();
+                    && x.OrderDate > DateTimeHelper.GetCurrentTime().AddMinutes(-30))
+                    .Select(x => new { x.Id, x.CustomerId }).ToList();
 
-                if (numberOfOrders != null || numberOfOrders.Count != 0)
+                if (numberOfOrders != null && numberOfOrders.Count != 0)
                 {
+                    var listOrderId = numberOfOrders.Select(o => o.Id).Distinct().ToList();
+                    var listCustomerId = numberOfOrders.Select(o => o.CustomerId).Distinct().ToList();
                     return new ServiceActionResult(false)
                     {
                         Data = new
                         {
-                            listOrderId = numberOfOrders,
-                            count = numberOfOrders.Count
+                            listOrderId = listOrderId,
+                            listCustomerId = listCustomerId,
+                            count = listOrderId.Count
                         },
                         Detail = $"You are having {numberOfOrders.Count} in {OrderStatus.ORDERED.ToString()} or {OrderStatus.CHECKING.ToString()} now. We will cancel them. The rest orders in another status can not be cancel. Are you sure about changing this product to out of stock ?"
                     };
