@@ -41,13 +41,15 @@ namespace BMS.BLL.Services
         private readonly RecommendationEngine _recommendationEngine;
         private readonly IProductService _productService;
         private readonly IAuthService _authService;
-        public OrderService(IUnitOfWork unitOfWork, IMapper mapper, IQRCodeService qrCodeService, IHubContext<NotificationHub> hubContext, RecommendationEngine recommendationEngine, IProductService productService, IAuthService authService) : base(unitOfWork, mapper)
+        private readonly IOpeningHoursService _openingHoursService;
+        public OrderService(IUnitOfWork unitOfWork,IOpeningHoursService openingHoursService, IMapper mapper, IQRCodeService qrCodeService, IHubContext<NotificationHub> hubContext, RecommendationEngine recommendationEngine, IProductService productService, IAuthService authService) : base(unitOfWork, mapper)
         {
             _qrCodeService = qrCodeService;
             _hubContext = hubContext;
             _recommendationEngine = recommendationEngine;
             _productService = productService;
             _authService = authService;
+            _openingHoursService = openingHoursService;
         }
 
         public async Task<ServiceActionResult> ChangeOrderStatus(Guid id, OrderStatus status, Guid userId)
@@ -380,7 +382,31 @@ namespace BMS.BLL.Services
                     return serviceActionResult;
                 }
             }*/
-
+            // Check if the order date is within the shop's opening hours
+            if (request.OrderDate != null)
+            {
+                bool isWithinOpeningHours = await _openingHoursService.IsWithinOpeningHours(cart.ShopId, request.OrderDate.GetValueOrDefault());
+                if (!isWithinOpeningHours)
+                {
+                    // Return a failure response if the order date is outside the shop's opening hours
+                    return new ServiceActionResult(false)
+                    {
+                        Data = "The order date is outside of the shop's opening hours."
+                    };
+                }
+            }
+            else
+            {
+                bool isWithinOpeningHours = await _openingHoursService.IsWithinOpeningHours(cart.ShopId, DateTimeHelper.GetCurrentTime());
+                if (!isWithinOpeningHours)
+                {
+                    // Return a failure response if the order date is outside the shop's opening hours
+                    return new ServiceActionResult(false)
+                    {
+                        Data = "The order date is outside of the shop's opening hours."
+                    };
+                }
+            }
             Order order = new Order
             {
                 Status = OrderStatus.ORDERED.ToString(),

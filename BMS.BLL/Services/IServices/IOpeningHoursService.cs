@@ -15,5 +15,6 @@ namespace BMS.BLL.Services.IServices
         void AddDefaultForShop(Guid shopId, int to_hour, int from_hour, int to_minute, int from_minute);
         Task<ServiceActionResult> UpdateOpeningHoursOnceDayForShop(UpdateDayOpeningHoursRequest request);
         Task<ServiceActionResult> UpdateOpenTodayForShop(Guid id, bool isOpenToday);
+        Task<bool> IsWithinOpeningHours(Guid shopId, DateTime timeOrder);
     }
 }

@@ -1,8 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using BMS.Core.Domains.Enums;
+using System;
 
 namespace BMS.BLL.Utilities
 {
@@ -22,6 +19,23 @@ namespace BMS.BLL.Utilities
             //return TimeZoneInfo.ConvertTimeFromUtc(time, AppTimeZone);
             return time.AddHours(7);
         }
-    }
 
+        public static WeekDay GetCurrentWeekDay()
+        {
+            // Get current Vietnamese time
+            DateTime vietnamTime = GetCurrentTime();
+
+            // Convert to WeekDay enum
+            return (WeekDay)vietnamTime.DayOfWeek;
+        }
+
+        public static WeekDay GetWeekDayFromDateTime(DateTime dateTime)
+        {
+            // Convert the given DateTime to Vietnamese time
+            DateTime vietnamTime = GetVietNameseTime(dateTime);
+
+            // Convert to WeekDay enum
+            return (WeekDay)vietnamTime.DayOfWeek;
+        }
+    }
 }

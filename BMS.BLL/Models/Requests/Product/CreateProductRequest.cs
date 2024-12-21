@@ -16,6 +16,8 @@ namespace BMS.BLL.Models.Requests.Product
 
         public Guid ShopId { get; set; }
 
+        public bool? IsCombo { get; set; }
+
         public List<IFormFile> Images { get; set; } = new List<IFormFile>();
 
     }

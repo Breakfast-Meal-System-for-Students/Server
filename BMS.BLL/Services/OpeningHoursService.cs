@@ -7,6 +7,7 @@ using BMS.BLL.Models.Responses.OpeningHour;
 using BMS.BLL.Models.Responses.Users;
 using BMS.BLL.Services.BaseServices;
 using BMS.BLL.Services.IServices;
+using BMS.BLL.Utilities;
 using BMS.Core.Domains.Entities;
 using BMS.Core.Domains.Enums;
 using BMS.Core.Helpers;
@@ -69,17 +70,35 @@ namespace BMS.BLL.Services
         {
             var openingHours = await _unitOfWork.OpeningHoursRepository.FindAsync(x => x.Id == request.Id);
             // Validate input times
-            if (request.from_hour < 0 || request.from_hour > 24 ||
-                request.to_hour < 0 || request.to_hour > 24 ||
+            if (request.from_hour < 5 || request.from_hour > 12 ||
+                request.to_hour < 5 || request.to_hour > 12 ||
                 request.from_minute < 0 || request.from_minute > 60 ||
                 request.to_minute < 0 || request.to_minute > 60)
             {
                 return new ServiceActionResult(false)
                 {
-                    Data = "Invalid time values. Hours must be between 0 and 24, and minutes must be between 0 and 60."
+                    Data = "Invalid time values. Hours must be between 5 and 12, and minutes must be between 0 and 60."
                 };
             }
+            // Get the current day of the week
+            WeekDay currentDay = DateTimeHelper.GetCurrentWeekDay();
+            // Converts DayOfWeek to WeekDay enum
 
+            // Check if the current day matches the day of the opening hours
+            if (openingHours.day == currentDay)
+            {
+                return new ServiceActionResult(true)
+                {
+                    Detail = "Time is already the current time in the opening hours (48 hour). No update required."
+                };
+            }
+            if (openingHours.day == currentDay +1)
+            {
+                return new ServiceActionResult(true)
+                {
+                    Detail = "Time is already the current time in the opening hours (48 hour). No update required."
+                };
+            }
             // Ensure "from time" is less than "to time"
             var fromTime = new TimeSpan(request.from_hour, request.from_minute, 0);
             var toTime = new TimeSpan(request.to_hour, request.to_minute, 0);
@@ -138,14 +157,22 @@ namespace BMS.BLL.Services
             if (openingHours is not null)
             {
                 // Get the current day of the week
-                WeekDay currentDay = (WeekDay)DateTime.Now.DayOfWeek; // Converts DayOfWeek to WeekDay enum
+                WeekDay currentDay = DateTimeHelper.GetCurrentWeekDay();
+                // Converts DayOfWeek to WeekDay enum
 
                 // Check if the current day matches the day of the opening hours
                 if (openingHours.day == currentDay)
                 {
                     return new ServiceActionResult(true)
                     {
-                        Detail = "Today is already the current day in the opening hours. No update required."
+                        Detail = "Time is already the current time in the opening hours (48 hour). No update required."
+                    };
+                }
+                if (openingHours.day == currentDay + 1)
+                {
+                    return new ServiceActionResult(true)
+                    {
+                        Detail = "Time is already the current time in the opening hours (48 hour). No update required."
                     };
                 }
                 openingHours.isOpenToday = isOpenToday;
@@ -161,6 +188,32 @@ namespace BMS.BLL.Services
             {
                 Detail = "Shop is not existed or deleted"
             };
+        }
+
+
+        public async Task<bool> IsWithinOpeningHours(Guid shopId, DateTime timeOrder)
+        {
+            // Get the current day based on the Vietnamese timezone
+            WeekDay currentDay = DateTimeHelper.GetCurrentWeekDay();
+
+            // Fetch opening hours for the shop and the current day
+            var openingHours = await _unitOfWork.OpeningHoursRepository
+                .FindAsync(x => x.ShopId == shopId && x.day == currentDay);
+
+            if (openingHours == null)
+            {
+                // Return false if no opening hours are found for the shop on the current day
+                return false;
+            }
+
+            // Calculate the start and end times for the shop's opening hours
+            DateTime startTime = timeOrder.Date.AddHours(openingHours.from_hour)
+                                        .AddMinutes(openingHours.from_minute);
+            DateTime endTime = timeOrder.Date.AddHours(openingHours.to_hour)
+                                      .AddMinutes(openingHours.to_minute);
+
+            // Check if the provided timeOrder is within the range
+            return timeOrder >= startTime && timeOrder <= endTime;
         }
 
     }

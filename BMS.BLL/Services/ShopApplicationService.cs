@@ -50,14 +50,14 @@ namespace BMS.BLL.Services
         {
             var user = await _userManager.FindByEmailAsync(applicationRequest.Email);
             // Validate input times
-            if (applicationRequest.from_hour < 0 || applicationRequest.from_hour > 24 ||
-                applicationRequest.to_hour < 0 || applicationRequest.to_hour > 24 ||
+            if (applicationRequest.from_hour < 5 || applicationRequest.from_hour > 12 ||
+                applicationRequest.to_hour < 5 || applicationRequest.to_hour > 12 ||
                 applicationRequest.from_minute < 0 || applicationRequest.from_minute > 60 ||
                 applicationRequest.to_minute < 0 || applicationRequest.to_minute > 60)
             {
                 return new ServiceActionResult(false)
                 {
-                    Data = "Invalid time values. Hours must be between 0 and 24, and minutes must be between 0 and 60."
+                    Data = "Invalid time values. Hours must be between 5 and 12, and minutes must be between 0 and 60."
                 };
             }
 

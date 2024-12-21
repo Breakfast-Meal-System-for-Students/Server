@@ -153,6 +153,7 @@ namespace BMS.BLL.Services
             // Query the shops
             IQueryable<Shop> ShopQueryable = (await _unitOfWork.ShopRepository.GetAllAsyncAsQueryable())
                 .Include(a => a.OpeningHours)
+                .Include(a => a.University)
                 .Include(a => a.Package_Shop)
                 .ThenInclude(b => b.Package)
                 .Where(x => x.Status == ShopStatus.ACCEPTED
@@ -161,7 +162,11 @@ namespace BMS.BLL.Services
                         : DateTime.MinValue) > DateTimeHelper.GetCurrentTime()
                     && x.OpeningHours.Any(oh => oh.day == currentDay && oh.isOpenToday));
 
-
+            // Filter by university name if provided
+            if (!string.IsNullOrEmpty(request.University))
+            {
+                ShopQueryable = ShopQueryable.Where(m => m.University != null && m.University.Name.Contains(request.University));
+            }
             if (!string.IsNullOrEmpty(request.Search))
             {
                 ShopQueryable = ShopQueryable.Where(m => m.Name.Contains(request.Search));
