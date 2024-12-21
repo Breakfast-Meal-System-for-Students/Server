@@ -311,18 +311,20 @@ namespace BMS.BLL.Services
             double maxLng = Math.Max(local1.Lng, local2.Lng)+ 0.045;
 
             IQueryable<Shop> shops = (await _unitOfWork.ShopRepository.GetAllAsyncAsQueryable())
-                    .Include(a => a.Package_Shop)
-                      .ThenInclude(b => b.Package)
-                    .Where(x =>
-                    x.Status == ShopStatus.ACCEPTED &&
+              .Include(a => a.Package_Shop)
+                  .ThenInclude(b => b.Package)
+              .Include(a => a.OpeningHours) // Include OpeningHours for filtering
+              .Where(x =>
+                  x.Status == ShopStatus.ACCEPTED &&
                   (x.Package_Shop.Any()
-                  ? x.Package_Shop.Max(p => p.Package != null
-                 ? p.CreateDate.AddDays(p.Package.Duration)
-                 : DateTime.MinValue)
-             : DateTime.MinValue) > DateTimeHelper.GetCurrentTime() &&
-                   (x.lat > minLat && x.lat < maxLat) &&
-                  (x.lng > minLng && x.lng < maxLng)
-                  );
+                      ? x.Package_Shop.Max(p => p.Package != null
+                          ? p.CreateDate.AddDays(p.Package.Duration)
+                          : DateTime.MinValue)
+                      : DateTime.MinValue) > DateTimeHelper.GetCurrentTime() &&
+                  (x.lat > minLat && x.lat < maxLat) &&
+                  (x.lng > minLng && x.lng < maxLng) &&
+                  x.OpeningHours.Any(oh => oh.day == (WeekDay)DateTime.Now.DayOfWeek && oh.isOpenToday)); // Check if open today
+
 
             if (!string.IsNullOrEmpty(search))
             {

@@ -39,6 +39,14 @@ namespace BMS.API.Controllers
                 async () => await _authService.RegisterStudentAsync(request).ConfigureAwait(false)
             ).ConfigureAwait(false);
         }
+        [HttpPost("register-student-non-mailedu")]
+        public async Task<IActionResult> RegisterStudentNonMailEdu(RegisterStudentNoMailEdu request)
+        {
+            return await ExecuteServiceLogic(
+
+                async () => await _authService.RegisterStudentNoMailEduAsync(request).ConfigureAwait(false)
+            ).ConfigureAwait(false);
+        }
 
         [HttpPost("login")]
         public async Task<IActionResult> Login(LoginUser request)

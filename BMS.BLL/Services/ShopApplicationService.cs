@@ -49,6 +49,30 @@ namespace BMS.BLL.Services
         public async Task<ServiceActionResult> CreateShopApplication(CreateShopApplicationRequest applicationRequest)
         {
             var user = await _userManager.FindByEmailAsync(applicationRequest.Email);
+            // Validate input times
+            if (applicationRequest.from_hour < 0 || applicationRequest.from_hour > 24 ||
+                applicationRequest.to_hour < 0 || applicationRequest.to_hour > 24 ||
+                applicationRequest.from_minute < 0 || applicationRequest.from_minute > 60 ||
+                applicationRequest.to_minute < 0 || applicationRequest.to_minute > 60)
+            {
+                return new ServiceActionResult(false)
+                {
+                    Data = "Invalid time values. Hours must be between 0 and 24, and minutes must be between 0 and 60."
+                };
+            }
+
+            // Ensure "from time" is less than "to time"
+            var fromTime = new TimeSpan(applicationRequest.from_hour, applicationRequest.from_minute, 0);
+            var toTime = new TimeSpan(applicationRequest.to_hour, applicationRequest.to_minute, 0);
+
+            if (fromTime >= toTime)
+            {
+                return new ServiceActionResult(false)
+                {
+                    Data = "Invalid time range. 'From time' must be earlier than 'To time'."
+                };
+            }
+            //
             if (user != null)
             {
                 var roles = await _userManager.GetRolesAsync(user);
@@ -63,6 +87,7 @@ namespace BMS.BLL.Services
                 };
             }
             var shopApplication = _mapper.Map<Shop>(applicationRequest);
+           
             // Analys lat and lng (if cannot convert address --> save address)
             try
             {
@@ -88,6 +113,7 @@ namespace BMS.BLL.Services
                 shopApplication.Rate = 5;
                 await _unitOfWork.ShopRepository.AddAsync(shopApplication);
                 await _unitOfWork.CommitAsync();
+                _openingHoursService.AddDefaultForShop(shopApplication.Id, applicationRequest.to_hour,applicationRequest.from_hour,applicationRequest.to_minute, applicationRequest.from_hour);
                 return new ServiceActionResult();
             }
             catch
@@ -98,7 +124,7 @@ namespace BMS.BLL.Services
 
         public async Task<ServiceActionResult> GetAllApplications(ShopApplicationRequest queryParameters)
         {
-            IQueryable<Shop> applicationQuery = (await _unitOfWork.ShopRepository.GetAllAsyncAsQueryable()).Include(a => a.User);
+            IQueryable<Shop> applicationQuery = (await _unitOfWork.ShopRepository.GetAllAsyncAsQueryable()).Include(a => a.User).Include(a => a.University);
 
             var canParsed = Enum.TryParse(queryParameters.Status, true, out ShopStatus status);
             if (canParsed)
@@ -122,10 +148,14 @@ namespace BMS.BLL.Services
 
         public async Task<ServiceActionResult> GetApplication(Guid id)
         {
-            var application = await _unitOfWork.ShopRepository.FindAsync(id) ?? throw new ArgumentNullException("Application is not exist");
-
-            var returnApplication = _mapper.Map<ShopApplicationResponse>(application);
-
+           // var application = await _unitOfWork.ShopRepository.FindAsync(id) ?? throw new ArgumentNullException("Application is not exist");
+            var applicationQuery = (await _unitOfWork.ShopRepository.GetAllAsyncAsQueryable()).Include(a => a.User).Include(a => a.University).FirstOrDefault();
+            var openCloseShop =await _unitOfWork.OpeningHoursRepository.FindAsync(a => a.ShopId == id);
+            var returnApplication = _mapper.Map<ShopApplicationDetailResponse>(applicationQuery);
+            returnApplication.From_Hour = openCloseShop.from_hour;
+            returnApplication.To_Hour = openCloseShop.to_hour;
+            returnApplication.From_Minune = openCloseShop.from_minute;
+            returnApplication.To_Minune = openCloseShop.to_minute;
             return new ServiceActionResult(true) { Data = returnApplication };
         }
 

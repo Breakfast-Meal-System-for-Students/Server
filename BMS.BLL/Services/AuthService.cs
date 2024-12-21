@@ -1,5 +1,7 @@
 ﻿using AutoMapper;
+using Azure.Core;
 using BMS.BLL.Models;
+using BMS.BLL.Models.Requests.StudentApplication;
 using BMS.BLL.Models.Requests.User;
 using BMS.BLL.Services.BaseServices;
 using BMS.BLL.Services.IServices;
@@ -27,14 +29,15 @@ namespace BMS.BLL.Services
         private readonly IMapper _mapper;
         private readonly IEmailService _emailService;
         private readonly ICookieService _cookieService;
-
+        private readonly IStudentApplicationService _studentApplicationService;
+        private readonly IFileStorageService _fileStorageService;
         public AuthService(ITokenService tokenService, IUnitOfWork unitOfWork,
             UserManager<User> userManager,
             SignInManager<User> signInManager,
             IMapper mapper,
             RoleManager<Role> roleManager,
             IEmailService emailService,
-            ICookieService cookieService) : base(unitOfWork, mapper)
+            ICookieService cookieService, IStudentApplicationService studentApplicationService, IFileStorageService fileStorageService) : base(unitOfWork, mapper)
         {
             _tokenService = tokenService;
             _userManager = userManager;
@@ -43,6 +46,8 @@ namespace BMS.BLL.Services
             _mapper = mapper;
             _emailService = emailService;
             _cookieService = cookieService;
+            _studentApplicationService = studentApplicationService;
+            _fileStorageService = fileStorageService;
         }
 
         public async Task<ServiceActionResult> CheckOTP(string email, string OTP)
@@ -236,7 +241,28 @@ namespace BMS.BLL.Services
                 await _userManager.DeleteAsync(userEntity);
                 throw new AddRoleException("Can not create account with role");
             }
-
+            string imageCardUrl="";
+            if (userToRegisterDTO.Images != null)
+            {
+                imageCardUrl = await _fileStorageService.UploadFileBlobAsync((Microsoft.AspNetCore.Http.IFormFile)userToRegisterDTO.Images);
+                
+            }
+            CreateStudentApplicationRequest createStudentApplicationRequest = new CreateStudentApplicationRequest
+            {
+                ImageCardStudent = imageCardUrl,
+                StatusStudent = Core.Domains.Enums.StudentStatus.PENDING,
+                StudentId = userToRegisterDTO.StudentIdCard,
+                UniversityId =userToRegisterDTO.UniversityId,
+                UserId = userEntity.Id,
+            
+                Email = userToRegisterDTO.Email,
+            };
+            var StudentApplication = _mapper.Map<StudentApplication>(createStudentApplicationRequest);
+            StudentApplication.Id =userEntity.Id;
+            await _unitOfWork.StudentApplicationRepository.AddAsync(StudentApplication);
+        
+            await _unitOfWork.CommitAsync();
+            //_studentApplicationService.AddStudentApplication(createStudentApplicationRequest);
 
             //var token = await _userManager.GenerateEmailConfirmationTokenAsync(userEntity);
            // await _emailService.SendEmailConfirmationMoblieAsync(userEntity, token);

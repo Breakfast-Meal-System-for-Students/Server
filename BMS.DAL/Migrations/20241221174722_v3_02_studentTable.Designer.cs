@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace BMS.DAL.Migrations
 {
     [DbContext(typeof(BMS_DbContext))]
-    [Migration("20241220155332_v3_02_studentTable")]
+    [Migration("20241221174722_v3_02_studentTable")]
     partial class v3_02_studentTable
     {
         /// <inheritdoc />
@@ -439,6 +439,9 @@ namespace BMS.DAL.Migrations
                     b.Property<int>("from_minute")
                         .HasColumnType("int");
 
+                    b.Property<bool>("isOpenToday")
+                        .HasColumnType("bit");
+
                     b.Property<int>("to_hour")
                         .HasColumnType("int");
 
@@ -718,25 +721,25 @@ namespace BMS.DAL.Migrations
                     b.HasData(
                         new
                         {
-                            Id = new Guid("d1e2bed4-9a21-49ed-8b7a-11034e8527d7"),
+                            Id = new Guid("a56093b9-12d2-483e-90f6-0d413e910d69"),
                             Name = "Admin",
                             NormalizedName = "Admin"
                         },
                         new
                         {
-                            Id = new Guid("e6881f62-34af-464e-af7c-6936897b3a49"),
+                            Id = new Guid("73763b56-92a1-41f3-aaa9-fe6c8dad745c"),
                             Name = "Staff",
                             NormalizedName = "Staff"
                         },
                         new
                         {
-                            Id = new Guid("beae467e-3d84-4c35-9469-e18d1b0959d7"),
+                            Id = new Guid("9691b818-23ab-48bf-9deb-a965c55711c6"),
                             Name = "User",
                             NormalizedName = "User"
                         },
                         new
                         {
-                            Id = new Guid("0408a1b2-c55a-4620-a414-ffa7849727ef"),
+                            Id = new Guid("75c5e41d-38c8-40f6-8e97-f1c661b5631a"),
                             Name = "Shop",
                             NormalizedName = "Shop"
                         });
@@ -847,6 +850,10 @@ namespace BMS.DAL.Migrations
 
                     b.Property<DateTime?>("DeletedDate")
                         .HasColumnType("datetime2");
+
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("ImageCardStudent")
                         .IsRequired()

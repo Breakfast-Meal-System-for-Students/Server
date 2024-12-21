@@ -36,6 +36,8 @@ using BMS.BLL.Models.Requests.OpeningHour;
 using BMS.BLL.Models.Responses.Favourite;
 using BMS.BLL.Models.Requests.University;
 using BMS.BLL.Models.Responses.University;
+using BMS.BLL.Models.Responses.StudentApplication;
+using BMS.BLL.Models.Requests.StudentApplication;
 
 
 namespace BMS.BLL.Utilities.AutoMapperProfiles
@@ -80,12 +82,14 @@ namespace BMS.BLL.Utilities.AutoMapperProfiles
 
                 #endregion
                 #region shop  
-
                 CreateMap<CreateShopApplicationRequest, Shop>()
                     .ForMember(dest => dest.PhoneNumber, opt => opt.MapFrom(src => src.Phone));
-
+                CreateMap<Shop, ShopApplicationDetailResponse>()
+              .ForMember(dest => dest.Phone, opt => opt.MapFrom(src => src.PhoneNumber))
+              .ForMember(dest => dest.Name, opt => opt.MapFrom(src => src.University));
                 CreateMap<Shop, ShopApplicationResponse>()
-                    .ForMember(dest => dest.Phone, opt => opt.MapFrom(src => src.PhoneNumber));
+                    .ForMember(dest => dest.Phone, opt => opt.MapFrom(src => src.PhoneNumber))
+                    .ForMember(dest => dest.Name, opt => opt.MapFrom(src => src.University));
                 CreateMap<Shop, ShopRequest>();
                 CreateMap<Shop, ShopResponse>()
                     .ForMember(dest => dest.Phone, opt => opt.MapFrom(src => src.PhoneNumber))
@@ -193,6 +197,13 @@ namespace BMS.BLL.Utilities.AutoMapperProfiles
 
                 CreateMap<University, UniversityResponse>();
                 #endregion
+                #region studentApplication
+                CreateMap<StudentApplication, UpdateStudentApplicationRequest>();
+                CreateMap<CreateStudentApplicationRequest, StudentApplication>();
+
+                CreateMap<StudentApplication, StudentApplicationResponse>()
+                     .ForMember(dest => dest.NameUniversity, opt => opt.MapFrom(src => src.University)); 
+                #endregion
                 #region image
 
 
@@ -224,6 +235,8 @@ namespace BMS.BLL.Utilities.AutoMapperProfiles
                 #endregion
                 #region openinghours
                 CreateMap<OpeningHours, GetOpeningHoursForShopResonse>();
+                CreateMap<OpeningHours, CreateOpeningHoursRequest>();
+                CreateMap<OpeningHours, UpdateDayOpeningHoursRequest>();
                 CreateMap<OpeningHoursRequest, OpeningHours>();
                 #endregion
                 #region

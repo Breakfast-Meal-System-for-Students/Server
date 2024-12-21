@@ -11,9 +11,10 @@ namespace BMS.Core.Domains.Entities
         public string StudentId { get; set; } = null!;
         public string ImageCardStudent { get; set; } = null!;
 
+        public string Email { get; set; } = null!;
         // Relationships
         public Guid UniversityId { get; set; } 
-        public University University { get; set; } = null!; 
+        public University? University { get; set; } = null!; 
 
         public User? User { get; set; } = null!;
         public StudentStatus? StatusStudent { get; set; }

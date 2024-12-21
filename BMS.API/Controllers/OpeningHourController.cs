@@ -33,5 +33,14 @@ namespace BMS.API.Controllers
                                async () => await _openingHoursService.UpdateOpeningHoursForShop(request).ConfigureAwait(false)
                                           ).ConfigureAwait(false);
         }
+
+        [HttpPut("UpdateOnceDayOpeningHoursForShop")]
+        //[Authorize]
+        public async Task<IActionResult> UpdateOnceOpeningHoursForShop([FromBody] UpdateDayOpeningHoursRequest request)
+        {
+            return await ExecuteServiceLogic(
+                               async () => await _openingHoursService.UpdateOpeningHoursOnceDayForShop(request).ConfigureAwait(false)
+                                          ).ConfigureAwait(false);
+        }
     }
 }

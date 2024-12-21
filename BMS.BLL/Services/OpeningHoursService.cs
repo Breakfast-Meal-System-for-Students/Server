@@ -8,6 +8,7 @@ using BMS.BLL.Models.Responses.Users;
 using BMS.BLL.Services.BaseServices;
 using BMS.BLL.Services.IServices;
 using BMS.Core.Domains.Entities;
+using BMS.Core.Domains.Enums;
 using BMS.Core.Helpers;
 using BMS.DAL;
 using Microsoft.Extensions.Azure;
@@ -21,6 +22,11 @@ namespace BMS.BLL.Services
 {
     public class OpeningHoursService : BaseService, IOpeningHoursService
     {
+        public const int DEFAULT_FROM_HOUR = 5;
+        public const int DEFAULT_TO_HOUR = 12;
+        public const int DEFAULT_FROM_MINUTE = 00;
+        public const int DEFAULT_TO_MINUTE = 00;
+
         public OpeningHoursService(IUnitOfWork unitOfWork, IMapper mapper) : base(unitOfWork, mapper)
         {
         }
@@ -58,5 +64,104 @@ namespace BMS.BLL.Services
                 Detail = "Shop is not existed or deleted"
             };
         }
+
+        public async Task<ServiceActionResult> UpdateOpeningHoursOnceDayForShop(UpdateDayOpeningHoursRequest request)
+        {
+            var openingHours = await _unitOfWork.OpeningHoursRepository.FindAsync(x => x.Id == request.Id);
+            // Validate input times
+            if (request.from_hour < 0 || request.from_hour > 24 ||
+                request.to_hour < 0 || request.to_hour > 24 ||
+                request.from_minute < 0 || request.from_minute > 60 ||
+                request.to_minute < 0 || request.to_minute > 60)
+            {
+                return new ServiceActionResult(false)
+                {
+                    Data = "Invalid time values. Hours must be between 0 and 24, and minutes must be between 0 and 60."
+                };
+            }
+
+            // Ensure "from time" is less than "to time"
+            var fromTime = new TimeSpan(request.from_hour, request.from_minute, 0);
+            var toTime = new TimeSpan(request.to_hour, request.to_minute, 0);
+
+            if (fromTime >= toTime)
+            {
+                return new ServiceActionResult(false)
+                {
+                    Data = "Invalid time range. 'From time' must be earlier than 'To time'."
+                };
+            }
+            if (openingHours is not null)
+            {
+
+                openingHours.from_hour = request.from_hour;
+                openingHours.to_hour = request.to_hour;
+                openingHours.from_minute = request.from_minute;
+                openingHours.to_minute = request.to_minute;
+
+                await _unitOfWork.CommitAsync();
+                return new ServiceActionResult(true)
+                {
+                    Detail = "Update OpeningHoursForShop Successfully"
+                };
+            }
+            return new ServiceActionResult(true)
+            {
+                Detail = "Shop is not existed or deleted"
+            };
+        }
+
+        public async void AddDefaultForShop(Guid shopId,int to_hour,int from_hour, int to_minute, int from_minute)
+        {
+            foreach (WeekDay day in Enum.GetValues(typeof(WeekDay)))
+            {
+                OpeningHours openingHours = new OpeningHours()
+                {
+                    ShopId = shopId,
+                    to_hour = to_hour,
+                    from_hour = from_hour,
+                    to_minute = to_minute,
+                    from_minute = from_minute,
+                    isOpenToday = true,
+                    day = day, // Assign the current day of the week
+                };
+                await _unitOfWork.OpeningHoursRepository.AddAsync(openingHours);
+            }
+
+            // Commit all changes to the database
+            await _unitOfWork.CommitAsync();
+        }
+
+        public async Task<ServiceActionResult> UpdateOpenTodayForShop(Guid id, bool isOpenToday)
+        {
+            var openingHours = await _unitOfWork.OpeningHoursRepository.FindAsync(x => x.Id == id);
+            if (openingHours is not null)
+            {
+                // Get the current day of the week
+                WeekDay currentDay = (WeekDay)DateTime.Now.DayOfWeek; // Converts DayOfWeek to WeekDay enum
+
+                // Check if the current day matches the day of the opening hours
+                if (openingHours.day == currentDay)
+                {
+                    return new ServiceActionResult(true)
+                    {
+                        Detail = "Today is already the current day in the opening hours. No update required."
+                    };
+                }
+                openingHours.isOpenToday = isOpenToday;
+          
+
+                await _unitOfWork.CommitAsync();
+                return new ServiceActionResult(true)
+                {
+                    Detail = "Update OpeningHoursForShop Successfully"
+                };
+            }
+            return new ServiceActionResult(true)
+            {
+                Detail = "Shop is not existed or deleted"
+            };
+        }
+
     }
 }

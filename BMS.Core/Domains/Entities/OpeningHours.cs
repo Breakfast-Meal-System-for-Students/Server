@@ -19,6 +19,7 @@ namespace BMS.Core.Domains.Entities
         public Guid ShopId { get; set; }
         public Shop Shop { get; set; } = null!;
 
+        public bool isOpenToday { get; set; } = true;
         public void Set(int from_hour, int to_hour, int from_minute, int to_minute)
         {
             this.from_hour = from_hour;

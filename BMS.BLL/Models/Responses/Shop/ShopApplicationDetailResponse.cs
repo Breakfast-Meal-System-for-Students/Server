@@ -1,6 +1,5 @@
 ﻿using BMS.BLL.Models.Responses.University;
 using BMS.Core.Domains.Enums;
-using BMS.DAL.Repositories;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,7 +8,8 @@ using System.Threading.Tasks;
 
 namespace BMS.BLL.Models.Responses.Shop
 {
-    public class ShopApplicationResponse
+
+    public class ShopApplicationDetailResponse
     {
         public Guid Id { get; set; }
         public string Name { get; set; } = null!;
@@ -24,6 +24,9 @@ namespace BMS.BLL.Models.Responses.Shop
         public Guid? UserId { get; set; }
 
         public UniversityResponse University { get; set; } = null!;
-
+        public int To_Hour { get; set; }
+        public int From_Hour { get; set; }
+        public int To_Minune { get; set; }
+        public int From_Minune { get; set; }
     }
 }

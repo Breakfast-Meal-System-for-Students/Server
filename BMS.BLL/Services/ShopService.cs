@@ -148,10 +148,19 @@ namespace BMS.BLL.Services
 
         public async Task<ServiceActionResult> GetAllShopForMobile(ShopRequest request)
         {
-            IQueryable<Shop> ShopQueryable = (await _unitOfWork.ShopRepository.GetAllAsyncAsQueryable()).Include(a => a.Package_Shop).ThenInclude(b => b.Package)
-                                        .Where(x => x.Status == ShopStatus.ACCEPTED && (x.Package_Shop.Any()
-                                        ? x.Package_Shop.Max(x => x.Package != null ? x.CreateDate.AddDays(x.Package.Duration) : DateTime.MinValue)
-                                        : DateTime.MinValue) > DateTimeHelper.GetCurrentTime());
+            WeekDay currentDay = (WeekDay)DateTime.Now.DayOfWeek;
+
+            // Query the shops
+            IQueryable<Shop> ShopQueryable = (await _unitOfWork.ShopRepository.GetAllAsyncAsQueryable())
+                .Include(a => a.OpeningHours)
+                .Include(a => a.Package_Shop)
+                .ThenInclude(b => b.Package)
+                .Where(x => x.Status == ShopStatus.ACCEPTED
+                    && (x.Package_Shop.Any()
+                        ? x.Package_Shop.Max(x => x.Package != null ? x.CreateDate.AddDays(x.Package.Duration) : DateTime.MinValue)
+                        : DateTime.MinValue) > DateTimeHelper.GetCurrentTime()
+                    && x.OpeningHours.Any(oh => oh.day == currentDay && oh.isOpenToday));
+
 
             if (!string.IsNullOrEmpty(request.Search))
             {
