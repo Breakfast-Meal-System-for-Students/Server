@@ -48,11 +48,25 @@ namespace BMS.DAL.Migrations
                 table: "AspNetUsers",
                 newName: "StudentIdCard");
 
+            migrationBuilder.AddColumn<string>(
+                name: "Email",
+                table: "StudentApplications",
+                type: "nvarchar(max)",
+                nullable: false,
+                defaultValue: "");
+
             migrationBuilder.AddColumn<int>(
                 name: "StatusStudent",
                 table: "StudentApplications",
                 type: "int",
                 nullable: true);
+
+            migrationBuilder.AddColumn<bool>(
+                name: "isOpenToday",
+                table: "OpeningHours",
+                type: "bit",
+                nullable: false,
+                defaultValue: false);
 
             migrationBuilder.AddColumn<Guid>(
                 name: "StudentApplicationId",
@@ -71,10 +85,10 @@ namespace BMS.DAL.Migrations
                 columns: new[] { "Id", "ConcurrencyStamp", "Name", "NormalizedName" },
                 values: new object[,]
                 {
-                    { new Guid("0408a1b2-c55a-4620-a414-ffa7849727ef"), null, "Shop", "Shop" },
-                    { new Guid("beae467e-3d84-4c35-9469-e18d1b0959d7"), null, "User", "User" },
-                    { new Guid("d1e2bed4-9a21-49ed-8b7a-11034e8527d7"), null, "Admin", "Admin" },
-                    { new Guid("e6881f62-34af-464e-af7c-6936897b3a49"), null, "Staff", "Staff" }
+                    { new Guid("73763b56-92a1-41f3-aaa9-fe6c8dad745c"), null, "Staff", "Staff" },
+                    { new Guid("75c5e41d-38c8-40f6-8e97-f1c661b5631a"), null, "Shop", "Shop" },
+                    { new Guid("9691b818-23ab-48bf-9deb-a965c55711c6"), null, "User", "User" },
+                    { new Guid("a56093b9-12d2-483e-90f6-0d413e910d69"), null, "Admin", "Admin" }
                 });
 
             migrationBuilder.AddForeignKey(
@@ -96,26 +110,34 @@ namespace BMS.DAL.Migrations
             migrationBuilder.DeleteData(
                 table: "AspNetRoles",
                 keyColumn: "Id",
-                keyValue: new Guid("0408a1b2-c55a-4620-a414-ffa7849727ef"));
+                keyValue: new Guid("73763b56-92a1-41f3-aaa9-fe6c8dad745c"));
 
             migrationBuilder.DeleteData(
                 table: "AspNetRoles",
                 keyColumn: "Id",
-                keyValue: new Guid("beae467e-3d84-4c35-9469-e18d1b0959d7"));
+                keyValue: new Guid("75c5e41d-38c8-40f6-8e97-f1c661b5631a"));
 
             migrationBuilder.DeleteData(
                 table: "AspNetRoles",
                 keyColumn: "Id",
-                keyValue: new Guid("d1e2bed4-9a21-49ed-8b7a-11034e8527d7"));
+                keyValue: new Guid("9691b818-23ab-48bf-9deb-a965c55711c6"));
 
             migrationBuilder.DeleteData(
                 table: "AspNetRoles",
                 keyColumn: "Id",
-                keyValue: new Guid("e6881f62-34af-464e-af7c-6936897b3a49"));
+                keyValue: new Guid("a56093b9-12d2-483e-90f6-0d413e910d69"));
+
+            migrationBuilder.DropColumn(
+                name: "Email",
+                table: "StudentApplications");
 
             migrationBuilder.DropColumn(
                 name: "StatusStudent",
                 table: "StudentApplications");
+
+            migrationBuilder.DropColumn(
+                name: "isOpenToday",
+                table: "OpeningHours");
 
             migrationBuilder.DropColumn(
                 name: "StudentApplicationId",

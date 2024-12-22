@@ -65,6 +65,7 @@ namespace BMS.BLL
             services.AddScoped<IRecommendationService, RecommendationService>();
             services.AddScoped<IProductAIDetectService, ProductAIDetectService>();
             services.AddScoped<IUniversityService, UniversityService>();
+            services.AddScoped<IStudentApplicationService, StudentApplicationService>();
             services.AddScoped<IWalletService, WalletService>();
             services.AddScoped<IWalletTransactionService, WalletTransactionService>();
             #endregion

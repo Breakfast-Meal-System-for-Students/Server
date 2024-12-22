@@ -16,7 +16,7 @@ namespace BMS.BLL.Models.Responses.Product
         public string Name { get; set; } = null!;
         public string Description { get; set; } = null!;
         public double Price { get; set; }
-
+        public bool? IsCombo { get; set; }
         public Guid ShopId { get; set; }
         public bool isOutOfStock { get; set; }
         public AIDetectStatus isAICanDetect { get; set; }

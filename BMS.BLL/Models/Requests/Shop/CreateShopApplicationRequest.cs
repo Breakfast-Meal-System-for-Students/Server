@@ -19,6 +19,13 @@ namespace BMS.BLL.Models.Requests.Shop
 
         public string Email { get; set; } = null!;
         public string Phone { get; set; } = null!;
-       // public ShopStatus Status { get; set; } = ShopStatus.PENDING;
+        public Guid? UniversityId { get; set; } = null;
+        public int to_hour { get; set; }
+        public int to_minute { get; set; }
+        public int from_hour { get; set; }
+        public int from_minute { get; set; }
+
+
+        // public ShopStatus Status { get; set; } = ShopStatus.PENDING;
     }
 }

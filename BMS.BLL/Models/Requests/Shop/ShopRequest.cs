@@ -12,5 +12,6 @@ namespace BMS.BLL.Models.Requests.Shop
         public string Status { get; set; } = string.Empty;
         public string? Search { get; set; }
         public bool IsDesc { get; set; } = false;
+        public string? University { get; set; }
     }
 }

@@ -18,5 +18,7 @@ namespace BMS.BLL.Services.IServices
         Task<ServiceActionResult> CheckOTP(string email, string OTP);
         Task<ServiceActionResult> RegisterStudentAsync(RegisterStudent userToRegisterDTO);
         Task<IList<string>> GetRole(Guid userId);
+        Task<ServiceActionResult> RegisterStudentNoMailEduAsync(RegisterStudentNoMailEdu userToRegisterDTO);
+
     }
 }
