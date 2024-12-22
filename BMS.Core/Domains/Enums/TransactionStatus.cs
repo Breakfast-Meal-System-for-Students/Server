@@ -11,6 +11,9 @@ namespace BMS.Core.Domains.Enums
         PAID = 1,
         NOTPAID = 2,
         ERROR = 3,
+        REFUND = 4,
+        DEPOSIT = 5,
+        WITHDRA = 6,
     }
- 
+
 }

@@ -36,6 +36,7 @@ using BMS.BLL.Models.Requests.OpeningHour;
 using BMS.BLL.Models.Responses.Favourite;
 using BMS.BLL.Models.Requests.University;
 using BMS.BLL.Models.Responses.University;
+using BMS.BLL.Models.Responses.Wallet;
 
 
 namespace BMS.BLL.Utilities.AutoMapperProfiles
@@ -225,6 +226,10 @@ namespace BMS.BLL.Utilities.AutoMapperProfiles
                 #region openinghours
                 CreateMap<OpeningHours, GetOpeningHoursForShopResonse>();
                 CreateMap<OpeningHoursRequest, OpeningHours>();
+                #endregion
+                #region wallet
+                CreateMap<WalletTransaction, WalletTransactionResponse>();
+                CreateMap<Wallet, WalletResponse>();
                 #endregion
                 #region
                 CreateMap<Favourite, FavouriteResponse>()
