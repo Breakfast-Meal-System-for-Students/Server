@@ -165,7 +165,13 @@ namespace BMS.BLL.Services
 
             var token = await _userManager.GenerateEmailConfirmationTokenAsync(userEntity);
             await _emailService.SendEmailConfirmationMoblieAsync(userEntity, token);
-
+            await _unitOfWork.WalletRepository.AddAsync(
+                new Wallet()
+                {
+                    UserId = userEntity.Id,
+                    WalletName = $"BMS Wallet - {userEntity.Email}"
+                }
+                );
             return new ServiceActionResult(true);
         }
 
@@ -210,7 +216,13 @@ namespace BMS.BLL.Services
                 await _userManager.DeleteAsync(userEntity);
                 throw new AddRoleException("Can not create account with role");
             }
-
+            await _unitOfWork.WalletRepository.AddAsync(
+                new Wallet()
+                {
+                    UserId = userEntity.Id,
+                    WalletName = $"BMS Wallet - {userEntity.Email}"
+                }
+                );
             var token = await _userManager.GenerateEmailConfirmationTokenAsync(userEntity);
             await _emailService.SendEmailConfirmationMoblieAsync(userEntity, token);
 
@@ -260,7 +272,12 @@ namespace BMS.BLL.Services
             var StudentApplication = _mapper.Map<StudentApplication>(createStudentApplicationRequest);
             StudentApplication.Id =userEntity.Id;
             await _unitOfWork.StudentApplicationRepository.AddAsync(StudentApplication);
-        
+            await _unitOfWork.WalletRepository.AddAsync(
+                new Wallet() {
+                    UserId = userEntity.Id, 
+                    WalletName = $"BMS Wallet - {userEntity.Email}"
+                }
+                );
             await _unitOfWork.CommitAsync();
             //_studentApplicationService.AddStudentApplication(createStudentApplicationRequest);
 

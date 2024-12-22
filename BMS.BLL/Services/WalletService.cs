@@ -1,24 +1,31 @@
 ﻿using AutoMapper;
 using BMS.BLL.Models;
+using BMS.BLL.Models.Requests.Basic;
 using BMS.BLL.Models.Responses.Admin;
+using BMS.BLL.Models.Responses.Cart;
 using BMS.BLL.Models.Responses.Wallet;
 using BMS.BLL.Services.BaseServices;
 using BMS.BLL.Services.IServices;
 using BMS.Core.Domains.Entities;
+using BMS.Core.Domains.Enums;
+using BMS.Core.Helpers;
 using BMS.DAL;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Azure;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using System.Transactions;
 
 namespace BMS.BLL.Services
 {
     public class WalletService : BaseService, IWalletService
     {
-        public WalletService(IUnitOfWork unitOfWork, IMapper mapper) : base(unitOfWork, mapper)
+        public readonly ITransactionService _transactionService;
+        public WalletService(IUnitOfWork unitOfWork, IMapper mapper, ITransactionService transactionService) : base(unitOfWork, mapper)
         {
+            _transactionService = transactionService;
         }
 
         public async Task<ServiceActionResult> AddWallet(Guid userId)
@@ -40,6 +47,17 @@ namespace BMS.BLL.Services
             return new ServiceActionResult();
         }
 
+        public async Task<ServiceActionResult> GetAllTransactionOfUserWallet(Guid userId, PagingRequest request)
+        {
+            var walletTransactions = (await _unitOfWork.WalletTransactionRepository.GetAllAsyncAsQueryable()).Include(a => a.Wallet).Where(x => x.Wallet.UserId == userId).OrderByDescending(y => y.CreateDate);
+            var paginationResult = PaginationHelper
+            .BuildPaginatedResult<WalletTransaction, WalletTransactionResponse>(_mapper, walletTransactions, request.PageSize, request.PageIndex);
+            return new ServiceActionResult(true)
+            {
+                Data = paginationResult,
+            };
+        }
+
         public async Task<ServiceActionResult> GetWalletByUserId(Guid userId)
         {
             var wallet = (await _unitOfWork.WalletRepository.GetAllAsyncAsQueryable()).Where(x => x.UserId == userId && x.IsDeleted == false).FirstOrDefault();
@@ -57,7 +75,7 @@ namespace BMS.BLL.Services
             };
         }
 
-        public async Task<ServiceActionResult> UpdateBalance(Guid userId, TransactionStatus status)
+        public async Task<ServiceActionResult> UpdateBalance(Guid userId, TransactionStatus status, decimal amount, Guid? orderId)
         {
             var wallet = (await _unitOfWork.WalletRepository.GetAllAsyncAsQueryable()).Where(x => x.UserId == userId && x.IsDeleted == false).FirstOrDefault();
             if (wallet == null)
@@ -67,11 +85,131 @@ namespace BMS.BLL.Services
                     Detail = "The Wallet has been deleted or not exists"
                 };
             }
+            WalletTransaction walletTransaction = new WalletTransaction()
+            {
+                WalletID = wallet.Id,
+                Status = status,
+            };
+            switch (status)
+            {
+                case TransactionStatus.PAID:
+                    if(orderId == null)
+                    {
+                        return new ServiceActionResult(false)
+                        {
+                            Detail = "Since this is a payment transaction, please fill in the orderId"
+                        };
+                    }
+                    wallet.Balance -= amount;
+                    walletTransaction.Price = (-amount);
+                    await _unitOfWork.TransactionRepository.AddAsync(
+                        new Transaction()
+                            {
+                                Method = TransactionMethod.BMSWallet.ToString(),
+                                Status = TransactionStatus.PAID,
+                                Price = (double)amount,
+                                OrderId = (Guid)orderId,
+                            }
+                        );
+                    break;
+                case TransactionStatus.REFUND:
+                    if (orderId == null)
+                    {
+                        return new ServiceActionResult(false)
+                        {
+                            Detail = "Since this is a payment transaction, please fill in the orderId"
+                        };
+                    }
+                    wallet.Balance += amount;
+                    walletTransaction.Price = amount;
+                    await _unitOfWork.TransactionRepository.AddAsync(
+                        new Transaction()
+                        {
+                            Method = TransactionMethod.BMSWallet.ToString(),
+                            Status = TransactionStatus.PAID,
+                            Price = (double)(-amount),
+                            OrderId = (Guid)orderId,
+                        }
+                        );
+                    break;
+                case TransactionStatus.DEPOSIT:
+                    wallet.Balance += amount;
+                    walletTransaction.Price = amount;
+                    break;
+                case TransactionStatus.WITHDRA:
+                    wallet.Balance -= amount;
+                    walletTransaction.Price = (-amount);
+                    break;
+            }
+            await _unitOfWork.WalletRepository.UpdateAsync(wallet);
+            await _unitOfWork.WalletTransactionRepository.AddAsync(walletTransaction);
+            return new ServiceActionResult(true)
+            {
+                Data = wallet.Balance,
+                Detail = "Add Wallet Transaction Succesfully"
+            };
         }
 
-        public async Task<double> UpdateBalanceInSystem(Guid userId, TransactionStatus status)
+        public async Task<decimal> UpdateBalanceInSystem(Guid userId, TransactionStatus status, decimal amount, Guid? orderId)
         {
-            throw new NotImplementedException();
+            var wallet = (await _unitOfWork.WalletRepository.GetAllAsyncAsQueryable()).Where(x => x.UserId == userId && x.IsDeleted == false).FirstOrDefault();
+            if (wallet == null)
+            {
+                return -1;
+            }
+            WalletTransaction walletTransaction = new WalletTransaction()
+            {
+                WalletID = wallet.Id,
+                Status = status,
+            };
+            switch (status)
+            {
+                case TransactionStatus.PAID:
+                    if (orderId == null)
+                    {
+                        return -1;
+                    }
+                    wallet.Balance -= amount;
+                    walletTransaction.Price = (-amount);
+                    await _unitOfWork.TransactionRepository.AddAsync(
+                        new Transaction()
+                        {
+                            Method = TransactionMethod.BMSWallet.ToString(),
+                            Status = TransactionStatus.PAID,
+                            Price = (double)amount,
+                            OrderId = (Guid)orderId,
+                        }
+                        );
+                    break;
+                case TransactionStatus.REFUND:
+                    if (orderId == null)
+                    {
+                        return -1;
+                    }
+                    wallet.Balance += amount;
+                    walletTransaction.Price = amount;
+                    await _unitOfWork.TransactionRepository.AddAsync(
+                        new Transaction()
+                        {
+                            Method = TransactionMethod.BMSWallet.ToString(),
+                            Status = TransactionStatus.PAID,
+                            Price = (double)(-amount),
+                            OrderId = (Guid)orderId,
+                        }
+                        );
+                    break;
+                case TransactionStatus.DEPOSIT:
+                    wallet.Balance += amount;
+                    walletTransaction.Price = amount;
+                    break;
+                case TransactionStatus.WITHDRA:
+                    wallet.Balance -= amount;
+                    walletTransaction.Price = (-amount);
+                    break;
+            }
+            await _unitOfWork.WalletRepository.UpdateAsync(wallet);
+            await _unitOfWork.WalletTransactionRepository.AddAsync(walletTransaction);
+            return wallet.Balance;
         }
     }
 }

@@ -42,7 +42,8 @@ namespace BMS.BLL.Services
         private readonly IProductService _productService;
         private readonly IAuthService _authService;
         private readonly IOpeningHoursService _openingHoursService;
-        public OrderService(IUnitOfWork unitOfWork,IOpeningHoursService openingHoursService, IMapper mapper, IQRCodeService qrCodeService, IHubContext<NotificationHub> hubContext, RecommendationEngine recommendationEngine, IProductService productService, IAuthService authService) : base(unitOfWork, mapper)
+        private readonly IWalletService _walletService;
+        public OrderService(IUnitOfWork unitOfWork,IOpeningHoursService openingHoursService, IMapper mapper, IQRCodeService qrCodeService, IHubContext<NotificationHub> hubContext, RecommendationEngine recommendationEngine, IProductService productService, IAuthService authService, IWalletService walletService) : base(unitOfWork, mapper)
         {
             _qrCodeService = qrCodeService;
             _hubContext = hubContext;
@@ -50,6 +51,7 @@ namespace BMS.BLL.Services
             _productService = productService;
             _authService = authService;
             _openingHoursService = openingHoursService;
+            _walletService = walletService;
         }
 
         public async Task<ServiceActionResult> ChangeOrderStatus(Guid id, OrderStatus status, Guid userId)
@@ -119,6 +121,8 @@ namespace BMS.BLL.Services
                     };
                 }
                 //bool isPayed = bool.Parse((await CheckOrderIsPayed(id)).Data.ToString());
+                Wallet wallet = null;
+                bool isPayed = bool.Parse((await CheckOrderIsPayed(id)).Data.ToString());
                 if (status.Equals(OrderStatus.CANCEL))
                 {
                     if (!(s <= OrderStatus.CHECKING))
@@ -127,12 +131,21 @@ namespace BMS.BLL.Services
                         {
                             Detail = $"Order is already in {s}. So that not Cancel"
                         };
+                    } else if (isPayed)
+                    {
+                        var x = await _walletService.UpdateBalanceInSystem(userId, TransactionStatus.REFUND, ((decimal)order.TotalPrice), order.Id);
+                        if(x < 0)
+                        {
+                            return new ServiceActionResult(false)
+                            {
+                                Detail = "The Wallet has been deleted or not exists"
+                            };
+                        }
                     }
                 }
 
                 if (status.Equals(OrderStatus.COMPLETE))
                 {
-                    bool isPayed = bool.Parse((await CheckOrderIsPayed(id)).Data.ToString());
                     if (isPayed == false)
                     {
                         Transaction transaction = new Transaction()
@@ -886,6 +899,18 @@ namespace BMS.BLL.Services
                         Destination = NotificationDestination.FORUSER
                     }
                 );
+                bool isPayed = bool.Parse((await CheckOrderIsPayed(order.Id)).Data.ToString());
+                if (isPayed)
+                {
+                    var x = await _walletService.UpdateBalanceInSystem(order.CustomerId, TransactionStatus.REFUND, ((decimal)order.TotalPrice), order.Id);
+                    if (x < 0)
+                    {
+                        return new ServiceActionResult(false)
+                        {
+                            Detail = "The Wallet has been deleted or not exists"
+                        };
+                    }
+                }
             }
             await _unitOfWork.OrderRepository.UpdateRangeAsync(orders);
             await _unitOfWork.CommitAsync();
