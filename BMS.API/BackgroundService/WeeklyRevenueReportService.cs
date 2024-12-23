@@ -1,4 +1,5 @@
 ﻿using BMS.BLL.Services.IServices;
+using BMS.BLL.Utilities;
 using BMS.Core.Domains.Entities;
 using BMS.Core.Domains.Enums;
 using BMS.DAL.DataContext;
@@ -51,19 +52,23 @@ public class WeeklyRevenueReportService : BackgroundService
             var walletService = scope.ServiceProvider.GetRequiredService<IWalletService>();
             foreach (var shop in shops)
             {
-                var revenue = shop.Orders
-                    .Where(o => o.Transactions.Any(t => (t.Status == TransactionStatus.PAID || t.Status == TransactionStatus.REFUND) && t.Method != TransactionMethod.Cash.ToString()))
-                    .Sum(o => o.Transactions.Sum(x => x.Price));
-                if (revenue > 0) {
-                    var report = GenerateReportForShop(shop, revenue);
+                var isPaidToShop = await walletService.CheckSystemPaidRevenueToShopInWeek(DateTimeHelper.GetCurrentTime().AddDays(-6), DateTimeHelper.GetCurrentTime().AddDays(1), shop.UserId.GetValueOrDefault());
+                if (isPaidToShop == false)
+                {
+                    var revenue = shop.Orders
+                        .Where(o => o.Transactions.Any(t => (t.Status == TransactionStatus.PAID || t.Status == TransactionStatus.REFUND) && t.Method != TransactionMethod.Cash.ToString()))
+                        .Sum(o => o.Transactions.Sum(x => x.Price));
+                    if (revenue > 0) {
+                        var report = GenerateReportForShop(shop, revenue);
 
-                    await emailService.SendEmailWithAttachmentAsync(shop.Email, "Weekly Revenue Report", "Your revenue report for the past week.", report);
+                        await emailService.SendEmailWithAttachmentAsync(shop.Email, "Weekly Revenue Report", "Your revenue report for the past week.", report);
 
-                    await shopWeeklyReportService.CreateShopWeeklyReport(shop.Id, report);
-                    await shopWeeklyReportService.SaveChange();
-                    await walletService.UpdateBalanceInSystem(shop.UserId.GetValueOrDefault(), TransactionStatus.PAIDTOSHOP, (decimal)revenue, null);
-                    await walletService.UpdateBalanceAdmin(TransactionStatus.PAIDTOSHOP, (decimal)revenue);
-                    await walletService.SaveChange();
+                        await shopWeeklyReportService.CreateShopWeeklyReport(shop.Id, report);
+                        await shopWeeklyReportService.SaveChange();
+                        await walletService.UpdateBalanceInSystem(shop.UserId.GetValueOrDefault(), TransactionStatus.PAIDTOSHOP, (decimal)revenue, null);
+                        await walletService.UpdateBalanceAdmin(TransactionStatus.PAIDTOSHOP, (decimal)revenue);
+                        await walletService.SaveChange();
+                    }
                 }
             }
 

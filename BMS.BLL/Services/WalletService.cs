@@ -307,5 +307,19 @@ namespace BMS.BLL.Services
             await _unitOfWork.WalletTransactionRepository.AddAsync(walletTransaction);
             return wallet.Balance;
         }
+
+        public async Task<bool> CheckSystemPaidRevenueToShopInWeek(DateTime from, DateTime to, Guid userId)
+        {
+            var countOfPaidToShop = (await _unitOfWork.WalletTransactionRepository.GetAllAsyncAsQueryable()).Include(a => a.Wallet).Where(x => x.Wallet.UserId == userId && x.CreateDate > from && x.CreateDate < to && x.Status == TransactionStatus.PAIDTOSHOP).Count();
+            if (countOfPaidToShop <= 0)
+            {
+                return false;
+            }
+            else
+            {
+                return true;
+            }
+
+        }
     }
 }

@@ -14,5 +14,6 @@ namespace BMS.BLL.Services.IServices
         Task<ServiceActionResult> GetAllTransactionOfUserWallet(Guid userId, PagingRequest request);
         Task<decimal> UpdateBalanceInSystem(Guid userId, TransactionStatus status, decimal amount, Guid? orderId);
         Task SaveChange();
+        Task<bool> CheckSystemPaidRevenueToShopInWeek(DateTime from, DateTime to, Guid userId);
     }
 }
