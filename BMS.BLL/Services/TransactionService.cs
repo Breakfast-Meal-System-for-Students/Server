@@ -36,7 +36,7 @@ namespace BMS.BLL.Services
             }
             Transaction transaction = new Transaction();
             transaction.OrderId = orderId;
-            transaction.Status = TransactionStatus.NOTPAID;
+            transaction.Status = TransactionStatus.PAID;
             transaction.Method = TransactionMethod.Cash.ToString();
             transaction.Price = order.TotalPrice;
             await _unitOfWork.TransactionRepository.AddAsync(transaction);

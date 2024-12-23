@@ -30,12 +30,14 @@ namespace BMS.BLL.Services
     {
         private readonly VNPaySettings _vnPaySettings;
         private readonly IHubContext<NotificationHub> _hubContext;
+        private readonly IWalletService _walletService;
         public VnPayService(IOptions<VNPaySettings> vnPaySettings,
             IUnitOfWork unitOfWork,
-            IMapper mapper, IHubContext<NotificationHub> hubContext) : base(unitOfWork, mapper)
+            IMapper mapper, IHubContext<NotificationHub> hubContext, IWalletService walletService) : base(unitOfWork, mapper)
         {
             _vnPaySettings = vnPaySettings.Value;
             _hubContext = hubContext;
+            _walletService = walletService;
         }
 
         public async Task<ServiceActionResult> CreatePaymentUrl(HttpContext context, VnPayRequest vnPayRequest)
@@ -172,6 +174,14 @@ namespace BMS.BLL.Services
 
                 if (isPaySucceed)
                 {
+                    var y = await _walletService.UpdateBalanceAdmin(TransactionStatus.PAID, Convert.ToDecimal(response.vnp_Amount));
+                    if (y < 0)
+                    {
+                        return new ServiceActionResult(false)
+                        {
+                            Detail = "The System Wallet has been deleted or not exists. So The system can not recieved."
+                        };
+                    }
                     // exccule logic affter payment
                     Transaction transaction = new Transaction()
                     {
@@ -207,7 +217,7 @@ namespace BMS.BLL.Services
                         Destination = NotificationDestination.FORSHOP
                     };
                     notifications.Add(notification1);
-                    Notification notification2 = new Notification
+                    /*Notification notification2 = new Notification
                     {
                         UserId = order.CustomerId,
                         OrderId = order.Id,
@@ -217,11 +227,10 @@ namespace BMS.BLL.Services
                         Title = NotificationTitle.PAYMENT_ORDER,
                         Destination = NotificationDestination.FORSTAFF
                     };
-                    notifications.Add(notification2);
+                    notifications.Add(notification2);*/
                     await _unitOfWork.NotificationRepository.AddRangeAsync(notifications);
 
                     await _unitOfWork.CommitAsync();
-
                     /*await _hubContext.Clients.User(notification.UserId.ToString()).SendAsync("ReceiveNotification", notification.Object);
                     await _hubContext.Clients.User(notification.ShopId.ToString()).SendAsync("ReceiveNotification", notification.Object);*/
 

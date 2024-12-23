@@ -10,7 +10,9 @@ namespace BMS.BLL.Services.IServices
         Task<ServiceActionResult> AddWallet(Guid userId);
         Task<ServiceActionResult> DeleteWallet(Guid userId);
         Task<ServiceActionResult> UpdateBalance(Guid userId, TransactionStatus status, decimal amount, Guid? orderId);
+        Task<decimal> UpdateBalanceAdmin(TransactionStatus status, decimal amount);
         Task<ServiceActionResult> GetAllTransactionOfUserWallet(Guid userId, PagingRequest request);
         Task<decimal> UpdateBalanceInSystem(Guid userId, TransactionStatus status, decimal amount, Guid? orderId);
+        Task SaveChange();
     }
 }

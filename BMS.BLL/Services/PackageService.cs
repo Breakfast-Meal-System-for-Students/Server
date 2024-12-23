@@ -15,6 +15,7 @@ using System.Threading.Tasks;
 using BMS.BLL.Models.Requests.Basic;
 using Microsoft.EntityFrameworkCore;
 using BMS.BLL.Utilities;
+using BMS.Core.Domains.Enums;
 
 namespace BMS.BLL.Services
 {
@@ -23,10 +24,12 @@ namespace BMS.BLL.Services
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
-        public PackageService(IUnitOfWork unitOfWork, IMapper mapper) : base(unitOfWork, mapper)
+        private readonly IWalletService _walletService;
+        public PackageService(IUnitOfWork unitOfWork, IMapper mapper, IWalletService walletService) : base(unitOfWork, mapper)
         {
             _unitOfWork = unitOfWork;
             _mapper = mapper;
+            _walletService = walletService;
         }
 
         public async Task<ServiceActionResult> GetAllPackage(PackageRequest queryParameters)
@@ -282,6 +285,7 @@ namespace BMS.BLL.Services
                 PackageId = packageId,
             };
             await _unitOfWork.Package_ShopRepository.AddAsync(package_Shop);
+            await _walletService.UpdateBalanceAdmin(TransactionStatus.PAID, (decimal)package.Price);
             return new ServiceActionResult(true)
             {
                 Data = package_Shop,

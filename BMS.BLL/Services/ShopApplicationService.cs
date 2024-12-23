@@ -256,7 +256,7 @@ namespace BMS.BLL.Services
 
             List<OpeningHours> openingHours2 = OpeningHoursCreationHelper.GenerateOpeningHours(application.Id);
             await _unitOfWork.OpeningHoursRepository.AddRangeAsync(openingHours2.AsEnumerable());
-
+            await _unitOfWork.CommitAsync();
             await _unitOfWork.WalletRepository.AddAsync(
                 new Wallet()
                 {
@@ -264,6 +264,7 @@ namespace BMS.BLL.Services
                     WalletName = $"BMS Wallet - {userEntity.Email}"
                 }
                 );
+            await _unitOfWork.CommitAsync();
             return new LoginUser() { Email = application.Email, Password = password };
         }
 

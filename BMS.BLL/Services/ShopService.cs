@@ -26,7 +26,7 @@ using BMS.BLL.Models.Responses.Map;
 
 namespace BMS.BLL.Services
 {
- 
+
     public class ShopService : BaseService, IShopService
     {
         private readonly IUnitOfWork _unitOfWork;
@@ -62,7 +62,7 @@ namespace BMS.BLL.Services
 
             return new ServiceActionResult() { Data = paginationResult };
         }
-   
+
 
         public async Task<ServiceActionResult> UpdateShop(Guid id, UpdateShopRequest request)
         {
@@ -107,7 +107,7 @@ namespace BMS.BLL.Services
             {
                 Shop.lat = location.Lat;
                 Shop.lng = location.Lng;
-            }else
+            } else
             {
                 Shop.lat = request.lat;
                 Shop.lng = request.lng;
@@ -142,7 +142,7 @@ namespace BMS.BLL.Services
             return (await _unitOfWork.ShopRepository.GetAllAsyncAsQueryable())
                     .Include(s => s.Orders)
                     .ThenInclude(o => o.Transactions)
-                    .Where(s => s.Orders.Any(o => o.CreateDate >= startDate && o.CreateDate <= endDate && o.Transactions.Any(t => t.Status == TransactionStatus.PAID && (t.Method == TransactionMethod.VnPay.ToString() || t.Method == TransactionMethod.PayOs.ToString()))))
+                    .Where(s => s.Orders.Any(o => o.CreateDate >= startDate && o.CreateDate <= endDate && o.Transactions.Any(t => (t.Status == TransactionStatus.PAID || t.Status == TransactionStatus.REFUND) && t.Method != TransactionMethod.Cash.ToString())))
                     .ToList();
         }
 

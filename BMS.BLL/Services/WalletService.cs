@@ -111,6 +111,14 @@ namespace BMS.BLL.Services
                                 OrderId = (Guid)orderId,
                             }
                         );
+                    var y = await UpdateBalanceAdmin(TransactionStatus.PAID, amount);
+                    if (y < 0)
+                    {
+                        return new ServiceActionResult(false)
+                        {
+                            Detail = "The System Wallet has been deleted or not exists. So The system can not recieved."
+                        };
+                    }
                     break;
                 case TransactionStatus.REFUND:
                     if (orderId == null)
@@ -131,6 +139,10 @@ namespace BMS.BLL.Services
                             OrderId = (Guid)orderId,
                         }
                         );
+                    break;
+                case TransactionStatus.PAIDTOSHOP:
+                    wallet.Balance += amount;
+                    walletTransaction.Price = amount;
                     break;
                 case TransactionStatus.DEPOSIT:
                     wallet.Balance += amount;
@@ -197,6 +209,55 @@ namespace BMS.BLL.Services
                             OrderId = (Guid)orderId,
                         }
                         );
+                    break;
+                case TransactionStatus.PAIDTOSHOP:
+                    wallet.Balance += amount;
+                    walletTransaction.Price = amount;
+                    break;
+                case TransactionStatus.DEPOSIT:
+                    wallet.Balance += amount;
+                    walletTransaction.Price = amount;
+                    break;
+                case TransactionStatus.WITHDRA:
+                    wallet.Balance -= amount;
+                    walletTransaction.Price = (-amount);
+                    break;
+            }
+            await _unitOfWork.WalletRepository.UpdateAsync(wallet);
+            await _unitOfWork.WalletTransactionRepository.AddAsync(walletTransaction);
+            return wallet.Balance;
+        }
+
+        public async Task SaveChange()
+        {
+            await _unitOfWork.CommitAsync();
+        }
+
+        public async Task<decimal> UpdateBalanceAdmin(TransactionStatus status, decimal amount)
+        {
+            var wallet = (await _unitOfWork.WalletRepository.GetAllAsyncAsQueryable()).Include(a => a.User).Where(x => x.User.Email!.Equals("admin@gmail.com") && x.IsDeleted == false).FirstOrDefault();
+            if (wallet == null)
+            {
+                return -1;
+            }
+            WalletTransaction walletTransaction = new WalletTransaction()
+            {
+                WalletID = wallet.Id,
+                Status = status,
+            };
+            switch (status)
+            {
+                case TransactionStatus.PAID:
+                    wallet.Balance += amount;
+                    walletTransaction.Price = amount;
+                    break;
+                case TransactionStatus.REFUND:
+                    wallet.Balance -= amount;
+                    walletTransaction.Price = (-amount);
+                    break;
+                case TransactionStatus.PAIDTOSHOP:
+                    wallet.Balance -= amount;
+                    walletTransaction.Price = (-amount);
                     break;
                 case TransactionStatus.DEPOSIT:
                     wallet.Balance += amount;

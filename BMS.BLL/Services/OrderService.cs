@@ -138,7 +138,15 @@ namespace BMS.BLL.Services
                         {
                             return new ServiceActionResult(false)
                             {
-                                Detail = "The Wallet has been deleted or not exists"
+                                Detail = "The Wallet has been deleted or not exists. So The system can not refund."
+                            };
+                        }
+                        var y = await _walletService.UpdateBalanceAdmin(TransactionStatus.REFUND, ((decimal)order.TotalPrice));
+                        if (y < 0)
+                        {
+                            return new ServiceActionResult(false)
+                            {
+                                Detail = "The System Wallet has been deleted or not exists. So The system can not refund."
                             };
                         }
                     }
@@ -908,6 +916,14 @@ namespace BMS.BLL.Services
                         return new ServiceActionResult(false)
                         {
                             Detail = "The Wallet has been deleted or not exists"
+                        };
+                    }
+                    var y = await _walletService.UpdateBalanceAdmin(TransactionStatus.REFUND, ((decimal)order.TotalPrice));
+                    if (y < 0)
+                    {
+                        return new ServiceActionResult(false)
+                        {
+                            Detail = "The System Wallet has been deleted or not exists. So The system can not refund."
                         };
                     }
                 }

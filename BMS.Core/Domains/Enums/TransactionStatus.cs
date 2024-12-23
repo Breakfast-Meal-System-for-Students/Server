@@ -9,7 +9,7 @@ namespace BMS.Core.Domains.Enums
     public enum TransactionStatus
     {
         PAID = 1,
-        NOTPAID = 2,
+        PAIDTOSHOP = 2,
         ERROR = 3,
         REFUND = 4,
         DEPOSIT = 5,
