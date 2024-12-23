@@ -100,6 +100,13 @@ namespace BMS.BLL.Services
                             Detail = "Since this is a payment transaction, please fill in the orderId"
                         };
                     }
+                    if (wallet.Balance - amount <= 0)
+                    {
+                        return new ServiceActionResult(false)
+                        {
+                            Detail = "The balance of you can not enough to paid"
+                        };
+                    }
                     wallet.Balance -= amount;
                     walletTransaction.Price = (-amount);
                     await _unitOfWork.TransactionRepository.AddAsync(
@@ -111,6 +118,7 @@ namespace BMS.BLL.Services
                                 OrderId = (Guid)orderId,
                             }
                         );
+                    await _unitOfWork.CommitAsync();
                     var y = await UpdateBalanceAdmin(TransactionStatus.PAID, amount);
                     if (y < 0)
                     {
@@ -139,6 +147,7 @@ namespace BMS.BLL.Services
                             OrderId = (Guid)orderId,
                         }
                         );
+                    await _unitOfWork.CommitAsync();
                     break;
                 case TransactionStatus.PAIDTOSHOP:
                     wallet.Balance += amount;
@@ -149,6 +158,24 @@ namespace BMS.BLL.Services
                     walletTransaction.Price = amount;
                     break;
                 case TransactionStatus.WITHDRA:
+                    if(wallet.Balance - amount <= 0)
+                    {
+                        return new ServiceActionResult(false)
+                        {
+                            Detail = "The balance of you can not enough to withdraw"
+                        };
+                    }
+                    wallet.Balance -= amount;
+                    walletTransaction.Price = (-amount);
+                    break;
+                case TransactionStatus.PAIDPACKAGE:
+                    if (wallet.Balance - amount <= 0)
+                    {
+                        return new ServiceActionResult(false)
+                        {
+                            Detail = "The balance of you can not enough to PAIDPACKAGE"
+                        };
+                    }
                     wallet.Balance -= amount;
                     walletTransaction.Price = (-amount);
                     break;
@@ -219,6 +246,10 @@ namespace BMS.BLL.Services
                     walletTransaction.Price = amount;
                     break;
                 case TransactionStatus.WITHDRA:
+                    if (wallet.Balance - amount <= 0)
+                    {
+                        return -1;
+                    }
                     wallet.Balance -= amount;
                     walletTransaction.Price = (-amount);
                     break;
@@ -264,6 +295,10 @@ namespace BMS.BLL.Services
                     walletTransaction.Price = amount;
                     break;
                 case TransactionStatus.WITHDRA:
+                    if (wallet.Balance - amount <= 0)
+                    {
+                        return -1;
+                    }
                     wallet.Balance -= amount;
                     walletTransaction.Price = (-amount);
                     break;

@@ -57,7 +57,7 @@ namespace BMS.BLL.Services
             {
                 return new ServiceActionResult(false)
                 {
-                    Data = "Invalid time values. Hours must be between 5 and 12, and minutes must be between 0 and 60."
+                    Detail = "Invalid time values. Hours must be between 5 and 12, and minutes must be between 0 and 60."
                 };
             }
 
@@ -69,7 +69,7 @@ namespace BMS.BLL.Services
             {
                 return new ServiceActionResult(false)
                 {
-                    Data = "Invalid time range. 'From time' must be earlier than 'To time'."
+                    Detail = "Invalid time range. 'From time' must be earlier than 'To time'."
                 };
             }
             //
@@ -113,7 +113,7 @@ namespace BMS.BLL.Services
                 shopApplication.Rate = 5;
                 await _unitOfWork.ShopRepository.AddAsync(shopApplication);
                 await _unitOfWork.CommitAsync();
-                _openingHoursService.AddDefaultForShop(shopApplication.Id, applicationRequest.to_hour,applicationRequest.from_hour,applicationRequest.to_minute, applicationRequest.from_hour);
+                await _openingHoursService.AddDefaultForShop(shopApplication.Id, applicationRequest.to_hour,applicationRequest.from_hour,applicationRequest.to_minute, applicationRequest.from_minute);
                 return new ServiceActionResult();
             }
             catch
@@ -176,7 +176,8 @@ namespace BMS.BLL.Services
             {
                 var account = await RegisterShopAsync(application);
                 application.Status = ShopStatus.ACCEPTED;
-
+                var user = await _userManager.FindByEmailAsync(application.Email);
+                application.UserId = user.Id;
                 await _unitOfWork.CommitAsync();
                 await _emailService.SendEmailAsync(application.Email, "YOU HAVE NEW INFORMATION FROM BMS", EmailHelper.GetAcceptedEmailBody("breakfastmealsystem@gmail.com", application.Email, account.Password), true);
             }

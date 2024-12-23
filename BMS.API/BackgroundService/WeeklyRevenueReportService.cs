@@ -18,21 +18,27 @@ public class WeeklyRevenueReportService : BackgroundService
     {
         while (!stoppingToken.IsCancellationRequested)
         {
-            // Chạy vào mỗi tối chủ nhật lúc 23:59
-            var nextRunTime = GetNextSundayAtTime(23, 59);
+            
+            var nextRunTime = GetNextTuesdayAtTime(23, 59);
             var delay = nextRunTime - DateTime.UtcNow;
             await Task.Delay(delay, stoppingToken);
-
             await GenerateAndSendWeeklyReports(stoppingToken);
         }
     }
 
-    private DateTime GetNextSundayAtTime(int hour, int minute)
+    /*private DateTime GetNextSundayAtTime(int hour, int minute)
     {
         var now = DateTime.UtcNow;
         var sunday = now.AddDays((7 - (int)now.DayOfWeek) % 7);
         return new DateTime(sunday.Year, sunday.Month, sunday.Day, hour, minute, 0, DateTimeKind.Utc);
+    }*/
+    private DateTime GetNextTuesdayAtTime(int hour, int minute)
+    {
+        var now = DateTime.UtcNow;
+        var tuesday = now.AddDays(((int)DayOfWeek.Tuesday - (int)now.DayOfWeek + 7) % 7);
+        return new DateTime(tuesday.Year, tuesday.Month, tuesday.Day, hour, minute, 0, DateTimeKind.Utc);
     }
+
 
     private async Task GenerateAndSendWeeklyReports(CancellationToken stoppingToken)
     {

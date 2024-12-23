@@ -130,7 +130,7 @@ namespace BMS.BLL.Services
             };
         }
 
-        public async void AddDefaultForShop(Guid shopId,int to_hour,int from_hour, int to_minute, int from_minute)
+        public async Task AddDefaultForShop(Guid shopId,int to_hour,int from_hour, int to_minute, int from_minute)
         {
             foreach (WeekDay day in Enum.GetValues(typeof(WeekDay)))
             {

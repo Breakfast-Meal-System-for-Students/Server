@@ -106,7 +106,7 @@ namespace BMS.BLL.Services
                         Detail = $"Order is already in {s}, so that you can not change back to {status}"
                     };
                 }
-                if (order.OrderDate > DateTimeHelper.GetCurrentTime().AddHours(1) && status <= OrderStatus.CHECKING)
+                if (order.OrderDate > DateTimeHelper.GetCurrentTime().AddHours(1) && status > OrderStatus.CHECKING && status != OrderStatus.CANCEL)
                 {
                     return new ServiceActionResult(false)
                     {

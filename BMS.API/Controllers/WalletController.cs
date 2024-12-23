@@ -26,7 +26,7 @@ namespace BMS.API.Controllers
         }
         [HttpGet("GetWalletByUserId")]
         [Authorize]
-        public async Task<IActionResult> GetWalletByUserId([FromQuery] SearchOrderRequest request)
+        public async Task<IActionResult> GetWalletByUserId()
         {
             return await ExecuteServiceLogic(
                  async () => await _walletService.GetWalletByUserId(_userClaims.UserId).ConfigureAwait(false)

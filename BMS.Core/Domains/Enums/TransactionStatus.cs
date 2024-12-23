@@ -14,6 +14,7 @@ namespace BMS.Core.Domains.Enums
         REFUND = 4,
         DEPOSIT = 5,
         WITHDRA = 6,
+        PAIDPACKAGE = 7,
     }
 
 }

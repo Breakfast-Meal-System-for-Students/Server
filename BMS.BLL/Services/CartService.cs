@@ -83,6 +83,7 @@ namespace BMS.BLL.Services
                 CartDetail cartDetails = _mapper.Map<CartDetail>(request);
                 cartDetails.CartId = newCart.Id;
                 await _unitOfWork.CartDetailRepository.AddAsync(cartDetails);
+                await _unitOfWork.CommitAsync();
             } else
             {
                 /*int x = cart.FirstOrDefault().CartDetails.Where(a => a.ProductId == request.ProductId).Sum(x => x.Quantity);
@@ -104,6 +105,7 @@ namespace BMS.BLL.Services
                 } else
                 {
                     await _unitOfWork.CartDetailRepository.AddAsync(cartDetails);
+                    await _unitOfWork.CommitAsync();
                 }
             }
             return new ServiceActionResult(true)
