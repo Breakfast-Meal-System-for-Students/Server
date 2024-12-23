@@ -54,13 +54,14 @@ namespace BMS.BLL.Services
             {
                 return new ServiceActionResult(false)
                 {
+                    IsSuccess = false,
                     Detail = "Name is not Empty"
                 };
             }
             if (request.Name.Trim() == "")
             {
                 return new ServiceActionResult(false)
-                {
+                {IsSuccess = false,
                     Detail = "Name is not Empty"
                 };
             }
@@ -81,6 +82,7 @@ namespace BMS.BLL.Services
             {
                 return new ServiceActionResult(false)
                 {
+                    IsSuccess = false,
                     Detail = "Name is not Empty"
                 };
             }
@@ -88,6 +90,7 @@ namespace BMS.BLL.Services
             {
                 return new ServiceActionResult(false)
                 {
+                    IsSuccess = false,
                     Detail = "Name is not Empty"
                 };
             }

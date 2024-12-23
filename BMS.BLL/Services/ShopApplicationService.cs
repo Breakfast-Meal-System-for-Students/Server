@@ -57,7 +57,8 @@ namespace BMS.BLL.Services
             {
                 return new ServiceActionResult(false)
                 {
-                    Detail = "Invalid time values. Hours must be between 5 and 12, and minutes must be between 0 and 60."
+                    IsSuccess = false,
+                    Detail = "Invalid time, The shop's opening and closing hours must be between 5:00 AM and 12:00 PM"
                 };
             }
 
@@ -69,7 +70,8 @@ namespace BMS.BLL.Services
             {
                 return new ServiceActionResult(false)
                 {
-                    Detail = "Invalid time range. 'From time' must be earlier than 'To time'."
+                    IsSuccess = false,
+                    Detail = "Invalid time range. 'open time' must be earlier than 'close time'."
                 };
             }
             //
@@ -83,6 +85,7 @@ namespace BMS.BLL.Services
                 }*/
                 return new ServiceActionResult(false)
                 {
+                    IsSuccess = false,
                     Detail = $"The Email {applicationRequest.Email} is already used in BMS System"
                 };
             }
@@ -165,12 +168,12 @@ namespace BMS.BLL.Services
 
             if (status.Equals(application.Status.ToString(), StringComparison.OrdinalIgnoreCase))
             {
-                return new ServiceActionResult(false) { Detail = $"Application is already in {status} status" };
+                return new ServiceActionResult(false) { IsSuccess = false, Detail = $"Application is already in {status} status" };
             }
             else if (application.Status.ToString().Equals(ShopStatus.ACCEPTED.ToString(), StringComparison.OrdinalIgnoreCase)
                 || application.Status.ToString().Equals(ShopStatus.DENIED.ToString(), StringComparison.OrdinalIgnoreCase))
             {
-                return new ServiceActionResult(false) { Detail = $"Application is already in {application.Status.ToString()} status. Can not modify." };
+                return new ServiceActionResult(false) {IsSuccess = false, Detail = $"Application is already in {application.Status.ToString()} status. Can not modify." };
             }
             else if (status.Equals(ShopStatus.ACCEPTED.ToString(), StringComparison.OrdinalIgnoreCase))
             {

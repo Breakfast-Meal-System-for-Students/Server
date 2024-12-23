@@ -77,7 +77,8 @@ namespace BMS.BLL.Services
             {
                 return new ServiceActionResult(false)
                 {
-                    Data = "Invalid time values. Hours must be between 5 and 12, and minutes must be between 0 and 60."
+                    IsSuccess = false,
+                    Detail = "Invalid time, The shop's opening and closing hours must be between 5:00 AM and 12:00 PM"
                 };
             }
             // Get the current day of the week
@@ -87,15 +88,17 @@ namespace BMS.BLL.Services
             // Check if the current day matches the day of the opening hours
             if (openingHours.day == currentDay)
             {
-                return new ServiceActionResult(true)
+                return new ServiceActionResult(false)
                 {
+                    IsSuccess = false,
                     Detail = "Time is already the current time in the opening hours (48 hour). No update required."
                 };
             }
             if (openingHours.day == currentDay +1)
             {
-                return new ServiceActionResult(true)
+                return new ServiceActionResult(false)
                 {
+                    IsSuccess = false,
                     Detail = "Time is already the current time in the opening hours (48 hour). No update required."
                 };
             }
@@ -107,6 +110,7 @@ namespace BMS.BLL.Services
             {
                 return new ServiceActionResult(false)
                 {
+                    IsSuccess = false,
                     Data = "Invalid time range. 'From time' must be earlier than 'To time'."
                 };
             }

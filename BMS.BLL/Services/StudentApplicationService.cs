@@ -103,7 +103,7 @@ namespace BMS.BLL.Services
            var StudentApplicationQueryable = (await _unitOfWork.StudentApplicationRepository.GetAllAsyncAsQueryable()).Include(a => a.University).Where(a => a.IsDeleted == false && a.Id ==id).FirstOrDefault();
             if(StudentApplicationQueryable is null)
             {
-                return new ServiceActionResult(false) { Data = "Not Found Student Application" };
+                return new ServiceActionResult(false) { IsSuccess= false,Detail = "Not Found Student Application" };
             }
 
             return new ServiceActionResult(true) { Data = StudentApplicationQueryable };

@@ -412,7 +412,8 @@ namespace BMS.BLL.Services
                     // Return a failure response if the order date is outside the shop's opening hours
                     return new ServiceActionResult(false)
                     {
-                        Data = "The order date is outside of the shop's opening hours."
+                        IsSuccess = false,
+                        Detail = "The order date is outside of the shop's opening hours."
                     };
                 }
             }
@@ -424,7 +425,8 @@ namespace BMS.BLL.Services
                     // Return a failure response if the order date is outside the shop's opening hours
                     return new ServiceActionResult(false)
                     {
-                        Data = "The order date is outside of the shop's opening hours."
+                        IsSuccess = false,
+                        Detail = "Invalid time range. 'open time' must be earlier than 'close time'."
                     };
                 }
             }
