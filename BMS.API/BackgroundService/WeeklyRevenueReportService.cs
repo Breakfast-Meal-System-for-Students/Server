@@ -100,6 +100,7 @@ public class WeeklyRevenueReportService : BackgroundService
             var regularFont = FontFactory.GetFont(FontFactory.HELVETICA, 12);
 
             document.Add(new Paragraph($"Weekly Revenue Report for {shop.Name}", titleFont));
+            document.Add(new Paragraph($"From {LastWeekStartDate()} To {LastWeekEndDate()}", titleFont));
             document.Add(new Paragraph($"Address: {shop.Address}", regularFont));
             document.Add(new Paragraph($"Email: {shop.Email}", regularFont));
             document.Add(new Paragraph($"Phone: {shop.PhoneNumber}", regularFont));
@@ -107,7 +108,7 @@ public class WeeklyRevenueReportService : BackgroundService
 
             var table = new PdfPTable(5);
             table.AddCell("Order ID");
-            table.AddCell("Customer ID");
+            table.AddCell("Customer Name");
             table.AddCell("Order Date");
             table.AddCell("Total Price");
             table.AddCell("Status");
@@ -115,16 +116,16 @@ public class WeeklyRevenueReportService : BackgroundService
             foreach (var order in shop.Orders)
             {
                 table.AddCell(order.Id.ToString());
-                table.AddCell(order.CustomerId.ToString());
+                table.AddCell(order.Customer.FirstName.ToString() + " " + order.Customer.LastName.ToString());
                 table.AddCell(order.CreateDate.ToString("dd/MM/yyyy"));
-                table.AddCell(order.TotalPrice.ToString("C"));
+                table.AddCell(order.TotalPrice.ToString() + " VND");
                 table.AddCell(order.Status);
             }
 
             document.Add(table);
 
             document.Add(new Paragraph(" "));
-            document.Add(new Paragraph($"Total Revenue for the Week: {revenue.ToString("C")}", titleFont));
+            document.Add(new Paragraph($"Total Revenue for the Week: {revenue.ToString()} VND", titleFont));
 
             document.Close();
 

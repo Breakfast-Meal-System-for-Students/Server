@@ -141,6 +141,8 @@ namespace BMS.BLL.Services
         {
             return (await _unitOfWork.ShopRepository.GetAllAsyncAsQueryable())
                     .Include(s => s.Orders)
+                    .ThenInclude(o => o.Customer)
+                    .Include(s => s.Orders)
                     .ThenInclude(o => o.Transactions)
                     .Where(s => s.Orders.Any(o => o.CreateDate >= startDate && o.CreateDate <= endDate && o.Transactions.Any(t => (t.Status == TransactionStatus.PAID || t.Status == TransactionStatus.REFUND) && t.Method != TransactionMethod.Cash.ToString())))
                     .ToList();
