@@ -7,6 +7,8 @@ namespace BMS.BLL.Services.IServices
     public interface IWalletService
     {
         Task<ServiceActionResult> GetWalletByUserId(Guid userId);
+        Task<ServiceActionResult> GetWalletBMSSystem();
+        Task<ServiceActionResult> GetAllTransactionOfBMSSystemWallet(PagingRequest request);
         Task<ServiceActionResult> AddWallet(Guid userId);
         Task<ServiceActionResult> DeleteWallet(Guid userId);
         Task<ServiceActionResult> UpdateBalance(Guid userId, TransactionStatus status, decimal amount, Guid? orderId);

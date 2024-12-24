@@ -266,7 +266,7 @@ namespace BMS.BLL.Services
 
         public async Task<decimal> UpdateBalanceAdmin(TransactionStatus status, decimal amount)
         {
-            var wallet = (await _unitOfWork.WalletRepository.GetAllAsyncAsQueryable()).Include(a => a.User).Where(x => x.User.Email!.Equals("admin@gmail.com") && x.IsDeleted == false).FirstOrDefault();
+            var wallet = (await _unitOfWork.WalletRepository.GetAllAsyncAsQueryable()).Include(a => a.User).Where(x => x.User.Email!.Equals("bmssystem@gmail.com") && x.IsDeleted == false).FirstOrDefault();
             if (wallet == null)
             {
                 return -1;
@@ -320,6 +320,34 @@ namespace BMS.BLL.Services
                 return true;
             }
 
+        }
+
+        public async Task<ServiceActionResult> GetWalletBMSSystem()
+        {
+            var wallet = (await _unitOfWork.WalletRepository.GetAllAsyncAsQueryable()).Include(a => a.User).Where(x => x.User.Email!.Equals("bmssystem@gmail.com") && x.IsDeleted == false).FirstOrDefault();
+            if (wallet == null)
+            {
+                return new ServiceActionResult(false)
+                {
+                    Detail = "The BMSSystem Wallet has been deleted or not exists"
+                };
+            }
+            var returnWallet = _mapper.Map<WalletResponse>(wallet);
+            return new ServiceActionResult(true)
+            {
+                Data = returnWallet,
+            };
+        }
+
+        public async Task<ServiceActionResult> GetAllTransactionOfBMSSystemWallet(PagingRequest request)
+        {
+            var walletTransactions = (await _unitOfWork.WalletTransactionRepository.GetAllAsyncAsQueryable()).Include(a => a.Wallet).ThenInclude(b => b.User).Where(x => x.Wallet!.User.Email!.Equals("bmssystem@gmail.com")).OrderByDescending(y => y.CreateDate);
+            var paginationResult = PaginationHelper
+            .BuildPaginatedResult<WalletTransaction, WalletTransactionResponse>(_mapper, walletTransactions, request.PageSize, request.PageIndex);
+            return new ServiceActionResult(true)
+            {
+                Data = paginationResult,
+            };
         }
     }
 }

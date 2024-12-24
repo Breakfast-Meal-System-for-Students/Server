@@ -9,6 +9,7 @@ using BMS.BLL.Models.Requests.Admin;
 using Microsoft.AspNetCore.Authorization;
 using BMS.BLL.Models.Requests;
 using BMS.BLL.Models.Requests.Basic;
+using BMS.Core.Domains.Constants;
 
 namespace BMS.API.Controllers
 {
@@ -48,6 +49,24 @@ namespace BMS.API.Controllers
         {
             return await ExecuteServiceLogic(
                  async () => await _walletService.GetAllTransactionOfUserWallet(_userClaims.UserId, request).ConfigureAwait(false)
+            ).ConfigureAwait(false);
+        }
+
+        [HttpGet("GetWalletBMSSystem")]
+        [Authorize(Roles = UserRoleConstants.ADMIN + "," + UserRoleConstants.STAFF)]
+        public async Task<IActionResult> GetWalletBMSSystem()
+        {
+            return await ExecuteServiceLogic(
+                 async () => await _walletService.GetWalletBMSSystem().ConfigureAwait(false)
+             ).ConfigureAwait(false);
+        }
+
+        [HttpGet("GetAllTransactionOfBMSSystemWallet")]
+        [Authorize(Roles = UserRoleConstants.ADMIN + "," + UserRoleConstants.STAFF)]
+        public async Task<IActionResult> GetAllTransactionOfBMSSystemWallet([FromQuery] PagingRequest request)
+        {
+            return await ExecuteServiceLogic(
+                 async () => await _walletService.GetAllTransactionOfBMSSystemWallet(request).ConfigureAwait(false)
             ).ConfigureAwait(false);
         }
     }
