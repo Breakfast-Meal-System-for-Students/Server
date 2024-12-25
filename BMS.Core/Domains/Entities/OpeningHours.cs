@@ -20,12 +20,13 @@ namespace BMS.Core.Domains.Entities
         public Shop Shop { get; set; } = null!;
 
         public bool isOpenToday { get; set; } = true;
-        public void Set(int from_hour, int to_hour, int from_minute, int to_minute)
+        public void Set(int from_hour, int to_hour, int from_minute, int to_minute, bool isOpenToday)
         {
             this.from_hour = from_hour;
             this.to_hour = to_hour;
             this.from_minute = from_minute;
             this.to_minute = to_minute;
+            this.isOpenToday = isOpenToday;
         }
     }
 }

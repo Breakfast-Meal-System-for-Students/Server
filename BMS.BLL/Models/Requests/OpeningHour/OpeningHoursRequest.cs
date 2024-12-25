@@ -11,6 +11,7 @@ namespace BMS.BLL.Models.Requests.OpeningHour
     {
         public WeekDay day { get; set; }
 
+        public bool isOpenToday { get; set; }
         public int from_hour { get; set; }
         public int to_hour { get; set; }
         public int from_minute { get; set; }

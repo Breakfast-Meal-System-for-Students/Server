@@ -43,28 +43,100 @@ namespace BMS.BLL.Services
 
         public async Task<ServiceActionResult> UpdateOpeningHoursForShop(UpdateOpeningHoursRequest request)
         {
-            var openingHours = (await _unitOfWork.OpeningHoursRepository.GetAllAsyncAsQueryable()).Where(x => x.ShopId == request.shopId).ToList();
-            if (openingHours.Any()) 
-            {
-                foreach (OpeningHoursRequest openingHour in request.listOpeningHours)
-                {
-                    //var op = _mapper.Map<OpeningHours>(openingHour);
+            // Lấy danh sách giờ mở cửa hiện tại của shop từ cơ sở dữ liệu
+            var existingOpeningHours = await _unitOfWork.OpeningHoursRepository.GetAllAsync(x => x.ShopId == request.shopId);
 
-                    //op.ShopId = request.shopId;
-                    openingHours.SingleOrDefault(x => x.day == openingHour.day).Set(openingHour.from_hour, openingHour.to_hour, openingHour.from_minute, openingHour.to_minute);
-                }
-                await _unitOfWork.OpeningHoursRepository.UpdateRangeAsync(openingHours);
-                await _unitOfWork.CommitAsync();
-                return new ServiceActionResult(true)
+            if (existingOpeningHours == null || !existingOpeningHours.Any())
+            {
+                return new ServiceActionResult(false)
                 {
-                    Detail = "Update OpeningHoursForShop Successfully"
+                    IsSuccess = false,
+                    Detail = "Shop does not exist or has no opening hours defined."
                 };
             }
+
+            WeekDay currentDay = DateTimeHelper.GetCurrentWeekDay();
+
+            foreach (var dayRequest in request.listOpeningHours)
+            {
+                // Validate thời gian đầu vào cho từng ngày
+                if (dayRequest.from_hour < 5 || dayRequest.from_hour > 12 ||
+                    dayRequest.to_hour < 5 || dayRequest.to_hour > 12 ||
+                    dayRequest.from_minute < 0 || dayRequest.from_minute > 60 ||
+                    dayRequest.to_minute < 0 || dayRequest.to_minute > 60)
+                {
+                    return new ServiceActionResult(false)
+                    {
+                        IsSuccess = false,
+                        Detail = $"Invalid time for day {dayRequest.day}. The shop's opening and closing hours must be between 5:00 AM and 12:00 PM."
+                    };
+                }
+
+                var fromTime = new TimeSpan(dayRequest.from_hour, dayRequest.from_minute, 0);
+                var toTime = new TimeSpan(dayRequest.to_hour, dayRequest.to_minute, 0);
+
+                if (fromTime >= toTime)
+                {
+                    return new ServiceActionResult(false)
+                    {
+                        IsSuccess = false,
+                        Detail = $"Invalid time range for day {dayRequest.day}. 'From time' must be earlier than 'To time'."
+                    };
+                }
+
+                // Tìm giờ mở cửa hiện tại của ngày
+                var openingHour = existingOpeningHours.FirstOrDefault(x => x.day == dayRequest.day);
+
+                // Kiểm tra nếu ngày hiện tại hoặc ngày tiếp theo không cần cập nhật
+                if (dayRequest.day == currentDay)
+                {
+                    return new ServiceActionResult(true)
+                    {
+                        Detail = $"Today is {currentDay}. Cannot update opening hours for {currentDay} again. Time is already the current time in the opening hours (48 hour)"
+                    };
+                }
+                if (dayRequest.day == currentDay + 1)
+                {
+                    return new ServiceActionResult(true)
+                    {
+                        Detail = $"Tomorow is {currentDay+1}. Cannot update opening hours for {currentDay + 1}. Time is already the current time in the opening hours (48 hour)"
+                    };
+                }
+
+                if (openingHour != null)
+                {
+                    // Cập nhật giờ mở cửa nếu có sự thay đổi
+                    openingHour.Set(dayRequest.from_hour, dayRequest.to_hour, dayRequest.from_minute, dayRequest.to_minute, dayRequest.isOpenToday);
+                }
+                else
+                {
+                    // Thêm giờ mở cửa mới nếu chưa tồn tại
+                    var newOpeningHour = new OpeningHours
+                    {
+                        Id = Guid.NewGuid(),
+                        ShopId = request.shopId,
+                        day = dayRequest.day,
+                        from_hour = dayRequest.from_hour,
+                        to_hour = dayRequest.to_hour,
+                        from_minute = dayRequest.from_minute,
+                        to_minute = dayRequest.to_minute,
+                        isOpenToday = dayRequest.isOpenToday
+                    };
+
+                    await _unitOfWork.OpeningHoursRepository.AddAsync(newOpeningHour);
+                }
+            }
+
+            // Lưu thay đổi vào cơ sở dữ liệu
+            await _unitOfWork.CommitAsync();
+
             return new ServiceActionResult(true)
             {
-                Detail = "Shop is not existed or deleted"
+                IsSuccess = true,
+                Detail = "Updated opening hours for shop successfully."
             };
         }
+
 
         public async Task<ServiceActionResult> UpdateOpeningHoursOnceDayForShop(UpdateDayOpeningHoursRequest request)
         {
@@ -91,7 +163,7 @@ namespace BMS.BLL.Services
                 return new ServiceActionResult(false)
                 {
                     IsSuccess = false,
-                    Detail = "Time is already the current time in the opening hours (48 hour). No update required."
+                    Detail = $"Today is {currentDay}. Cannot update opening hours for {currentDay} again. Time is already the current time in the opening hours (48 hour)"
                 };
             }
             if (openingHours.day == currentDay +1)
@@ -99,7 +171,8 @@ namespace BMS.BLL.Services
                 return new ServiceActionResult(false)
                 {
                     IsSuccess = false,
-                    Detail = "Time is already the current time in the opening hours (48 hour). No update required."
+                    Detail = $"Tomorow is {currentDay + 1}. Cannot update opening hours for {currentDay + 1}. Time is already the current time in the opening hours (48 hour)"
+                
                 };
             }
             // Ensure "from time" is less than "to time"
