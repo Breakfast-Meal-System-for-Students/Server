@@ -44,7 +44,8 @@ namespace BMS.BLL.Services
         public async Task<ServiceActionResult> UpdateOpeningHoursForShop(UpdateOpeningHoursRequest request)
         {
             // Lấy danh sách giờ mở cửa hiện tại của shop từ cơ sở dữ liệu
-            var existingOpeningHours = await _unitOfWork.OpeningHoursRepository.GetAllAsync(x => x.ShopId == request.shopId);
+            IQueryable<OpeningHours> existingOpeningHours = (await _unitOfWork.OpeningHoursRepository.GetAllAsyncAsQueryable())
+                .Where(x => x.ShopId == request.shopId);
 
             if (existingOpeningHours == null || !existingOpeningHours.Any())
             {
@@ -88,18 +89,16 @@ namespace BMS.BLL.Services
                 var openingHour = existingOpeningHours.FirstOrDefault(x => x.day == dayRequest.day);
 
                 // Kiểm tra nếu ngày hiện tại hoặc ngày tiếp theo không cần cập nhật
-                if (dayRequest.day == currentDay)
+                bool ordersTodayOrTomorrow = (await _unitOfWork.OrderRepository.GetAllAsyncAsQueryable())
+                    .Where(x => x.ShopId == request.shopId &&
+                                (x.OrderDate.Value == DateTime.Today || x.OrderDate.Value == DateTime.Today.AddDays(1)))
+                    .Any();
+
+                if ((dayRequest.day == currentDay || dayRequest.day == currentDay + 1) && ordersTodayOrTomorrow)
                 {
                     return new ServiceActionResult(true)
                     {
-                        Detail = $"Today is {currentDay}. Cannot update opening hours for {currentDay} again. Time is already the current time in the opening hours (48 hour)"
-                    };
-                }
-                if (dayRequest.day == currentDay + 1)
-                {
-                    return new ServiceActionResult(true)
-                    {
-                        Detail = $"Tomorow is {currentDay+1}. Cannot update opening hours for {currentDay + 1}. Time is already the current time in the opening hours (48 hour)"
+                        Detail = $"Today is {currentDay}. Cannot update opening hours for {dayRequest.day} because there are existing orders today or tomorrow."
                     };
                 }
 
@@ -136,7 +135,6 @@ namespace BMS.BLL.Services
                 Detail = "Updated opening hours for shop successfully."
             };
         }
-
 
         public async Task<ServiceActionResult> UpdateOpeningHoursOnceDayForShop(UpdateDayOpeningHoursRequest request)
         {
