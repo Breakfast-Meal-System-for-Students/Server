@@ -313,6 +313,7 @@ namespace BMS.BLL.Services
                 }
             }
             product.isOutOfStock = product.isOutOfStock ? false : true;
+            await _unitOfWork.ProductRepository.UpdateAsync(product);
             return new ServiceActionResult(true)
             {
                 Data = product.isOutOfStock,
