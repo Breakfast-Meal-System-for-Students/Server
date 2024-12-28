@@ -404,29 +404,60 @@ namespace BMS.BLL.Services
                 }
             }*/
             // Check if the order date is within the shop's opening hours
+            var requestOrderTimeConvertVN = DateTimeHelper.GetVietNameseTime(request.OrderDate.GetValueOrDefault());
             if (request.OrderDate != null)
             {
-                bool isWithinOpeningHours = await _openingHoursService.IsWithinOpeningHours(cart.ShopId, request.OrderDate.GetValueOrDefault());
+                bool isWithinOpeningHours = await _openingHoursService.IsWithinOpeningHours(cart.ShopId, requestOrderTimeConvertVN);
                 if (!isWithinOpeningHours)
                 {
+                    // Get the current day based on the Vietnamese timezone
+                    WeekDay currentDay = DateTimeHelper.GetWeekDayFromDateTime(requestOrderTimeConvertVN);
+
+                    // Fetch opening hours for the shop and the current day
+                    var openingHours = await _unitOfWork.OpeningHoursRepository
+                        .FindAsync(x => x.ShopId == cart.ShopId && x.day == currentDay);
+
+                    // Calculate the start and end times for the shop's opening hours
+                    DateTime startTime = requestOrderTimeConvertVN.Date.AddHours(openingHours.from_hour)
+                                                .AddMinutes(openingHours.from_minute);
+                    DateTime endTime = requestOrderTimeConvertVN.Date.AddHours(openingHours.to_hour)
+                                              .AddMinutes(openingHours.to_minute);
+
+
                     // Return a failure response if the order date is outside the shop's opening hours
                     return new ServiceActionResult(false)
                     {
                         IsSuccess = false,
-                        Detail = "The order date is outside of the shop's opening hours."
+                        Detail = "Your order time choose is: " + requestOrderTimeConvertVN + ".The order date is outside of the shop's opening hours. On " + currentDay + ", the shop will operate from " + startTime + " to " + endTime
                     };
                 }
             }
             else
             {
-                bool isWithinOpeningHours = await _openingHoursService.IsWithinOpeningHours(cart.ShopId, DateTimeHelper.GetCurrentTime());
+                var requestOrderTimeDefaut = DateTimeHelper.GetCurrentTime();
+
+                bool isWithinOpeningHours = await _openingHoursService.IsWithinOpeningHours(cart.ShopId, requestOrderTimeDefaut);
                 if (!isWithinOpeningHours)
                 {
+                    // Get the current day based on the Vietnamese timezone
+                    WeekDay currentDay = DateTimeHelper.GetWeekDayFromDateTime(requestOrderTimeDefaut);
+
+                    // Fetch opening hours for the shop and the current day
+                    var openingHours = await _unitOfWork.OpeningHoursRepository
+                        .FindAsync(x => x.ShopId == cart.ShopId && x.day == currentDay);
+
+                    // Calculate the start and end times for the shop's opening hours
+                    DateTime startTime = requestOrderTimeDefaut.Date.AddHours(openingHours.from_hour)
+                                                .AddMinutes(openingHours.from_minute);
+                    DateTime endTime = requestOrderTimeDefaut.Date.AddHours(openingHours.to_hour)
+                                              .AddMinutes(openingHours.to_minute);
+
+
                     // Return a failure response if the order date is outside the shop's opening hours
                     return new ServiceActionResult(false)
                     {
                         IsSuccess = false,
-                        Detail = "Invalid time range. 'open time' must be earlier than 'close time'."
+                        Detail = "Your order time choose is: " + requestOrderTimeDefaut + ".The order date is outside of the shop's opening hours. On " + currentDay + ", the shop will operate from " + startTime + " to " + endTime
                     };
                 }
             }

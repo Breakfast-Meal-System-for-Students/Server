@@ -269,8 +269,8 @@ namespace BMS.BLL.Services
         public async Task<bool> IsWithinOpeningHours(Guid shopId, DateTime timeOrder)
         {
             // Get the current day based on the Vietnamese timezone
-            WeekDay currentDay = DateTimeHelper.GetCurrentWeekDay();
-
+            WeekDay currentDay = DateTimeHelper.GetWeekDayFromDateTime(timeOrder);
+            var timeNow = DateTimeHelper.GetCurrentTime();
             // Fetch opening hours for the shop and the current day
             var openingHours = await _unitOfWork.OpeningHoursRepository
                 .FindAsync(x => x.ShopId == shopId && x.day == currentDay);
@@ -286,7 +286,10 @@ namespace BMS.BLL.Services
                                         .AddMinutes(openingHours.from_minute);
             DateTime endTime = timeOrder.Date.AddHours(openingHours.to_hour)
                                       .AddMinutes(openingHours.to_minute);
-
+            if (timeOrder < timeNow)
+            {
+                return false;
+            }
             // Check if the provided timeOrder is within the range
             return timeOrder >= startTime && timeOrder <= endTime;
         }

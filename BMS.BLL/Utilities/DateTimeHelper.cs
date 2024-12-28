@@ -29,13 +29,13 @@ namespace BMS.BLL.Utilities
             return (WeekDay)vietnamTime.DayOfWeek;
         }
 
+
         public static WeekDay GetWeekDayFromDateTime(DateTime dateTime)
         {
-            // Convert the given DateTime to Vietnamese time
-            DateTime vietnamTime = GetVietNameseTime(dateTime);
+
 
             // Convert to WeekDay enum
-            return (WeekDay)vietnamTime.DayOfWeek;
+            return (WeekDay)dateTime.DayOfWeek+1;
         }
     }
 }
