@@ -56,7 +56,7 @@ namespace BMS.BLL.Services
                 };
             }
 
-            WeekDay currentDay = DateTimeHelper.GetCurrentWeekDay();
+            WeekDay currentDay = DateTimeHelper.GetCurrentWeekDay() +1;
 
             foreach (var dayRequest in request.listOpeningHours)
             {
@@ -69,7 +69,7 @@ namespace BMS.BLL.Services
                     return new ServiceActionResult(false)
                     {
                         IsSuccess = false,
-                        Detail = $"Invalid time for day {dayRequest.day}. The shop's opening and closing hours must be between 5:00 AM and 12:00 PM."
+                        Detail = $"Invalid time for {dayRequest.day+1}. The shop's opening and closing hours must be between 5:00 AM and 12:00 PM."
                     };
                 }
 
@@ -81,7 +81,7 @@ namespace BMS.BLL.Services
                     return new ServiceActionResult(false)
                     {
                         IsSuccess = false,
-                        Detail = $"Invalid time range for day {dayRequest.day}. 'From time' must be earlier than 'To time'."
+                        Detail = $"Invalid time range for {dayRequest.day+1}. 'From time' must be earlier than 'To time'."
                     };
                 }
 
@@ -232,7 +232,7 @@ namespace BMS.BLL.Services
             if (openingHours is not null)
             {
                 // Get the current day of the week
-                WeekDay currentDay = DateTimeHelper.GetCurrentWeekDay();
+                WeekDay currentDay = DateTimeHelper.GetCurrentWeekDay()+1;
                 // Converts DayOfWeek to WeekDay enum
 
                 // Check if the current day matches the day of the opening hours
