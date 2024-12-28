@@ -86,11 +86,9 @@ namespace BMS.BLL.Utilities.AutoMapperProfiles
                 CreateMap<CreateShopApplicationRequest, Shop>()
                     .ForMember(dest => dest.PhoneNumber, opt => opt.MapFrom(src => src.Phone));
                 CreateMap<Shop, ShopApplicationDetailResponse>()
-              .ForMember(dest => dest.Phone, opt => opt.MapFrom(src => src.PhoneNumber))
-              .ForMember(dest => dest.Name, opt => opt.MapFrom(src => src.University));
+              .ForMember(dest => dest.Phone, opt => opt.MapFrom(src => src.PhoneNumber));
                 CreateMap<Shop, ShopApplicationResponse>()
-                    .ForMember(dest => dest.Phone, opt => opt.MapFrom(src => src.PhoneNumber))
-                    .ForMember(dest => dest.Name, opt => opt.MapFrom(src => src.University));
+                    .ForMember(dest => dest.Phone, opt => opt.MapFrom(src => src.PhoneNumber));
                 CreateMap<Shop, ShopRequest>();
                 CreateMap<Shop, ShopResponse>()
                     .ForMember(dest => dest.Phone, opt => opt.MapFrom(src => src.PhoneNumber))
