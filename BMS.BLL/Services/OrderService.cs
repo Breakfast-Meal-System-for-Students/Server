@@ -428,7 +428,7 @@ namespace BMS.BLL.Services
                     return new ServiceActionResult(false)
                     {
                         IsSuccess = false,
-                        Detail = "Your order time choose is: " + requestOrderTimeConvertVN + ".The order date is outside of the shop's opening hours. On " + currentDay + ", the shop will operate from " + startTime + " to " + endTime
+                        Detail = "On " + currentDay + ", the shop will operate from " + startTime + " to " + endTime
                     };
                 }
             }
@@ -457,7 +457,7 @@ namespace BMS.BLL.Services
                     return new ServiceActionResult(false)
                     {
                         IsSuccess = false,
-                        Detail = "Your order time choose is: " + requestOrderTimeDefaut + ".The order date is outside of the shop's opening hours. On " + currentDay + ", the shop will operate from " + startTime + " to " + endTime
+                        Detail = "On " + currentDay + ", the shop will operate from " + startTime + " to " + endTime
                     };
                 }
             }

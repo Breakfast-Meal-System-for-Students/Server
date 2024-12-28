@@ -152,7 +152,7 @@ namespace BMS.BLL.Services
                 };
             }
             // Get the current day of the week
-            WeekDay currentDay = DateTimeHelper.GetCurrentWeekDay();
+            WeekDay currentDay = DateTimeHelper.GetCurrentWeekDay()+1;
             // Converts DayOfWeek to WeekDay enum
 
             // Check if the current day matches the day of the opening hours
