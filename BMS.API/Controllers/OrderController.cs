@@ -168,7 +168,7 @@ namespace BMS.API.Controllers
 
         [HttpPut("CancelListOrder")]
         [Authorize(Roles = UserRoleConstants.ADMIN + "," + UserRoleConstants.STAFF + "," + UserRoleConstants.SHOP)]
-        public async Task<IActionResult> CancelListOrder([FromForm] List<Guid> orderIds)
+        public async Task<IActionResult> CancelListOrder([FromBody] List<Guid> orderIds)
         {
             return await ExecuteServiceLogic(
                 async () => await _orderService.CancelListOrder(orderIds).ConfigureAwait(false)
