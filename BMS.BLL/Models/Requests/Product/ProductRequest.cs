@@ -13,6 +13,7 @@ namespace BMS.BLL.Models.Requests.Product
         public string? Search { get; set; }
         public bool IsDesc { get; set; } = false;
         public bool? IsOutOfStock { get; set; } = null;
+        public bool? IsCombo { get; set; } = null;
         public AIDetectStatus? IsAICanDetect { get; set; } = null;
     }
 }
