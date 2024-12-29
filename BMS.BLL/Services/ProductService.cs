@@ -79,7 +79,10 @@ namespace BMS.BLL.Services
             {
                 productEntity.Inventory = 9999;
             }*/
-
+            if(request.IsCombo == null)
+            {
+                productEntity.IsCombo = false;
+            }
             productEntity.isAICanDetect = AIDetectStatus.ACCEPTED;
             await _unitOfWork.ProductRepository.AddAsync(productEntity);
 
