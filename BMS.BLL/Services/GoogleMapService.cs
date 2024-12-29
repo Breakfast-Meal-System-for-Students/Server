@@ -312,9 +312,7 @@ namespace BMS.BLL.Services
 
             IQueryable<Shop> shops = (await _unitOfWork.ShopRepository.GetAllAsyncAsQueryable())
               .Include(a => a.Package_Shop)
-                  .ThenInclude(b => b.Package)
-              .Include(a => a.OpeningHours) // Include OpeningHours for filtering
-              .Where(x =>
+                  .ThenInclude(b => b.Package).Where(x =>
                   x.Status == ShopStatus.ACCEPTED &&
                   (x.Package_Shop.Any()
                       ? x.Package_Shop.Max(p => p.Package != null
@@ -322,8 +320,7 @@ namespace BMS.BLL.Services
                           : DateTime.MinValue)
                       : DateTime.MinValue) > DateTimeHelper.GetCurrentTime() &&
                   (x.lat > minLat && x.lat < maxLat) &&
-                  (x.lng > minLng && x.lng < maxLng) &&
-                  x.OpeningHours.Any(oh => oh.day == (WeekDay)DateTime.Now.DayOfWeek && oh.isOpenToday)); // Check if open today
+                  (x.lng > minLng && x.lng < maxLng)); 
 
 
             if (!string.IsNullOrEmpty(search))
