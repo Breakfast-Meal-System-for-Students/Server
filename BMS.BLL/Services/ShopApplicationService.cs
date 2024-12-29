@@ -151,9 +151,10 @@ namespace BMS.BLL.Services
 
         public async Task<ServiceActionResult> GetApplication(Guid id)
         {
-           // var application = await _unitOfWork.ShopRepository.FindAsync(id) ?? throw new ArgumentNullException("Application is not exist");
+            WeekDay currentDay = DateTimeHelper.GetCurrentWeekDay()+1;
+            // var application = await _unitOfWork.ShopRepository.FindAsync(id) ?? throw new ArgumentNullException("Application is not exist");
             var applicationQuery = (await _unitOfWork.ShopRepository.GetAllAsyncAsQueryable()).Include(a => a.User).Include(a => a.University).FirstOrDefault();
-            var openCloseShop =await _unitOfWork.OpeningHoursRepository.FindAsync(a => a.ShopId == id);
+            var openCloseShop =await _unitOfWork.OpeningHoursRepository.FindAsync(a => a.ShopId == id&&(a.day== currentDay));
             var returnApplication = _mapper.Map<ShopApplicationDetailResponse>(applicationQuery);
             returnApplication.From_Hour = openCloseShop.from_hour;
             returnApplication.To_Hour = openCloseShop.to_hour;
