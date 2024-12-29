@@ -130,6 +130,40 @@ namespace BMS.BLL.Services
             return new ServiceActionResult() { Data = paymentUrl };
         }
 
+        public async Task<ServiceActionResult> CreatePaymentUrlForDeposit(HttpContext context, VNPayForDepositRequest request)
+        {
+            var userId = new Guid(request.UserId ?? throw new BusinessRuleException("Invalid userId"));
+            var user = await _unitOfWork.UserRepository.FindAsync(userId);
+            if (user == null)
+            {
+                return new ServiceActionResult(false)
+                {
+                    Detail = "User is not exist"
+                };
+            }
+            var tick = DateTimeHelper.GetCurrentTime().Ticks.ToString();
+
+            var vnpay = new VnPayLibrary();
+
+            vnpay.AddRequestData(VnPayConstansts.VERSION, _vnPaySettings.Version);
+            vnpay.AddRequestData(VnPayConstansts.COMMAND, _vnPaySettings.Command);
+            vnpay.AddRequestData(VnPayConstansts.TMN_CODE, _vnPaySettings.TmnCode);
+            vnpay.AddRequestData(VnPayConstansts.AMOUNT, (request.Amount * 100).ToString());
+            vnpay.AddRequestData(VnPayConstansts.CREATE_DATE, DateTimeHelper.GetCurrentTime().ToString("yyyyMMddHHmmss"));
+            vnpay.AddRequestData(VnPayConstansts.CURR_CODE, _vnPaySettings.CurrencyCode);
+            vnpay.AddRequestData(VnPayConstansts.IP_ADDRESS, Utils.GetIpAddress(context));
+            vnpay.AddRequestData(VnPayConstansts.LOCALE, _vnPaySettings.Locale);
+            vnpay.AddRequestData(VnPayConstansts.ORDER_INFOR, request.UserId);
+            vnpay.AddRequestData(VnPayConstansts.ORDER_TYPE, request.OrderType);
+            vnpay.AddRequestData(VnPayConstansts.RETURN_URL, request.ReturnUrl);
+            vnpay.AddRequestData(VnPayConstansts.TXN_REF, tick);
+
+            string paymentUrl = vnpay.CreateRequestUrl(_vnPaySettings.BaseUrl, _vnPaySettings.HashSecret);
+            await Task.CompletedTask;
+
+            return new ServiceActionResult() { Data = paymentUrl };
+        }
+
         public async Task<ServiceActionResult> PaymentExecute(VnPayResponse response, bool isIPN = false)
         {
             /*var vnpay = new VnPayLibrary();

@@ -14,6 +14,7 @@ namespace BMS.BLL.Services.IServices
     {
         Task<ServiceActionResult> CreatePaymentUrl(HttpContext context, VnPayRequest request);
         Task<ServiceActionResult> CreatePaymentUrlForBuyPackage(HttpContext context, VnPayForBuyPackageRequest request);
+        Task<ServiceActionResult> CreatePaymentUrlForDeposit(HttpContext context, VNPayForDepositRequest request);
         Task<ServiceActionResult> PaymentExecute(VnPayResponse response, bool isIPN = false);
     }
 }
