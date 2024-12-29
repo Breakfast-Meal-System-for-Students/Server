@@ -166,6 +166,13 @@ namespace BMS.BLL.Services
 
                         await _unitOfWork.TransactionRepository.AddAsync(transaction);
                     }
+                    else
+                    {
+                        var shop = (await _unitOfWork.ShopRepository.GetAllAsyncAsQueryable()).Where(x => x.Id == order.ShopId).FirstOrDefault();
+                        await _walletService.UpdateBalanceInSystem(shop.UserId.GetValueOrDefault(), TransactionStatus.PAIDTOSHOP, (decimal)order.TotalPrice, null);
+                        await _walletService.UpdateBalanceAdmin(TransactionStatus.PAIDTOSHOP, (decimal)order.TotalPrice);
+                        await _walletService.SaveChange();
+                    }
                 }
                 order.Status = status.ToString();
                 order.LastUpdateDate = DateTimeHelper.GetCurrentTime();

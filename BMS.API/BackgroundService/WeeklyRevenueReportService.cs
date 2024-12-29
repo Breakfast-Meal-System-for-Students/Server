@@ -49,12 +49,12 @@ public class WeeklyRevenueReportService : BackgroundService
             var emailService = scope.ServiceProvider.GetRequiredService<IEmailService>();
             var shops = await shopService.GetAllShopToRevenue(LastWeekStartDate(), LastWeekEndDate());
             var shopWeeklyReportService = scope.ServiceProvider.GetRequiredService<IShopWeeklyReportService>();
-            var walletService = scope.ServiceProvider.GetRequiredService<IWalletService>();
+            //var walletService = scope.ServiceProvider.GetRequiredService<IWalletService>();
             foreach (var shop in shops)
             {
-                var isPaidToShop = await walletService.CheckSystemPaidRevenueToShopInWeek(DateTimeHelper.GetCurrentTime().AddDays(-6), DateTimeHelper.GetCurrentTime().AddDays(1), shop.UserId.GetValueOrDefault());
+                /*var isPaidToShop = await walletService.CheckSystemPaidRevenueToShopInWeek(DateTimeHelper.GetCurrentTime().AddDays(-6), DateTimeHelper.GetCurrentTime().AddDays(1), shop.UserId.GetValueOrDefault());
                 if (isPaidToShop == false)
-                {
+                {*/
                     var revenue = shop.Orders
                         .Where(o => o.Transactions.Any(t => (t.Status == TransactionStatus.PAID || t.Status == TransactionStatus.REFUND) && t.Method != TransactionMethod.Cash.ToString()))
                         .Sum(o => o.Transactions.Sum(x => x.Price));
@@ -65,11 +65,11 @@ public class WeeklyRevenueReportService : BackgroundService
 
                         await shopWeeklyReportService.CreateShopWeeklyReport(shop.Id, report);
                         await shopWeeklyReportService.SaveChange();
-                        await walletService.UpdateBalanceInSystem(shop.UserId.GetValueOrDefault(), TransactionStatus.PAIDTOSHOP, (decimal)revenue, null);
+                        /*await walletService.UpdateBalanceInSystem(shop.UserId.GetValueOrDefault(), TransactionStatus.PAIDTOSHOP, (decimal)revenue, null);
                         await walletService.UpdateBalanceAdmin(TransactionStatus.PAIDTOSHOP, (decimal)revenue);
-                        await walletService.SaveChange();
+                        await walletService.SaveChange();*/
                     }
-                }
+                //}
             }
 
             
