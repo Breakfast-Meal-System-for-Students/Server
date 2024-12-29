@@ -52,6 +52,7 @@ namespace BMS.API.Controllers
         public async Task<IActionResult> CreatePaymentUrlForBuyPackage(VNPayForDepositRequest request)
         {
             var context = HttpContext;
+            request.UserId = _userClaims.UserId.ToString();
             return await ExecuteServiceLogic(
                async () => await _vnPayService.CreatePaymentUrlForDeposit(context, request).ConfigureAwait(false)
            ).ConfigureAwait(false);
