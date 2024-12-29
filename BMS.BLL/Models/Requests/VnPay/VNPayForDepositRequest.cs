@@ -8,7 +8,7 @@ namespace BMS.BLL.Models.Requests.VnPay
 {
     public class VNPayForDepositRequest
     {
-        public string UserId { get; set; }
+        public string? UserId { get; set; }
         public string OrderType { get; set; }
         public double Amount { get; set; }
         public string ReturnUrl { get; set; }
