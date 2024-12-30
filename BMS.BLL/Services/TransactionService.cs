@@ -171,7 +171,7 @@ namespace BMS.BLL.Services
 
         public async Task<ServiceActionResult> GetTotalRevenueForShop(Guid shopId, TotalTRansactionRequest request)
         {
-            var transactions = (await _unitOfWork.TransactionRepository.GetAllAsyncAsQueryable()).Include(a => a.Order).Where(x => x.Order.ShopId == shopId);
+            var transactions = (await _unitOfWork.TransactionRepository.GetAllAsyncAsQueryable()).Include(a => a.Order).Where(x => x.Order.ShopId == shopId && x.Order.Status.Equals(OrderStatus.COMPLETE.ToString()));
             if (request.Year != 0)
             {
                 if (request.Month != 0)
