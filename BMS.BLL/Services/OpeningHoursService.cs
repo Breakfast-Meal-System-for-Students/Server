@@ -270,7 +270,7 @@ namespace BMS.BLL.Services
         {
             // Get the current day based on the Vietnamese timezone
             WeekDay currentDay = DateTimeHelper.GetWeekDayFromDateTime(timeOrder);
-            var timeNow = DateTimeHelper.GetCurrentTime();
+            var timeNow = DateTimeHelper.GetCurrentTime().AddMinutes(-5); 
             // Fetch opening hours for the shop and the current day
             var openingHours = await _unitOfWork.OpeningHoursRepository
                 .FindAsync(x => x.ShopId == shopId && x.day == currentDay);
