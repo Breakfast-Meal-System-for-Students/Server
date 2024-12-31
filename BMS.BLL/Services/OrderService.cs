@@ -133,7 +133,7 @@ namespace BMS.BLL.Services
                         };
                     } else if (isPayed)
                     {
-                        var x = await _walletService.UpdateBalanceInSystem(userId, TransactionStatus.REFUND, ((decimal)order.TotalPrice), order.Id);
+                        var x = await _walletService.UpdateBalanceInSystem(order.CustomerId, TransactionStatus.REFUND, ((decimal)order.TotalPrice), order.Id);
                         if(x < 0)
                         {
                             return new ServiceActionResult(false)
