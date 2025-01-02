@@ -106,11 +106,11 @@ namespace BMS.BLL.Services
                         Detail = $"Order is already in {s}, so that you can not change back to {status}"
                     };
                 }
-                if (order.OrderDate > DateTimeHelper.GetCurrentTime().AddHours(1) && status > OrderStatus.CHECKING && status != OrderStatus.CANCEL)
+                if (order.OrderDate > DateTimeHelper.GetCurrentTime().AddHours(2) && status > OrderStatus.CHECKING && status != OrderStatus.CANCEL)
                 {
                     return new ServiceActionResult(false)
                     {
-                        Detail = $"Since the order time of this order is {order.OrderDate}, you cannot change the order to status:  {status}. Please wait until to the order time to prepare this order for the best taste."
+                        Detail = $"Since the order time of this order is {order.OrderDate}, you cannot change the order to status:  {status}. Please wait until 2 hours before order time to prepare this order for the best taste."
                     };
                 }
                 if (status == OrderStatus.TAKENOVER && s != OrderStatus.PREPARED)
