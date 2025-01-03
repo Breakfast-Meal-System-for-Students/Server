@@ -12,5 +12,6 @@ namespace BMS.BLL.Models.Responses.Wallet
         public Guid WalletID { get; set; }
         public double Price { get; set; }
         public TransactionStatus Status { get; set; }
+        public DateTime CreateDate { get; set; }
     }
 }
