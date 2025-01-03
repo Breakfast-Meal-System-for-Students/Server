@@ -26,5 +26,6 @@ namespace BMS.BLL.Models.Responses.Admin
         public bool IsGroup { get; set; }
         public bool canCancel {  get; set; }
         public bool canFeedback { get; set; }
+        public bool isPayed { get; set; }
     }
 }

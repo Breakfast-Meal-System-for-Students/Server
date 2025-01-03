@@ -644,6 +644,7 @@ namespace BMS.BLL.Services
                 {
                     returnOrder.canFeedback = true;
                 }
+                returnOrder.isPayed = bool.Parse((await CheckOrderIsPayed(returnOrder.Id)).Data.ToString());
                 return new ServiceActionResult(true) { Data = returnOrder };
             }
             else
@@ -666,11 +667,16 @@ namespace BMS.BLL.Services
             //{
             //    orderQuery = orderQuery.Where(m => m.Email.Contains(request.Search) || (m.LastName + m.FirstName).Contains(request.Search));
             //}
-
+            
             orderQuery = request.IsDesc ? orderQuery.OrderByDescending(a => a.CreateDate) : orderQuery.OrderBy(a => a.CreateDate);
 
             var paginationResult = PaginationHelper
             .BuildPaginatedResult<Order, OrderResponse>(_mapper, orderQuery, request.PageSize, request.PageIndex);
+
+            foreach (var order in (List<OrderResponse>)paginationResult.Data)
+            {
+                order.isPayed = bool.Parse((await CheckOrderIsPayed(order.Id)).Data.ToString());
+            }
 
             return new ServiceActionResult(true) { Data = paginationResult };
         }
@@ -706,6 +712,7 @@ namespace BMS.BLL.Services
                 {
                     order.canFeedback = true;
                 }
+                order.isPayed = bool.Parse((await CheckOrderIsPayed(order.Id)).Data.ToString());
             }
 
             return new ServiceActionResult(true) { Data = paginationResult };
@@ -736,6 +743,7 @@ namespace BMS.BLL.Services
                 {
                     order.canFeedback = true;
                 }
+                order.isPayed = bool.Parse((await CheckOrderIsPayed(order.Id)).Data.ToString());
             }
 
             return new ServiceActionResult(true) { Data = paginationResult };
@@ -992,6 +1000,11 @@ namespace BMS.BLL.Services
 
             var paginationResult = PaginationHelper
             .BuildPaginatedResult<Order, OrderResponse>(_mapper, orderQuery, request.PageSize, request.PageIndex);
+
+            foreach (var order in (List<OrderResponse>)paginationResult.Data)
+            {
+                order.isPayed = bool.Parse((await CheckOrderIsPayed(order.Id)).Data.ToString());
+            }
 
             return new ServiceActionResult(true) { Data = paginationResult };
         }
