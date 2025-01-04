@@ -153,7 +153,7 @@ namespace BMS.BLL.Services
         {
             WeekDay currentDay = DateTimeHelper.GetCurrentWeekDay()+1;
             // var application = await _unitOfWork.ShopRepository.FindAsync(id) ?? throw new ArgumentNullException("Application is not exist");
-            var applicationQuery = (await _unitOfWork.ShopRepository.GetAllAsyncAsQueryable()).Include(a => a.User).Include(a => a.University).FirstOrDefault();
+            var applicationQuery = (await _unitOfWork.ShopRepository.GetAllAsyncAsQueryable()).Include(a => a.User).Include(a => a.University).Where(x => x.Id == id).FirstOrDefault();
             var openCloseShop =await _unitOfWork.OpeningHoursRepository.FindAsync(a => a.ShopId == id&&(a.day== currentDay));
             var returnApplication = _mapper.Map<ShopApplicationDetailResponse>(applicationQuery);
             returnApplication.From_Hour = openCloseShop.from_hour;
