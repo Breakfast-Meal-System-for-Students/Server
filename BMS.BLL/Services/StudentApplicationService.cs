@@ -38,7 +38,7 @@ namespace BMS.BLL.Services
         public async Task<ServiceActionResult> GetAllStudentApplication(StudentApplicationRequest queryParameters)
         {
 
-            IQueryable<StudentApplication> StudentApplicationQueryable = (await _unitOfWork.StudentApplicationRepository.GetAllAsyncAsQueryable()).Include(a => a.University).Where(a => a.IsDeleted == false);
+            IQueryable<StudentApplication> StudentApplicationQueryable = (await _unitOfWork.StudentApplicationRepository.GetAllAsyncAsQueryable()).Include(a => a.University).Include(a => a.User).Where(a => a.IsDeleted == false); 
 
 
 

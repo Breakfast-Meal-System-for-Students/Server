@@ -1,4 +1,5 @@
 ﻿using BMS.BLL.Models.Responses.University;
+using BMS.BLL.Models.Responses.Users;
 using BMS.Core.Domains.Entities;
 using BMS.Core.Domains.Enums;
 using BMS.DAL.Repositories;
@@ -26,7 +27,7 @@ namespace BMS.BLL.Models.Responses.StudentApplication
 
         public StudentStatus? StatusStudent { get; set; }
 
-
+        public UserResponse? User { get; set; } = null!;
 
     }
 }

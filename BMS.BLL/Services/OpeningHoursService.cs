@@ -69,7 +69,7 @@ namespace BMS.BLL.Services
                     return new ServiceActionResult(false)
                     {
                         IsSuccess = false,
-                        Detail = $"Invalid time for {dayRequest.day+1}. The shop's opening and closing hours must be between 5:00 AM and 12:00 PM."
+                        Detail = $"Invalid time for {dayRequest.day}. The shop's opening and closing hours must be between 5:00 AM and 12:00 PM."
                     };
                 }
 
@@ -81,7 +81,7 @@ namespace BMS.BLL.Services
                     return new ServiceActionResult(false)
                     {
                         IsSuccess = false,
-                        Detail = $"Invalid time range for {dayRequest.day+1}. 'From time' must be earlier than 'To time'."
+                        Detail = $"Invalid time range for {dayRequest.day}. 'From time' must be earlier than 'To time'."
                     };
                 }
 

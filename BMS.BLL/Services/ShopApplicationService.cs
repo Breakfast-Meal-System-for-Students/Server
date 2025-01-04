@@ -156,15 +156,23 @@ namespace BMS.BLL.Services
             var applicationQuery = (await _unitOfWork.ShopRepository.GetAllAsyncAsQueryable()).Include(a => a.User).Include(a => a.University).Where(x => x.Id == id).FirstOrDefault();
             var openCloseShop =await _unitOfWork.OpeningHoursRepository.FindAsync(a => a.ShopId == id&&(a.day== currentDay));
             var openCloseShopTomorow = await _unitOfWork.OpeningHoursRepository.FindAsync(a => a.ShopId == id && (a.day == (WeekDay)(((int)currentDay + 1) % 7)));
+
             var returnApplication = _mapper.Map<ShopApplicationDetailResponse>(applicationQuery);
-            returnApplication.From_Hour = openCloseShop.from_hour;
-            returnApplication.To_Hour = openCloseShop.to_hour;
-            returnApplication.From_Minune = openCloseShop.from_minute;
-            returnApplication.To_Minune = openCloseShop.to_minute;
-            returnApplication.From_HourTomorow = openCloseShopTomorow.from_hour;
-            returnApplication.To_HourTomorow = openCloseShopTomorow.to_hour;
-            returnApplication.From_MinuneTomorow = openCloseShopTomorow.from_minute;
-            returnApplication.To_MinuneTomorow = openCloseShopTomorow.to_minute;
+            if(returnApplication is not null)
+            {
+                returnApplication.From_Hour = openCloseShop.from_hour;
+                returnApplication.To_Hour = openCloseShop.to_hour;
+                returnApplication.From_Minune = openCloseShop.from_minute;
+                returnApplication.To_Minune = openCloseShop.to_minute;
+            }
+            if (openCloseShopTomorow is not null)
+            {
+                returnApplication.From_HourTomorow = openCloseShopTomorow.from_hour;
+                returnApplication.To_HourTomorow = openCloseShopTomorow.to_hour;
+                returnApplication.From_MinuneTomorow = openCloseShopTomorow.from_minute;
+                returnApplication.To_MinuneTomorow = openCloseShopTomorow.to_minute;
+            }
+
             return new ServiceActionResult(true) { Data = returnApplication };
         }
 
