@@ -28,5 +28,10 @@ namespace BMS.BLL.Models.Responses.Shop
         public int From_Hour { get; set; }
         public int To_Minune { get; set; }
         public int From_Minune { get; set; }
+
+        public int? To_HourTomorow { get; set; }
+        public int? From_HourTomorow { get; set; }
+        public int? To_MinuneTomorow { get; set; }
+        public int? From_MinuneTomorow { get; set; }
     }
 }
