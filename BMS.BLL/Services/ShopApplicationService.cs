@@ -49,7 +49,17 @@ namespace BMS.BLL.Services
         public async Task<ServiceActionResult> CreateShopApplication(CreateShopApplicationRequest applicationRequest)
         {
             var user = await _userManager.FindByEmailAsync(applicationRequest.Email);
-            // Validate input times
+
+            if (user != null)
+            {
+                return new ServiceActionResult(false)
+                {
+                    IsSuccess = false,
+                    Detail = $"The Email {applicationRequest.Email} is already used in BMS System"
+                };
+            }
+
+            // Validate opening and closing hours
             if (applicationRequest.from_hour < 5 || applicationRequest.from_hour > 12 ||
                 applicationRequest.to_hour < 5 || applicationRequest.to_hour > 12 ||
                 applicationRequest.from_minute < 0 || applicationRequest.from_minute > 60 ||
@@ -62,7 +72,6 @@ namespace BMS.BLL.Services
                 };
             }
 
-            // Ensure "from time" is less than "to time"
             var fromTime = new TimeSpan(applicationRequest.from_hour, applicationRequest.from_minute, 0);
             var toTime = new TimeSpan(applicationRequest.to_hour, applicationRequest.to_minute, 0);
 
@@ -71,63 +80,77 @@ namespace BMS.BLL.Services
                 return new ServiceActionResult(false)
                 {
                     IsSuccess = false,
-                    Detail = "Invalid time range. 'open time' must be earlier than 'close time'."
+                    Detail = "Invalid time range. 'Open time' must be earlier than 'Close time'."
                 };
             }
-            //
-            if (user != null)
-            {
-                var roles = await _userManager.GetRolesAsync(user);
-                /*bool isInShopRole = roles.Contains(UserRoleConstants.SHOP);
-                if (isInShopRole)
-                {
-                    throw new BusinessRuleException($"{applicationRequest.Email} is already used by a Shop in System");
-                }*/
-                return new ServiceActionResult(false)
-                {
-                    IsSuccess = false,
-                    Detail = $"The Email {applicationRequest.Email} is already used in BMS System"
-                };
-            }
+
+            // Map request to Shop entity
             var shopApplication = _mapper.Map<Shop>(applicationRequest);
-           
-            // Analys lat and lng (if cannot convert address --> save address)
+
+            // Analyze latitude and longitude based on address
             try
             {
-                Models.Responses.Map.Location location = await _googleMapService.GetCoordinatesFromAddress(shopApplication.Address);
+                var location = await _googleMapService.GetCoordinatesFromAddress(shopApplication.Address);
                 if (location != null)
                 {
                     shopApplication.lat = location.Lat;
                     shopApplication.lng = location.Lng;
                 }
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-
+                // Log exception or handle error
             }
+
+            // Handle image upload
+            if (applicationRequest.Image != null)
+            {
+                var imageUrl = await _fileStorageService.UploadFileBlobAsync(applicationRequest.Image);
+                shopApplication.Image = imageUrl;
+            }
+
+            shopApplication.Rate = 5;
+
             try
             {
-
-                if (applicationRequest.Image != null)
-                {
-                    var imageUrl = await _fileStorageService.UploadFileBlobAsync(applicationRequest.Image);
-                    shopApplication.Image = imageUrl;
-                }
-                shopApplication.Rate = 5;
+                // Save shop to the database
                 await _unitOfWork.ShopRepository.AddAsync(shopApplication);
                 await _unitOfWork.CommitAsync();
-                await _openingHoursService.AddDefaultForShop(shopApplication.Id, applicationRequest.to_hour,applicationRequest.from_hour,applicationRequest.to_minute, applicationRequest.from_minute);
-                return new ServiceActionResult();
+
+                // Add associated universities
+                foreach (var universityId in applicationRequest.UniversityIds)
+                {
+                    var shopUniversity = new ShopUniversity
+                    {
+                        Id = Guid.NewGuid(),
+                        ShopId = shopApplication.Id,
+                        UniversityId = universityId
+                    };
+                    await _unitOfWork.ShopUniversityRepository.AddAsync(shopUniversity);
+                }
+
+                // Commit all changes
+                await _unitOfWork.CommitAsync();
+
+                // Add default opening hours
+                await _openingHoursService.AddDefaultForShop(
+                    shopApplication.Id,
+                    applicationRequest.to_hour,
+                    applicationRequest.from_hour,
+                    applicationRequest.to_minute,
+                    applicationRequest.from_minute);
+
+                return new ServiceActionResult { IsSuccess = true };
             }
             catch
             {
-                throw new BusinessRuleException("Error");
+                throw new BusinessRuleException("Error occurred while creating the shop application.");
             }
         }
 
         public async Task<ServiceActionResult> GetAllApplications(ShopApplicationRequest queryParameters)
         {
-            IQueryable<Shop> applicationQuery = (await _unitOfWork.ShopRepository.GetAllAsyncAsQueryable()).Include(a => a.User).Include(a => a.University);
+            IQueryable<Shop> applicationQuery = (await _unitOfWork.ShopRepository.GetAllAsyncAsQueryable()).Include(a => a.User).Include(a => a.ShopUniversities).ThenInclude(a=>a.University);
 
             var canParsed = Enum.TryParse(queryParameters.Status, true, out ShopStatus status);
             if (canParsed)
@@ -153,7 +176,7 @@ namespace BMS.BLL.Services
         {
             WeekDay currentDay = DateTimeHelper.GetCurrentWeekDay()+1;
             // var application = await _unitOfWork.ShopRepository.FindAsync(id) ?? throw new ArgumentNullException("Application is not exist");
-            var applicationQuery = (await _unitOfWork.ShopRepository.GetAllAsyncAsQueryable()).Include(a => a.User).Include(a => a.University).Where(x => x.Id == id).FirstOrDefault();
+            var applicationQuery = (await _unitOfWork.ShopRepository.GetAllAsyncAsQueryable()).Include(a => a.User).Include(a => a.ShopUniversities).ThenInclude(a => a.University).Where(x => x.Id == id).FirstOrDefault();
             var openCloseShop =await _unitOfWork.OpeningHoursRepository.FindAsync(a => a.ShopId == id&&(a.day== currentDay));
             var openCloseShopTomorow = await _unitOfWork.OpeningHoursRepository.FindAsync(a => a.ShopId == id && (a.day == (WeekDay)(((int)currentDay + 1) % 7)));
 

@@ -80,7 +80,19 @@ namespace BMS.DAL.DataContext
                       .WithMany(c => c.RegisterCategorys) // Navigational property in Category
                       .HasForeignKey(rc => rc.CategoryId)
                       .OnDelete(DeleteBehavior.Cascade);
+            modelBuilder.Entity<ShopUniversity>()
+     .HasKey(su => new { su.ShopId, su.UniversityId });
+            modelBuilder.Entity<ShopUniversity>()
+       .HasOne(su => su.Shop)
+       .WithMany(s => s.ShopUniversities)
+       .HasForeignKey(su => su.ShopId)
+       .OnDelete(DeleteBehavior.Cascade);
 
+            modelBuilder.Entity<ShopUniversity>()
+                .HasOne(su => su.University)
+                .WithMany(u => u.ShopUniversities)
+                .HasForeignKey(su => su.UniversityId)
+                .OnDelete(DeleteBehavior.Cascade);
             // One-to-Many relationship between Shop and Order
             modelBuilder.Entity<RegisterCategory>()
                 .HasOne(rc => rc.Product)
@@ -263,11 +275,7 @@ namespace BMS.DAL.DataContext
                 .WithMany(s => s.OTPs)
                 .HasForeignKey(oh => oh.UserId)
                 .OnDelete(DeleteBehavior.Cascade);
-            modelBuilder.Entity<University>()
-                .HasMany(oh => oh.Shops)
-                .WithOne(s => s.University)
-                .HasForeignKey(oh => oh.UniversityId)
-                .OnDelete(DeleteBehavior.Cascade);
+
             modelBuilder.Entity<University>()
                 .HasMany(oh => oh.StudentApplications)
                 .WithOne(s => s.University)

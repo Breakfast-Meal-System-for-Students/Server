@@ -23,8 +23,7 @@ namespace BMS.Core.Domains.Entities
         public Guid? UserId { get; set; }
         public User? User { get; set; } = null!;
 
-        public Guid? UniversityId { get; set; } // Reference to University
-        public University? University { get; set; } = null!; // Navigation property
+        public ICollection<ShopUniversity> ShopUniversities { get; set; } = new List<ShopUniversity>();
 
         // Navigation Properties
         public ICollection<Product>? Products { get; set; } = new List<Product>();

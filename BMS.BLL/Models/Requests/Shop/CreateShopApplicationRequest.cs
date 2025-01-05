@@ -19,7 +19,8 @@ namespace BMS.BLL.Models.Requests.Shop
 
         public string Email { get; set; } = null!;
         public string Phone { get; set; } = null!;
-        public Guid? UniversityId { get; set; } = null;
+        public List<Guid> UniversityIds { get; set; } = new List<Guid>(); // Updated to support multiple universities
+
         public int to_hour { get; set; }
         public int to_minute { get; set; }
         public int from_hour { get; set; }

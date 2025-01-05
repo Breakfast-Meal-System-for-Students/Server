@@ -83,13 +83,40 @@ namespace BMS.BLL.Utilities.AutoMapperProfiles
 
                 #endregion
                 #region shop  
+                CreateMap<Shop, ShopApplicationResponse>()
+    .ForMember(dest => dest.Phone, opt => opt.MapFrom(src => src.PhoneNumber))
+    .ForMember(dest => dest.Universities, opt => opt.MapFrom(src =>
+        src.ShopUniversities != null
+            ? src.ShopUniversities.Select(su => new UniversityResponse
+            {
+                Id = su.University.Id,
+                Name = su.University.Name,
+                Address = su.University.Address,
+                EndMail = su.University.EndMail,
+                Lng = su.University.Lng,
+                Lat = su.University.Lat,
+                IdStudentFormat = su.University.IdStudentFormat,
+                Abbreviation = su.University.Abbreviation
+            }).ToList()
+            : new List<UniversityResponse>()));
                 CreateMap<CreateShopApplicationRequest, Shop>()
                     .ForMember(dest => dest.PhoneNumber, opt => opt.MapFrom(src => src.Phone));
                 CreateMap<Shop, ShopApplicationDetailResponse>()
-              .ForMember(dest => dest.Phone, opt => opt.MapFrom(src => src.PhoneNumber));
-                CreateMap<Shop, ShopApplicationResponse>()
-                    .ForMember(dest => dest.Phone, opt => opt.MapFrom(src => src.PhoneNumber));
-                CreateMap<Shop, ShopRequest>();
+              .ForMember(dest => dest.Phone, opt => opt.MapFrom(src => src.PhoneNumber))
+                .ForMember(dest => dest.Universities, opt => opt.MapFrom(src =>
+        src.ShopUniversities != null
+            ? src.ShopUniversities.Select(su => new UniversityResponse
+            {
+                Id = su.University.Id,
+                Name = su.University.Name,
+                Address = su.University.Address,
+                EndMail = su.University.EndMail,
+                Lng = su.University.Lng,
+                Lat = su.University.Lat,
+                IdStudentFormat = su.University.IdStudentFormat,
+                Abbreviation = su.University.Abbreviation
+            }).ToList()
+            : new List<UniversityResponse>()));
                 CreateMap<Shop, ShopResponse>()
                     .ForMember(dest => dest.Phone, opt => opt.MapFrom(src => src.PhoneNumber))
                     .ForMember(dest => dest.ExpiredDate, opt => opt.MapFrom(src =>

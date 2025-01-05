@@ -36,6 +36,7 @@ namespace BMS.DAL
         public IStudentApplicationRepository StudentApplicationRepository { get; }
         public IWalletRepository WalletRepository { get; }
         public IWalletTransactionRepository WalletTransactionRepository { get; }
+        public IShopUniversityRepository ShopUniversityRepository { get; }
         void Commit();
         Task CommitAsync();
         void Rollback();

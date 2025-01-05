@@ -23,7 +23,7 @@ namespace BMS.BLL.Models.Responses.Shop
         public ShopStatus Status { get; set; } = ShopStatus.PENDING;
         public Guid? UserId { get; set; }
 
-        public UniversityResponse University { get; set; } = null!;
+        public List<UniversityResponse> Universities { get; set; } = new List<UniversityResponse>();
         public int To_Hour { get; set; }
         public int From_Hour { get; set; }
         public int To_Minune { get; set; }
