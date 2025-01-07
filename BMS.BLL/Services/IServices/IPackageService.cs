@@ -21,5 +21,8 @@ namespace BMS.BLL.Services.IServices
         Task<ServiceActionResult> GetPackageForShopInUse(Guid shopId, PackageRequest request);
         Task<ServiceActionResult> GetPackageForHistoryBuyingByShop(Guid shopId, PackageRequest request);
         Task<ServiceActionResult> BuyPackageByShop(Guid shopId, Guid packageId);
+
+        Task<ServiceActionResult> GetRevenueForBuyPackage(GetRevenueForBuyPackageRequest request);
+        Task<ServiceActionResult> GetAmountAndRevenueOfEachPackage(GetAmountAndRevenueOfEachPackageRequest request);
     }
 }

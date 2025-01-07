@@ -91,5 +91,23 @@ namespace BMS.API.Controllers
                 async () => await _packageService.BuyPackageByShop(request.ShopId, request.PackageId).ConfigureAwait(false)
             ).ConfigureAwait(false);
         }
+
+        [HttpGet("GetAmountAndRevenueOfEachPackage")]
+        [Authorize(Roles = UserRoleConstants.ADMIN + "," + UserRoleConstants.STAFF)]
+        public async Task<IActionResult> GetAmountAndRevenueOfEachPackage([FromQuery] GetAmountAndRevenueOfEachPackageRequest request)
+        {
+            return await ExecuteServiceLogic(
+                async () => await _packageService.GetAmountAndRevenueOfEachPackage(request).ConfigureAwait(false)
+            ).ConfigureAwait(false);
+        }
+
+        [HttpGet("GetRevenueForBuyPackage")]
+        [Authorize(Roles = UserRoleConstants.ADMIN + "," + UserRoleConstants.STAFF)]
+        public async Task<IActionResult> GetRevenueForBuyPackage([FromQuery] GetRevenueForBuyPackageRequest request)
+        {
+            return await ExecuteServiceLogic(
+                async () => await _packageService.GetRevenueForBuyPackage(request).ConfigureAwait(false)
+            ).ConfigureAwait(false);
+        }
     }
 }

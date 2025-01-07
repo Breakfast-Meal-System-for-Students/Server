@@ -16,6 +16,7 @@ using BMS.BLL.Models.Requests.Basic;
 using Microsoft.EntityFrameworkCore;
 using BMS.BLL.Utilities;
 using BMS.Core.Domains.Enums;
+using Azure.Core;
 
 namespace BMS.BLL.Services
 {
@@ -283,6 +284,8 @@ namespace BMS.BLL.Services
             {
                 ShopId = shopId,
                 PackageId = packageId,
+                Price = package.Price,
+                Duration = package.Duration
             };
             await _unitOfWork.Package_ShopRepository.AddAsync(package_Shop);
             await _walletService.UpdateBalanceAdmin(TransactionStatus.PAID, (decimal)package.Price);
@@ -292,5 +295,68 @@ namespace BMS.BLL.Services
                 Detail = "Buy Package succeessfully"
             };
         }
+
+        public async Task<ServiceActionResult> GetRevenueForBuyPackage(GetRevenueForBuyPackageRequest request)
+        {
+            var revenueBuyPackage = (await _unitOfWork.Package_ShopRepository.GetAllAsyncAsQueryable());
+            if (request.Year != 0)
+            {
+                if (request.Month != 0)
+                {
+                    if (request.Day != 0)
+                    {
+                        revenueBuyPackage = revenueBuyPackage.Where(x => x.CreateDate.Year == request.Year && x.CreateDate.Month == request.Month && x.CreateDate.Day == request.Day);
+                    }
+                    else
+                    {
+                        revenueBuyPackage = revenueBuyPackage.Where(x => x.CreateDate.Year == request.Year && x.CreateDate.Month == request.Month);
+                    }
+                }
+                else
+                {
+                    revenueBuyPackage = revenueBuyPackage.Where(x => x.CreateDate.Year == request.Year);
+                }
+            }
+            return new ServiceActionResult()
+            {
+                Data = revenueBuyPackage.Sum(x => x.Price)
+            };
+        }
+
+        public async Task<ServiceActionResult> GetAmountAndRevenueOfEachPackage(GetAmountAndRevenueOfEachPackageRequest request)
+        {
+            IQueryable<Package> packages = (await _unitOfWork.PackageRepository.GetAllAsyncAsQueryable())
+                .Where(x => x.IsDeleted == false)
+                .Include(p => p.Package_Shop);
+
+            if (request.Year != 0)
+            {
+                if (request.Month != 0)
+                {
+                    packages = packages.Where(x => x.CreateDate.Year == request.Year && x.CreateDate.Month == request.Month);
+                }
+                else
+                {
+                    packages = packages.Where(x => x.CreateDate.Year == request.Year);
+                }
+            }
+
+            var packageStats = packages
+                .Select(package => new
+                {
+                    PackageId = package.Id,
+                    PackageName = package.Name,
+                    AmountSold = package.Package_Shop.Count(),
+                    TotalRevenue = package.Package_Shop.Sum(ps => ps.Price)
+                })
+                .OrderByDescending(stat => stat.TotalRevenue)
+                .ToList();
+
+            return new ServiceActionResult()
+            {
+                Data = packageStats
+            };
+        }
+
     }
 }
