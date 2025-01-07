@@ -349,12 +349,13 @@ namespace BMS.BLL.Services
                     AmountSold = package.Package_Shop.Count(),
                     TotalRevenue = package.Package_Shop.Sum(ps => ps.Price)
                 })
-                .OrderByDescending(stat => stat.TotalRevenue)
-                .ToList();
+                .OrderByDescending(stat => stat.TotalRevenue);
+
+            var paginatedResult = PaginationHelper.BuildPaginatedResult(packageStats, request.PageSize, request.PageIndex);
 
             return new ServiceActionResult()
             {
-                Data = packageStats
+                Data = paginatedResult
             };
         }
 
