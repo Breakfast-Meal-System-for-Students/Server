@@ -328,26 +328,19 @@ namespace BMS.BLL.Services
             IQueryable<Package> packages = (await _unitOfWork.PackageRepository.GetAllAsyncAsQueryable())
                 .Where(x => x.IsDeleted == false)
                 .Include(p => p.Package_Shop);
-
-            if (request.Year != 0)
-            {
-                if (request.Month != 0)
-                {
-                    packages = packages.Where(x => x.CreateDate.Year == request.Year && x.CreateDate.Month == request.Month);
-                }
-                else
-                {
-                    packages = packages.Where(x => x.CreateDate.Year == request.Year);
-                }
-            }
-
             var packageStats = packages
                 .Select(package => new
                 {
                     PackageId = package.Id,
                     PackageName = package.Name,
-                    AmountSold = package.Package_Shop.Count(),
-                    TotalRevenue = package.Package_Shop.Sum(ps => ps.Price)
+                    AmountSold = package.Package_Shop
+                        .Where(ps => (request.Year == 0 || ps.CreateDate.Year == request.Year)
+                                  && (request.Month == 0 || ps.CreateDate.Month == request.Month))
+                        .Count(),
+                    TotalRevenue = package.Package_Shop
+                        .Where(ps => (request.Year == 0 || ps.CreateDate.Year == request.Year)
+                                  && (request.Month == 0 || ps.CreateDate.Month == request.Month))
+                        .Sum(ps => (double?)ps.Price) ?? 0
                 })
                 .OrderByDescending(stat => stat.TotalRevenue);
 
@@ -358,6 +351,7 @@ namespace BMS.BLL.Services
                 Data = paginatedResult
             };
         }
+
 
     }
 }
