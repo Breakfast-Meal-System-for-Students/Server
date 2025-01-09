@@ -29,6 +29,7 @@ namespace BMS.Core.Domains.Entities
         public Guid? FeedbackId { get; set; }
         public Feedback? Feedback { get; set; }
         public bool IsGroup { get; set; }
+        public string? ReasonOfCancel {  get; set; }
     }
 
 }

@@ -54,7 +54,7 @@ namespace BMS.BLL.Services
             _walletService = walletService;
         }
 
-        public async Task<ServiceActionResult> ChangeOrderStatus(Guid id, OrderStatus status, Guid userId)
+        public async Task<ServiceActionResult> ChangeOrderStatus(Guid id, OrderStatus status, Guid userId, string? reasonOfCancel)
         {
             var order = await _unitOfWork.OrderRepository.FindAsync(id);
             if(order == null)
@@ -125,6 +125,13 @@ namespace BMS.BLL.Services
                 bool isPayed = bool.Parse((await CheckOrderIsPayed(id)).Data.ToString());
                 if (status.Equals(OrderStatus.CANCEL))
                 {
+                    if (String.IsNullOrEmpty(reasonOfCancel))
+                    {
+                        return new ServiceActionResult(false)
+                        {
+                            Detail = $"Please input the reason of cancel"
+                        };
+                    }
                     if (!(s <= OrderStatus.CHECKING))
                     {
                         return new ServiceActionResult(false)
@@ -150,6 +157,7 @@ namespace BMS.BLL.Services
                             };
                         }
                     }
+                    order.ReasonOfCancel = reasonOfCancel;
                 }
 
                 if (status.Equals(OrderStatus.COMPLETE))

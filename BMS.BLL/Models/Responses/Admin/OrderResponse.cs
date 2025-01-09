@@ -24,6 +24,7 @@ namespace BMS.BLL.Models.Responses.Admin
         public string? ShopImage { get; set; } = null!;
         public ICollection<OrderItemResponse> OrderItems { get; set; } = new List<OrderItemResponse>();
         public bool IsGroup { get; set; }
+        public string? ReasonOfCancel { get; set; }
         public bool canCancel {  get; set; }
         public bool canFeedback { get; set; }
         public bool isPayed { get; set; }
