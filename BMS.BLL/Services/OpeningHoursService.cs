@@ -136,6 +136,81 @@ namespace BMS.BLL.Services
             };
         }
 
+        public async Task<ServiceActionResult> UpdateOpeningHoursForShopByAdmin(UpdateOpeningHoursRequest request)
+        {
+            // Lấy danh sách giờ mở cửa hiện tại của shop từ cơ sở dữ liệu
+            IQueryable<OpeningHours> existingOpeningHours = (await _unitOfWork.OpeningHoursRepository.GetAllAsyncAsQueryable())
+                .Where(x => x.ShopId == request.shopId);
+
+            if (existingOpeningHours == null || !existingOpeningHours.Any())
+            {
+                return new ServiceActionResult(false)
+                {
+                    IsSuccess = false,
+                    Detail = "Shop does not exist or has no opening hours defined."
+                };
+            }
+
+            WeekDay currentDay = DateTimeHelper.GetCurrentWeekDay() + 1;
+
+            foreach (var dayRequest in request.listOpeningHours)
+            {
+
+                var fromTime = new TimeSpan(dayRequest.from_hour, dayRequest.from_minute, 0);
+                var toTime = new TimeSpan(dayRequest.to_hour, dayRequest.to_minute, 0);
+
+
+                // Tìm giờ mở cửa hiện tại của ngày
+                var openingHour = existingOpeningHours.FirstOrDefault(x => x.day == dayRequest.day);
+
+                // Kiểm tra nếu ngày hiện tại hoặc ngày tiếp theo không cần cập nhật
+                bool ordersTodayOrTomorrow = (await _unitOfWork.OrderRepository.GetAllAsyncAsQueryable())
+                    .Where(x => x.ShopId == request.shopId &&
+                                (x.OrderDate.Value == DateTime.Today || x.OrderDate.Value == DateTime.Today.AddDays(1)))
+                    .Any();
+
+                if ((dayRequest.day == currentDay || dayRequest.day == currentDay + 1) && ordersTodayOrTomorrow)
+                {
+                    return new ServiceActionResult(true)
+                    {
+                        Detail = $"Today is {currentDay}. Cannot update opening hours for {dayRequest.day} because there are existing orders today or tomorrow."
+                    };
+                }
+
+                if (openingHour != null)
+                {
+                    // Cập nhật giờ mở cửa nếu có sự thay đổi
+                    openingHour.Set(dayRequest.from_hour, dayRequest.to_hour, dayRequest.from_minute, dayRequest.to_minute, dayRequest.isOpenToday);
+                }
+                else
+                {
+                    // Thêm giờ mở cửa mới nếu chưa tồn tại
+                    var newOpeningHour = new OpeningHours
+                    {
+                        Id = Guid.NewGuid(),
+                        ShopId = request.shopId,
+                        day = dayRequest.day,
+                        from_hour = dayRequest.from_hour,
+                        to_hour = dayRequest.to_hour,
+                        from_minute = dayRequest.from_minute,
+                        to_minute = dayRequest.to_minute,
+                        isOpenToday = dayRequest.isOpenToday
+                    };
+
+                    await _unitOfWork.OpeningHoursRepository.AddAsync(newOpeningHour);
+                }
+            }
+
+            // Lưu thay đổi vào cơ sở dữ liệu
+            await _unitOfWork.CommitAsync();
+
+            return new ServiceActionResult(true)
+            {
+                IsSuccess = true,
+                Detail = "Updated opening hours for shop successfully."
+            };
+        }
+
         public async Task<ServiceActionResult> UpdateOpeningHoursOnceDayForShop(UpdateDayOpeningHoursRequest request)
         {
             var openingHours = await _unitOfWork.OpeningHoursRepository.FindAsync(x => x.Id == request.Id);

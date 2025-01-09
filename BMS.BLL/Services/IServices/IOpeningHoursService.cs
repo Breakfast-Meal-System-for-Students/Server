@@ -16,5 +16,6 @@ namespace BMS.BLL.Services.IServices
         Task<ServiceActionResult> UpdateOpeningHoursOnceDayForShop(UpdateDayOpeningHoursRequest request);
         Task<ServiceActionResult> UpdateOpenTodayForShop(Guid id, bool isOpenToday);
         Task<bool> IsWithinOpeningHours(Guid shopId, DateTime timeOrder);
+        Task<ServiceActionResult> UpdateOpeningHoursForShopByAdmin(UpdateOpeningHoursRequest request);
     }
 }
