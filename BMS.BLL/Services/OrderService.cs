@@ -194,7 +194,7 @@ namespace BMS.BLL.Services
                     notifications.Add(notification);
                 }
 
-                if (status.Equals(OrderStatus.TAKENOVER) || status.Equals(OrderStatus.COMPLETE))
+                if (status.Equals(OrderStatus.TAKENOVER) || status.Equals(OrderStatus.COMPLETE) || status.Equals(OrderStatus.CANCEL)))
                 {
                     Notification notification1 = new Notification
                     {
