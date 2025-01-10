@@ -296,7 +296,7 @@ namespace BMS.BLL.Services
 
         public async Task<ServiceActionResult> GetAllCartForUser(Guid userId, PagingRequest request)
         {
-            var carts = (await _unitOfWork.CartRepository.GetAllAsyncAsQueryable()).Where(x => x.CustomerId == userId).Include(y => y.CartDetails).ThenInclude(z => z.Product);
+            var carts = (await _unitOfWork.CartRepository.GetAllAsyncAsQueryable()).Where(x => x.CustomerId == userId).Include(a => a.Shop).Include(y => y.CartDetails).ThenInclude(z => z.Product);
             var paginationResult = PaginationHelper
             .BuildPaginatedResult<Cart, CartResponse>(_mapper, carts, request.PageSize, request.PageIndex);
 

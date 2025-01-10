@@ -193,7 +193,9 @@ namespace BMS.BLL.Utilities.AutoMapperProfiles
                     .ForMember(dest => dest.CartGroupUserImage, opt => opt.MapFrom(src => src.CartGroupUser.User.Avatar))
                     .ForMember(dest => dest.CartGroupUserName, opt => opt.MapFrom(src => (src.CartGroupUser.User.FirstName + " " + src.CartGroupUser.User.LastName)));
                 CreateMap<Cart, CartResponse>()
-                    .ForMember(dest => dest.CartDetails, opt => opt.MapFrom(src => src.CartDetails));
+                    .ForMember(dest => dest.CartDetails, opt => opt.MapFrom(src => src.CartDetails))
+                    .ForMember(dest => dest.ShopName, opt => opt.MapFrom(src => src.Shop!.Name))
+                    .ForMember(dest => dest.ShopImage, opt => opt.MapFrom(src => src.Shop!.Image));
                 CreateMap<CartDetailRequest, CartDetail>();
                 CreateMap<CartGroupDetailRequest, CartDetail>();
                 CreateMap<CartGroupUser, CartGroupUserResponse2>();
