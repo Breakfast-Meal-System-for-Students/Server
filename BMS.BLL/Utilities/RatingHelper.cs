@@ -17,18 +17,22 @@ namespace BMS.BLL.Utilities
             }
             if(shopRating > newRating)
             {
-                if (count < 10)
+                if (count <= 0)
                 {
-                    rate = ((shopRating * count) - newRating * 0.3) / (count + 1);
+                    rate = (shopRating - (5 - newRating) * 0.3) / (count + 1);
+                }
+                else if (count < 10)
+                {
+                    rate = ((shopRating * count) - (5 - newRating) * 0.3) / (count + 1);
                 } else if (count < 50)
                 {
-                    rate = ((shopRating * count) - newRating * 0.5) / (count + 1);
+                    rate = ((shopRating * count) - (5 - newRating) * 0.5) / (count + 1);
                 } else if (count < 100)
                 {
-                    rate = ((shopRating * count) - newRating * 0.8) / (count + 1);
+                    rate = ((shopRating * count) - (5 - newRating) * 0.8) / (count + 1);
                 } else
                 {
-                    rate = ((shopRating * count) - newRating * 1) / (count + 1);
+                    rate = ((shopRating * count) - (5 - newRating) * 1) / (count + 1);
                 }
             } else
             {
