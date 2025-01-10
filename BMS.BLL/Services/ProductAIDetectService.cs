@@ -201,7 +201,7 @@ namespace BMS.BLL.Services
             try
             {
                 // Tạo câu truy vấn yêu cầu AI phân tích feedback
-                string instruction = "Analyze the feedback:( "+ feedback + ") content to detect inappropriate or offensive language in English or Vietnamese. If the feedback contains inappropriate or offensive words, return result = 0. If the feedback is appropriate, return result = 1. Use the following format exactly: json: {\"result\": \"1 or 0\", \"reason\": \"this is the reason\"}. For example: {\"result\": \"0\", \"reason\": \"Feedback contains offensive language.\"}.";
+                string instruction = "Analyze the feedback: (" + feedback + ") content to detect inappropriate or offensive language in English or Vietnamese. If the feedback contains inappropriate or offensive words, return result = 0. If the feedback is appropriate, or if the determination cannot be made, return result = 1. Use the following format exactly: json: {\"result\": \"1 or 0\", \"reason\": \"this is the reason\"}. For example: {\"result\": \"0\", \"reason\": \"Feedback contains offensive language with reason.\"} or {\"result\": \"1\", \"reason\": \"Feedback is appropriate or cannot be determined.\"}.";
 
                 // Chuẩn bị nội dung JSON cho yêu cầu AI
                 var requestBody = new
