@@ -8,39 +8,19 @@ namespace BMS.BLL.Utilities
 {
     public class RatingHelper
     {
-        public static double CaculateRaingForShopWhenHaveNewFeedback(double shopRating, double newRating, int count)
+        public static double CaculateRaingForShopWhenHaveNewFeedback(double shopRating, double newRating, int count, int initialWeight = 5)
         {
-            double rate = 0;
-            if ((shopRating == 5 && newRating == 5) || (shopRating == 1 && newRating == 1))
-            {
-                return shopRating;
-            }
-            if(shopRating > newRating)
-            {
-                if (count <= 0)
-                {
-                    rate = (shopRating - (5 - newRating) * 0.3) / (count + 1);
-                }
-                else if (count < 10)
-                {
-                    rate = ((shopRating * count) - (5 - newRating) * 0.3) / (count + 1);
-                } else if (count < 50)
-                {
-                    rate = ((shopRating * count) - (5 - newRating) * 0.5) / (count + 1);
-                } else if (count < 100)
-                {
-                    rate = ((shopRating * count) - (5 - newRating) * 0.8) / (count + 1);
-                } else
-                {
-                    rate = ((shopRating * count) - (5 - newRating) * 1) / (count + 1);
-                }
-            } else
-            {
-                rate = ((shopRating * count) + newRating * 1) / (count + 1);
-            }
-            rate = rate > 5 ? 5 : rate;
-            rate = rate < 1 ? 1 : rate;
-            return rate;
+            const double defaultRating = 5.0;
+
+            int totalFeedback = count + initialWeight;
+
+            double totalRating = (shopRating * count) + (defaultRating * initialWeight) + newRating;
+
+            double updatedRating = totalRating / (totalFeedback + 1);
+
+            updatedRating = Math.Max(1, Math.Min(5, updatedRating));
+
+            return updatedRating;
         }
     }
 }
